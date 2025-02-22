@@ -1,0 +1,34 @@
+.vs/
+
+# Custom
+Assets/ExternalAssets/
+Assets/ExternalAssets.meta
+"Assets/TextMesh Pro"
+
+# Unity-specific
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Visual Studio/JetBrains Rider
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+.vsconfig
+
+# Ignore crash reports
+[Cc]rash/
