@@ -302,13 +302,21 @@ MonoBehaviour:
   parameters:
     mapWidth: 309
     mapHeight: 146
-    noiseScale: 2.89
+    noiseScale: 96.69
     seed: -9
-    octaves: 3
-    persistance: 0.66
-    lacunarity: 0.001
+    octaves: 1
+    persistance: 1
+    lacunarity: 3.03
     offset: {x: -21.1, y: -20.39}
+  regions:
+  - name: water
+    height: 0.4
+    color: {r: 0.10568706, g: 0.31193277, b: 0.8962264, a: 0}
+  - name: land
+    height: 1
+    color: {r: 0, g: 0.33962262, b: 0.016693663, a: 0}
   autoUpdate: 1
+  drawMode: 1
 --- !u!4 &385768758
 Transform:
   m_ObjectHideFlags: 0
