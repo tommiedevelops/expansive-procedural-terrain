@@ -11,7 +11,9 @@ public class GenerateNoiseMapParams {
     public int octaves = 0;
     public float persistance = 0.5f;
     public float lacunarity = 1;
+    public float meshHeightMultipler = 1;
     public Vector2 offset = Vector2.zero;
+    public AnimationCurve meshHeightCurve;
 }
 public static class Noise {
     public static float[,] GenerateNoiseMap(GenerateNoiseMapParams parameters) {

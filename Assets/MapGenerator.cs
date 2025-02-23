@@ -15,12 +15,12 @@ public class MapGenerator : MonoBehaviour {
     private const float SMALL_NUMBER = 0.001f;
     private const int ONE = 1;
 
-    //yo
     #endregion
     
     public enum DrawMode {
         NoiseMap,
-        ColorMap
+        ColorMap,
+        Mesh
     }
 
     public DrawMode drawMode;
@@ -33,6 +33,10 @@ public class MapGenerator : MonoBehaviour {
             display.DrawTexture(TextureGenerator.GetTextureFromHeightMap(noiseMap));
         } else if(drawMode == DrawMode.ColorMap) {
             display.DrawTexture(TextureGenerator.GetTextureFromColorMap(colorMap, parameters.mapWidth, parameters.mapHeight));
+        } else if(drawMode == DrawMode.Mesh) {
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, parameters.meshHeightMultipler, parameters.meshHeightCurve),
+                TextureGenerator.GetTextureFromColorMap(colorMap, parameters.mapWidth, parameters.mapHeight)
+            );
         }
 
     }
