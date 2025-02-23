@@ -16,3 +16,4 @@ public class MapDisplay : MonoBehaviour {
         meshRenderer.sharedMaterial.mainTexture = texture;
     }
 }
+ 

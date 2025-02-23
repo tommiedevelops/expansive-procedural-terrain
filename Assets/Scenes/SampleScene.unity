@@ -302,8 +302,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parameters:
-    mapWidth: 100
-    mapHeight: 100
+    mapChunkSize: 241
+    levelOfDetail: 0
     noiseScale: 13.23
     seed: 5
     octaves: 3

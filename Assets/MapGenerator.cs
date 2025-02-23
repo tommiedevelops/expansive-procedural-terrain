@@ -32,23 +32,22 @@ public class MapGenerator : MonoBehaviour {
         if (drawMode == DrawMode.NoiseMap) {
             display.DrawTexture(TextureGenerator.GetTextureFromHeightMap(noiseMap));
         } else if(drawMode == DrawMode.ColorMap) {
-            display.DrawTexture(TextureGenerator.GetTextureFromColorMap(colorMap, parameters.mapWidth, parameters.mapHeight));
+            display.DrawTexture(TextureGenerator.GetTextureFromColorMap(colorMap, parameters.mapChunkSize, parameters.mapChunkSize));
         } else if(drawMode == DrawMode.Mesh) {
-            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, parameters.meshHeightMultipler, parameters.meshHeightCurve),
-                TextureGenerator.GetTextureFromColorMap(colorMap, parameters.mapWidth, parameters.mapHeight)
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, parameters.meshHeightMultipler, parameters.meshHeightCurve, parameters.levelOfDetail),
+                TextureGenerator.GetTextureFromColorMap(colorMap, parameters.mapChunkSize, parameters.mapChunkSize)
             );
         }
 
     }
-
     private Color[] GenerateColorMap(float[,] noiseMap) {
-        Color[] colorMap = new Color[parameters.mapWidth * parameters.mapHeight];
-        for (int y = 0; y < parameters.mapHeight; y++) {
-            for (int x = 0; x < parameters.mapWidth; x++) {
+        Color[] colorMap = new Color[parameters.mapChunkSize * parameters.mapChunkSize];
+        for (int y = 0; y < parameters.mapChunkSize; y++) {
+            for (int x = 0; x < parameters.mapChunkSize; x++) {
                 float currentHeight = noiseMap[x, y];
                 for (int i = 0; i < regions.Count; i++) { //yo
                     if (currentHeight <= regions[i].height) {
-                        colorMap[y * parameters.mapWidth + x] = regions[i].color;
+                        colorMap[y * parameters.mapChunkSize + x] = regions[i].color;
                         break;
                     }
                 }
@@ -56,13 +55,10 @@ public class MapGenerator : MonoBehaviour {
         }
         return colorMap;
     }
-
     void OnValidate() {
         ValidateFields();
     }
     void ValidateFields() {
-        if (parameters.mapWidth < 1) parameters.mapWidth = ONE;
-        if (parameters.mapHeight < 1) parameters.mapHeight = ONE;
         if (parameters.noiseScale <= 0) parameters.noiseScale = SMALL_NUMBER;
         if (parameters.persistance <= 0) parameters.persistance = SMALL_NUMBER;
         if (parameters.persistance > 1) parameters.persistance = ONE;

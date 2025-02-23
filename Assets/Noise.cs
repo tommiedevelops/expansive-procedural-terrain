@@ -4,8 +4,10 @@ using UnityEngine;
 
 [Serializable]
 public class GenerateNoiseMapParams {
-    public int mapWidth = 1;
-    public int mapHeight = 1;
+    public const int MAP_CHUNK_SIZE = 241; // 240 divisible by 1,2,4,8,6,12
+    public int mapChunkSize = MAP_CHUNK_SIZE;
+    [Range(0,6)]
+    public int levelOfDetail = 1;
     public float noiseScale = 1;
     public int seed = 0;
     public int octaves = 0;
@@ -19,17 +21,17 @@ public static class Noise {
     public static float[,] GenerateNoiseMap(GenerateNoiseMapParams parameters) {
 
         Vector2[] octaveOffsets = GenerateOctaveOffsets(parameters);
-        float[,] noiseMap = new float[parameters.mapWidth, parameters.mapHeight];
+        float[,] noiseMap = new float[parameters.mapChunkSize, parameters.mapChunkSize];
 
         // Variables for state
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
-        float halfWidth = parameters.mapWidth / 2;
-        float halfHeight = parameters.mapHeight / 2;
+        float halfWidth = parameters.mapChunkSize / 2;
+        float halfHeight = parameters.mapChunkSize / 2;
 
         // Loop through each pixel
-        for (int y = 0; y < parameters.mapHeight; y++) {
-            for (int x = 0; x < parameters.mapWidth; x++) {
+        for (int y = 0; y < parameters.mapChunkSize; y++) {
+            for (int x = 0; x < parameters.mapChunkSize; x++) {
                 
                 float amplitude = 1;
                 float frequency = 1;
@@ -63,8 +65,8 @@ public static class Noise {
     }
     private static void RenormalizeNoiseMap(GenerateNoiseMapParams parameters, ref float[,] noiseMap, float maxNoiseHeight, float minNoiseHeight) {
         /* Re-normalizes noise map to be between 0 and 1. */
-        for (int y = 0; y < parameters.mapHeight; y++) 
-            for (int x = 0; x < parameters.mapWidth; x++) 
+        for (int y = 0; y < parameters.mapChunkSize; y++) 
+            for (int x = 0; x < parameters.mapChunkSize; x++) 
                 noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);         
     }
     private static Vector2[] GenerateOctaveOffsets(GenerateNoiseMapParams param) {
