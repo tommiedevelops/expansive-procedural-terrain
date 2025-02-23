@@ -46,7 +46,7 @@ public class MapGenerator : MonoBehaviour {
         for (int y = 0; y < parameters.mapHeight; y++) {
             for (int x = 0; x < parameters.mapWidth; x++) {
                 float currentHeight = noiseMap[x, y];
-                for (int i = 0; i < regions.Count; i++) {
+                for (int i = 0; i < regions.Count; i++) { //yo
                     if (currentHeight <= regions[i].height) {
                         colorMap[y * parameters.mapWidth + x] = regions[i].color;
                         break;
