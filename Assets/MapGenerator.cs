@@ -8,7 +8,8 @@ public class MapGenerator : MonoBehaviour {
     [Header("Values")]
     [SerializeField] GenerateNoiseMapParams parameters;
     [SerializeField] List<TerrainType> regions;
-    
+    public const int MAP_CHUNK_SIZE_PLUSONE = 241; // 240 divisible by 1,2,4,8,6,12
+
     public bool autoUpdate;
 
     [Header("Constants")]

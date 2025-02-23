@@ -3,7 +3,7 @@
 public static class MeshGenerator {
     public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, AnimationCurve heightCurve, int levelOfDetail) {
 
-        int mapChunkSize = GenerateNoiseMapParams.MAP_CHUNK_SIZE;
+        int mapChunkSize = MapGenerator.MAP_CHUNK_SIZE_PLUSONE;
 
         // I don't get the below transformation. Why is this important? Maybe try without it after done.
         float topLeftX = (mapChunkSize - 1) / -2f;

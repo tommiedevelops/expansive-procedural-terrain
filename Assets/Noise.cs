@@ -1,22 +1,5 @@
-﻿using System;
-using Unity.VisualScripting;
+﻿using Unity.VisualScripting;
 using UnityEngine;
-
-[Serializable]
-public class GenerateNoiseMapParams {
-    public const int MAP_CHUNK_SIZE = 241; // 240 divisible by 1,2,4,8,6,12
-    public int mapChunkSize = MAP_CHUNK_SIZE;
-    [Range(0,6)]
-    public int levelOfDetail = 1;
-    public float noiseScale = 1;
-    public int seed = 0;
-    public int octaves = 0;
-    public float persistance = 0.5f;
-    public float lacunarity = 1;
-    public float meshHeightMultipler = 1;
-    public Vector2 offset = Vector2.zero;
-    public AnimationCurve meshHeightCurve;
-}
 public static class Noise {
     public static float[,] GenerateNoiseMap(GenerateNoiseMapParams parameters) {
 
