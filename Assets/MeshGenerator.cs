@@ -7,7 +7,7 @@ public static class MeshGenerator {
 
         int mapChunkSize = MapGenerator.MAP_CHUNK_SIZE_PLUSONE;
 
-        // I don't get the below transformation. Why is this important? Maybe try without it after done.
+        // I don't get the below transformation. Why is this important? Maybe try without it after done. //demo
         float topLeftX = (mapChunkSize - 1) / -2f;
         float topLeftZ = (mapChunkSize - 1) / 2f;
 
