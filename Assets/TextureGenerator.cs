@@ -3,11 +3,11 @@
 public static class TextureGenerator {
     public static int Convert2DIndexTo1D(int x, int y, int width) => y * width + x;
     public static Texture2D GetTextureFromColorMap(Color[] colorMap, int mapWidth, int mapHeight) {
-        Texture2D texture = new Texture2D(mapWidth, mapHeight);
+        var texture = new Texture2D(mapWidth, mapHeight);
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
 
-        texture.SetPixels(colorMap);
+        texture.SetPixels(colorMap); 
         texture.Apply();
         return texture;
     }

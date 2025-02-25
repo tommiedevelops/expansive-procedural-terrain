@@ -26,7 +26,7 @@ public class EndlessTerrain : MonoBehaviour {
     // Methods
     private void Start() {
         maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
-        chunkSize = MapGenerator.MAP_CHUNK_SIZE_PLUSONE - 1;
+        chunkSize = TerrainGenerator.MAP_CHUNK_SIZE_PLUSONE - 1;
         chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
     }
 
@@ -71,7 +71,7 @@ public class EndlessTerrain : MonoBehaviour {
         LODInfo[] detailLevels;
         LODMesh[] lodMeshes;
 
-        MapData mapData;
+        //MapData mapData;
         bool mapDataReceived;
         int previousLODIndex = -1;
 
@@ -132,10 +132,10 @@ public class EndlessTerrain : MonoBehaviour {
             
         }
 
-        void OnMapDataReceived(MapData mapData) {
-            this.mapData = mapData;
-            mapDataReceived = true;
-        }
+        //void OnMapDataReceived(MapData mapData) {
+        //    this.mapData = mapData;
+        //    mapDataReceived = true;
+        //}
 
         public void SetVisible(bool isVisible) {
             meshObject.SetActive(isVisible);
