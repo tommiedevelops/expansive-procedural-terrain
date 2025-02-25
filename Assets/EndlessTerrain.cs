@@ -96,7 +96,7 @@ public class EndlessTerrain : MonoBehaviour {
                 lodMeshes[i] = new LODMesh(detailLevels[i].lod);
             }
 
-            MapGenerator.Instance.RequestMapData(OnMapDataReceived);
+            //MapGenerator.Instance.RequestMapData(OnMapDataReceived);
         }
 
         public void UpdateTerrainChunk() {
@@ -123,7 +123,7 @@ public class EndlessTerrain : MonoBehaviour {
                         meshFilter.mesh = lodMesh.mesh;
                         previousLODIndex = lodIndex;
                     } else if (!lodMesh.hasRequestedMesh) {
-                        lodMesh.RequestMesh(mapData);
+                        //lodMesh.RequestMesh(mapData);
                     }
                 }
             }
@@ -163,10 +163,10 @@ public class LODMesh {
         mesh = meshData.CreateMesh();
         hasMesh = true;
     }
-    public void RequestMesh(MapData mapData) {
-        hasRequestedMesh = true;
-        MapGenerator.Instance.RequestMeshData(mapData, lod, OnMeshDataReceived);
-    }
+    //public void RequestMesh(MapData mapData) {
+    //    hasRequestedMesh = true;
+    //    MapGenerator.Instance.RequestMeshData(mapData, lod, OnMeshDataReceived);
+    //}
 }
 
 [Serializable]
