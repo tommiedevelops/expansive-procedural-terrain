@@ -1,9 +1,7 @@
-using NUnit.Framework;
+
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using System.Security.Cryptography;
 
 [RequireComponent(typeof(MapDisplay))]
 public class TerrainGenerator : MonoBehaviour {
@@ -23,6 +21,12 @@ public class TerrainGenerator : MonoBehaviour {
         }
     }
 
+    public enum DrawMode {
+        NoiseMap,
+        ColorMap,
+        Mesh
+    }
+
     [Serializable]
     public struct TerrainType {
         public string name;
@@ -36,7 +40,7 @@ public class TerrainGenerator : MonoBehaviour {
 
     [Header("Values")]
     [SerializeField] List<TerrainType> regions;
-    [SerializeField] PerlinNoiseMapGeneratorSettings settings; // Set in editor
+    [SerializeField] NoiseSettings settings; // Set in editor
 
     public static TerrainGenerator Instance { get; private set; }
 
@@ -44,7 +48,7 @@ public class TerrainGenerator : MonoBehaviour {
     //Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new();
 
     public const int MAP_CHUNK_SIZE_PLUSONE = 241; // 240 divisible by 1,2,4,8,6,12
-
+    public DrawMode drawMode;
     public bool autoUpdate;
 
     [Header("Constants")]
@@ -53,16 +57,11 @@ public class TerrainGenerator : MonoBehaviour {
 
     #endregion
 
+    // UnityEngine Methods
     private void Awake() {
         Instance = this;
     }
-    public enum DrawMode {
-        NoiseMap,
-        ColorMap,
-        Mesh
-    }
 
-    public DrawMode drawMode;
     MapData GenerateMapData() {
         float[,] noiseMap = PerlinNoiseMapGenerator.GenerateNoiseMap(settings);
         Color[] colorMap = GenerateColorMapFromNoiseMap(noiseMap);
@@ -77,8 +76,8 @@ public class TerrainGenerator : MonoBehaviour {
         } else if (drawMode == DrawMode.ColorMap) {
             display.DrawTexture(TextureGenerator.GetTextureFromColorMap(mapData.colorMap, mapData.width, mapData.height));
         } else if (drawMode == DrawMode.Mesh) {
-            MeshData meshData = MeshGenerator.GenerateTerrainMeshDataFromHeightMap(mapData.heightMap, settings.amplitudeMultipler, settings.amplitudeEnvelope, settings.previewLOD);
-            Texture2D texture = TextureGenerator.GetTextureFromColorMap(mapData.colorMap, settings.width, settings.height);
+            MeshData meshData = MeshGenerator.GenerateTerrainMeshDataFromHeightMap(mapData.heightMap, settings);
+            Texture2D texture = TextureGenerator.GetTextureFromColorMap(mapData.colorMap, settings.width, settings.length);
             display.DrawMesh(meshData, texture);
         }
     }
@@ -164,12 +163,18 @@ public class TerrainGenerator : MonoBehaviour {
     void OnValidate() {
         ValidateFields();
     }
+
     void ValidateFields() {
-        if (settings.amplitudeMultipler <= 0) settings.amplitudeMultipler = SMALL_NUMBER;
+        if (settings.noiseScale <= 0) settings.noiseScale = SMALL_NUMBER;
         if (settings.persistance <= 0) settings.persistance = SMALL_NUMBER;
         if (settings.persistance > 1) settings.persistance = ONE;
         if (settings.lacunarity <= 0) settings.lacunarity = SMALL_NUMBER;
         if (settings.octaves <= 0) settings.octaves = ONE;
+        if (settings.octaves > 4) settings.octaves = 4; //performance reasons 
+        if (settings.width <= 0) settings.width = ONE;
+        if (settings.length <= 0) settings.length = ONE;
+        if (settings.heightMultiplier <= 0) settings.heightMultiplier = SMALL_NUMBER;
+
     }
 
 

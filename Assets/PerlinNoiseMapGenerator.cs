@@ -12,20 +12,20 @@ public static class PerlinNoiseMapGenerator {
     private const int INITIAL_AMPLTIUDE = 1;
     private const int INITIAL_NOISE_HEIGHT = 1;
     #endregion
-    public static float[,] GenerateNoiseMap(PerlinNoiseMapGeneratorSettings settings) {
+    public static float[,] GenerateNoiseMap(NoiseSettings settings) {
         /* Algorithm for computing the Perlin Noise Map */
 
         Vector2[] octaveOffsets = GenerateOctaveOffsets(settings);
-        float[,] noiseMap = new float[settings.width, settings.height];
+        float[,] noiseMap = new float[settings.width, settings.length];
 
         // Variables for state
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
         float halfWidth = settings.width / 2;
-        float halfHeight = settings.height / 2;
+        float halfHeight = settings.length / 2;
 
         // Loop through each pixel
-        for (int y = 0; y < settings.height; y++) {
+        for (int y = 0; y < settings.length; y++) {
             for (int x = 0; x < settings.width; x++) {
 
                 float amplitude = INITIAL_AMPLTIUDE;
@@ -35,8 +35,8 @@ public static class PerlinNoiseMapGenerator {
                 // loop through octaves
                 for (int i = 0; i < settings.octaves; i++) {
 
-                    float sampleX = ((x - halfWidth) / settings.amplitudeMultipler + octaveOffsets[i].x) * frequency;
-                    float sampleY = ((y - halfHeight) / settings.amplitudeMultipler - octaveOffsets[i].y) * frequency;
+                    float sampleX = ((x - halfWidth) / settings.noiseScale + octaveOffsets[i].x) * frequency;
+                    float sampleY = ((y - halfHeight) / settings.noiseScale - octaveOffsets[i].y) * frequency;
 
                     // Shift and scale to be in range [-1,1]
                     float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
@@ -69,7 +69,7 @@ public static class PerlinNoiseMapGenerator {
             for (int x = 0; x < width; x++) 
                 noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);         
     }
-    private static Vector2[] GenerateOctaveOffsets(PerlinNoiseMapGeneratorSettings settings) {
+    private static Vector2[] GenerateOctaveOffsets(NoiseSettings settings) {
         /* Generates offsets for each octave based on the provided offset value */
         const int MIN = -100000;
         const int MAX = 100000;
@@ -88,16 +88,17 @@ public static class PerlinNoiseMapGenerator {
 }
 
 [Serializable]
-public class PerlinNoiseMapGeneratorSettings {
+public class NoiseSettings {
     /* An instance of this class can be used to configure the static NoiseMapGenerator */
     public int width;
-    public int height;
+    public int length;
     public int seed;
     public int octaves;
     public float persistance;
     public float lacunarity = 1f;
-    public float amplitudeMultipler;
+    public float noiseScale;
     public AnimationCurve amplitudeEnvelope;
     public int previewLOD;
     public Vector2 offsetV2;
+    public float heightMultiplier;
 }

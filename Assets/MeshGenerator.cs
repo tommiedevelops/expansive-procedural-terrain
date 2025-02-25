@@ -1,32 +1,32 @@
 ﻿using UnityEngine;
 
 public static class MeshGenerator {
-    public static MeshData GenerateTerrainMeshDataFromHeightMap(float[,] heightMap, float heightMultiplier, AnimationCurve _heightCurve, int levelOfDetail) {
+    public static MeshData GenerateTerrainMeshDataFromHeightMap(float[,] noiseMap, NoiseSettings settings) {
 
-        var heightCurve = new AnimationCurve(_heightCurve.keys);
-        int mapChunkSize = TerrainGenerator.MAP_CHUNK_SIZE_PLUSONE;
+        var envelope = new AnimationCurve(settings.amplitudeEnvelope.keys);
+        int width = settings.width;
+        int length = settings.length;
+        int levelOfDetail = settings.previewLOD;
+        float heightMultiplier = settings.heightMultiplier;
 
         // I don't get the below transformation. Why is this important? Maybe try without it after done. //demo
-        float topLeftX = (mapChunkSize - 1) / -2f;
-        float topLeftZ = (mapChunkSize - 1) / 2f;
-
-        int width = heightMap.GetLength(0);
-        int height = heightMap.GetLength(1);
+        float topLeftX = (width - 1) / -2f;
+        float topLeftZ = (length - 1) / 2f;
 
         int meshSimplificationIncrement = (levelOfDetail == 0 ) ? 1 : levelOfDetail * 2;
         
-        int verticesPerLine = (mapChunkSize - 1) / meshSimplificationIncrement + 1;
+        int verticesPerLine = (width - 1) / meshSimplificationIncrement + 1;
 
         int vertexIndex = 0; 
 
         var meshData = new MeshData(verticesPerLine, verticesPerLine);
 
-        for (int y = 0; y < height; y+=meshSimplificationIncrement) {
+        for (int y = 0; y < length; y+=meshSimplificationIncrement) {
             for (int x = 0; x < width; x+=meshSimplificationIncrement) {
-                meshData.vertices [vertexIndex] = new Vector3 (topLeftX + x, heightCurve.Evaluate(heightMap[x,y]) * heightMultiplier, topLeftZ - y);
-                meshData.uvs [vertexIndex] = new Vector2( x / (float)width, y / (float)height);
+                meshData.vertices [vertexIndex] = new Vector3 (topLeftX + x, envelope.Evaluate(noiseMap[x,y]) * heightMultiplier, topLeftZ - y);
+                meshData.uvs [vertexIndex] = new Vector2( x / (float)width, y / (float)length);
 
-                if (x < width - 1 && y < height - 1) {
+                if (x < width - 1 && y < width - 1) {
                     meshData.AddTriangle (vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
                     meshData.AddTriangle (vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
                 }
