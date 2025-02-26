@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 public static class MeshGenerator {
     public static MeshData GenerateTerrainMeshDataFromHeightMap(float[,] noiseMap, NoiseSettings settings) {
 
