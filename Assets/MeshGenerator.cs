@@ -3,32 +3,34 @@
 public static class MeshGenerator {
     public static MeshData GenerateTerrainMeshDataFromHeightMap(float[,] noiseMap, NoiseSettings settings) {
 
-        var envelope = new AnimationCurve(settings.amplitudeEnvelope.keys);
-        int width = settings.width;
-        int length = settings.length;
-        int levelOfDetail = settings.previewLOD;
-        float heightMultiplier = settings.heightMultiplier;
-
         // I don't get the below transformation. Why is this important? Maybe try without it after done. //demo
-        float topLeftX = (width - 1) / -2f;
-        float topLeftZ = (length - 1) / 2f;
+        MeshData meshData = GenerateMeshData(noiseMap, settings);
 
-        int meshSimplificationIncrement = (levelOfDetail == 0 ) ? 1 : levelOfDetail * 2;
-        
-        int verticesPerLine = (width - 1) / meshSimplificationIncrement + 1;
+        return meshData;
 
-        int vertexIndex = 0; 
+    }
 
+    private static MeshData GenerateMeshData(float[,] noiseMap, NoiseSettings settings) {
+
+        // Transform position so it is centred abou the origin
+        float topLeftX = (settings.width - 1) / -2f;
+        float topLeftZ = (settings.length - 1) / 2f;
+
+        // Index to use in case of mesh simplification
+        int meshSimplificationIncrement = (settings.previewLOD == 0) ? 1 : settings.previewLOD * 2;
+        int verticesPerLine = (settings.width - 1) / meshSimplificationIncrement + 1;
+
+        int vertexIndex = 0;
         var meshData = new MeshData(verticesPerLine, verticesPerLine);
 
-        for (int y = 0; y < length; y+=meshSimplificationIncrement) {
-            for (int x = 0; x < width; x+=meshSimplificationIncrement) {
-                meshData.vertices [vertexIndex] = new Vector3 (topLeftX + x, envelope.Evaluate(noiseMap[x,y]) * heightMultiplier, topLeftZ - y);
-                meshData.uvs [vertexIndex] = new Vector2( x / (float)width, y / (float)length);
+        for (int y = 0; y < settings.length; y += meshSimplificationIncrement) {
+            for (int x = 0; x < settings.width; x += meshSimplificationIncrement) {
+                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, settings.amplitudeEnvelope.Evaluate(noiseMap[x, y]) * settings.heightMultiplier, topLeftZ - y);
+                meshData.uvs[vertexIndex] = new Vector2(x / (float)settings.width, y / (float)settings.length);
 
-                if (x < width - 1 && y < width - 1) {
-                    meshData.AddTriangle (vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
-                    meshData.AddTriangle (vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
+                if (x < settings.width - 1 && y < settings.width - 1) {
+                    meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
+                    meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
                 }
 
                 vertexIndex++;
@@ -36,7 +38,6 @@ public static class MeshGenerator {
         }
 
         return meshData;
-
     }
 }
 

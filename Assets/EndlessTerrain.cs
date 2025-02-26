@@ -1,70 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using Unity.Collections.LowLevel.Unsafe;
 using System;
 
 public class EndlessTerrain : MonoBehaviour {
 
-    #region Fields
-    [Header("References")]
-    [SerializeField] Transform viewer;
-    [SerializeField] Material mapMaterial;
-    [SerializeField] LODInfo[] detailLevels;
-
-    [Header("Variables")]
-    public static float maxViewDst;
-    private int chunkSize;
-    private int chunksVisibleInViewDst;
-
-    Dictionary<Vector2, TerrainChunk> terrainChunkDict = new();
-    List<TerrainChunk> terrainChunksVisibleLastUpdate = new();
-    #endregion
-
-    public static Vector2 viewerPosition;
-
-    // Methods
-    private void Start() {
-        maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
-        chunkSize = TerrainGenerator.MAP_CHUNK_SIZE_PLUSONE - 1;
-        chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
-    }
-
-    private void Update() {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
-        UpdateVisibleChunks();
-    }
-
-    void UpdateVisibleChunks() {
-
-        for (int i = 0; i < terrainChunksVisibleLastUpdate.Count; i++) {
-            terrainChunksVisibleLastUpdate[i].SetVisible(false);
-        }
-
-        terrainChunksVisibleLastUpdate.Clear();
-
-        int currentChunkCoordX = Mathf.RoundToInt(viewer.position.x / chunkSize);
-        int currentChunkCoordY = Mathf.RoundToInt(viewer.position.z / chunkSize);
-
-        for (int yOffset = -chunksVisibleInViewDst; yOffset <= chunksVisibleInViewDst; yOffset++) {
-            for(int xOffset = -chunksVisibleInViewDst; xOffset <= chunksVisibleInViewDst; xOffset++) {
-                var viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
-
-                if (terrainChunkDict.ContainsKey(viewedChunkCoord)) {
-                    terrainChunkDict[viewedChunkCoord].UpdateTerrainChunk();
-                    if(terrainChunkDict[viewedChunkCoord].IsVisible()) {
-                        terrainChunksVisibleLastUpdate.Add(terrainChunkDict[viewedChunkCoord]);
-                    }
-
-                } else {
-                    terrainChunkDict.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform, detailLevels, mapMaterial));
-                }
-            }
-        }
-    }
-
+    #region Declarations
     public class TerrainChunk {
-        //
+        /* The properties here encompass a single Terrain Chunk, defined
+         * as a 240x240 unit grid of vertices
+         * 
+         * TODO: Refactor using C# event system.
+         */
+
         GameObject meshObject;
         Vector2 position;
         Bounds bounds;
@@ -77,6 +24,7 @@ public class EndlessTerrain : MonoBehaviour {
 
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
+
         public TerrainChunk(Vector2 coord, int size, Transform parent, LODInfo[] detailLevels, Material material) {
             this.detailLevels = detailLevels;
             position = coord * size;
@@ -96,7 +44,7 @@ public class EndlessTerrain : MonoBehaviour {
                 lodMeshes[i] = new LODMesh(detailLevels[i].lod);
             }
 
-            //MapGenerator.Instance.RequestMapData(OnMapDataReceived);
+            TerrainGenerator.Instance.RequestMapData(OnMapDataReceived);
         }
 
         public void UpdateTerrainChunk() {
@@ -128,8 +76,8 @@ public class EndlessTerrain : MonoBehaviour {
                 }
             }
             SetVisible(isVisible);
-            
-            
+
+
         }
 
         //void OnMapDataReceived(MapData mapData) {
@@ -146,8 +94,66 @@ public class EndlessTerrain : MonoBehaviour {
         }
 
     }
-}
+    #endregion
+    #region Fields
+    [Header("References")]
+    [SerializeField] Transform viewer;
+    [SerializeField] Material mapMaterial;
+    [SerializeField] LODInfo[] detailLevels;
 
+    [Header("Variables")]
+    public static float maxViewDst;
+    private int chunkSize;
+    private int chunksVisibleInViewDst;
+    public static Vector2 viewerPosition;
+
+    Dictionary<Vector2, TerrainChunk> terrainChunkDict = new();
+    List<TerrainChunk> terrainChunksVisibleLastUpdate = new();
+    #endregion
+
+    // Unity Methods
+    private void Start() {
+        maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
+        chunkSize = TerrainGenerator.MAP_CHUNK_SIZE_PLUSONE - 1;
+        chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
+    }
+
+    private void Update() {
+        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
+        UpdateVisibleChunks();
+    }
+
+    // Endless Terrain Methods
+    private void UpdateVisibleChunks() {
+
+        for (int i = 0; i < terrainChunksVisibleLastUpdate.Count; i++) {
+            terrainChunksVisibleLastUpdate[i].SetVisible(false);
+        }
+
+        terrainChunksVisibleLastUpdate.Clear();
+
+        int currentChunkCoordX = Mathf.RoundToInt(viewer.position.x / chunkSize);
+        int currentChunkCoordY = Mathf.RoundToInt(viewer.position.z / chunkSize);
+
+        for (int yOffset = -chunksVisibleInViewDst; yOffset <= chunksVisibleInViewDst; yOffset++) {
+            for(int xOffset = -chunksVisibleInViewDst; xOffset <= chunksVisibleInViewDst; xOffset++) {
+                var viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
+
+                if (terrainChunkDict.ContainsKey(viewedChunkCoord)) {
+                    terrainChunkDict[viewedChunkCoord].UpdateTerrainChunk();
+                    if(terrainChunkDict[viewedChunkCoord].IsVisible()) {
+                        terrainChunksVisibleLastUpdate.Add(terrainChunkDict[viewedChunkCoord]);
+                    }
+
+                } else {
+                    terrainChunkDict.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform, detailLevels, mapMaterial));
+                }
+            }
+        }
+    }
+
+    
+}
 
 public class LODMesh {
     public Mesh mesh;
