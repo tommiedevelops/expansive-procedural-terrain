@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Threading;
 
 [RequireComponent(typeof(MapDisplay))]
 public class TerrainGenerator : MonoBehaviour {
@@ -44,7 +45,7 @@ public class TerrainGenerator : MonoBehaviour {
 
     public static TerrainGenerator Instance { get; private set; }
 
-    //Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new();
+    Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new();
     //Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new();
 
     public const int MAP_CHUNK_SIZE_PLUSONE = 241; // 240 divisible by 1,2,4,8,6,12
@@ -62,11 +63,17 @@ public class TerrainGenerator : MonoBehaviour {
         Instance = this;
     }
 
-    MapData GenerateMapData() {
+    void OnValidate() {
+        ValidateFields();
+    }
+
+    // Methods
+    private MapData GenerateMapData() {
         float[,] noiseMap = PerlinNoiseMapGenerator.GenerateNoiseMap(settings);
         Color[] colorMap = GenerateColorMapFromNoiseMap(noiseMap);
         return new MapData(noiseMap, colorMap);
     }
+
     public void DrawMapInEditor() {
         MapData mapData = GenerateMapData();
         MapDisplay display = GetComponent<MapDisplay>();
@@ -82,15 +89,15 @@ public class TerrainGenerator : MonoBehaviour {
         }
     }
 
-    
-    //wtf
-    //public void RequestMapData(Action<MapData> callback) {
-    //    ThreadStart threadStart = delegate {
-    //        MapDataThread(callback);
-    //    };
 
-    //    new Thread(threadStart).Start();
-    //}
+    //wtf
+    public void RequestMapData(Action<MapData> callback) {
+        ThreadStart threadStart = delegate {
+            MapDataThread(callback);
+        };
+
+        new Thread(threadStart).Start();
+    }
 
     //public void RequestMeshData(MapData mapData, int levelOfDetail, Action<MeshData> callback) {
     //    ThreadStart threadStart = delegate {
@@ -107,13 +114,13 @@ public class TerrainGenerator : MonoBehaviour {
     //    }
     //}
 
-    //void MapDataThread(Action<MapData> callback) {
-    //    // Not running on the main thread
-    //    MapData mapData = GenerateMapData(); // executed inside this thread
-    //    lock (mapDataThreadInfoQueue) {
-    //        mapDataThreadInfoQueue.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
-    //    }
-    //}
+    void MapDataThread(Action<MapData> callback) {
+        // Not running on the main thread
+        MapData mapData = GenerateMapData(); // executed inside this thread
+        lock (mapDataThreadInfoQueue) {
+            mapDataThreadInfoQueue.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
+        }
+    }
 
     //private void Update() {
     //    if (mapDataThreadInfoQueue.Count > 0) {
@@ -132,15 +139,15 @@ public class TerrainGenerator : MonoBehaviour {
 
     //}
 
-    //struct MapThreadInfo<T> {
-    //    public readonly Action<T> callback;
-    //    public readonly T parameter;
+    struct MapThreadInfo<T> {
+        public readonly Action<T> callback;
+        public readonly T parameter;
 
-    //    public MapThreadInfo(Action<T> callback, T parameter) {
-    //        this.callback = callback;
-    //        this.parameter = parameter;
-    //    }
-    //}
+        public MapThreadInfo(Action<T> callback, T parameter) {
+            this.callback = callback;
+            this.parameter = parameter;
+        }
+    }
 
     private Color[] GenerateColorMapFromNoiseMap(float[,] noiseMap) {
         int width = noiseMap.GetLength(0);
@@ -160,11 +167,8 @@ public class TerrainGenerator : MonoBehaviour {
         }
         return colorMap;
     }
-    void OnValidate() {
-        ValidateFields();
-    }
 
-    void ValidateFields() {
+    private void ValidateFields() {
         if (settings.noiseScale <= 0) settings.noiseScale = SMALL_NUMBER;
         if (settings.persistance <= 0) settings.persistance = SMALL_NUMBER;
         if (settings.persistance > 1) settings.persistance = ONE;

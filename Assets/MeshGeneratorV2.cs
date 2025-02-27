@@ -3,42 +3,74 @@ using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+
 public class MeshGeneratorV2 : MonoBehaviour {
 
+    MeshData meshData;
     Mesh mesh;
-    Vector3[] vertices;
-    int[] triangles;
-    
-    
+    private int planeWidth = 10;
+    private int planeHeight = 10;
+
+    public void ClearMesh() {
+
+    public struct MeshData {
+        public readonly Vector3[] vertices;
+        public readonly int[] triangles;
+
+        public MeshData(Vector3[] vertices, int[] triangles) {
+            this.vertices = vertices;
+            this.triangles = triangles;
+        }
+    }
+
+    private void OnDrawGizmos() {
+        // also draw the vertices for debugging
+        if(meshData.vertices == null) return;
+        for (int i = 0; i < meshData.vertices.Length; i++)
+            Gizmos.DrawSphere(meshData.vertices[i], 0.1f);
+    }
+
     public void DrawMesh() {
         MeshFilter meshFilter = GetComponent<MeshFilter>();
-        GetMesh();
+        MeshData planeMeshData = CreatePlaneMeshData(planeWidth, planeHeight);
+        meshData = planeMeshData;
+
         mesh = new() {
-            vertices = vertices,
-            triangles = triangles
+            vertices = planeMeshData.vertices,
+            triangles = planeMeshData.triangles
         };
         // let unity calculate normals for us
         mesh.RecalculateNormals();
         meshFilter.sharedMesh = mesh;
+
+        // Draw gizmos for debugging
+        OnDrawGizmos();
     }
 
-    private void GetMesh() {
-        vertices = new Vector3[] {
-            new Vector3(0,0,0),
-            new Vector3(0,0,1),
-            new Vector3(1,0,0),
-            new Vector3(1,0,1),
-        };
+    public MeshData CreatePlaneMeshData(int width, int length) {
+        /* 
+         * Width and Length are measured in the number of vertices
+         * The distance between vertices is given by the unit distance defined
+         * by the game engine (Unity).
+         */
 
-        triangles = new int[] {
-            0,
-            1,
-            2,
-            1,
-            3,
-            2
-        };
+        int numVertices = width * length;
+        int numTriangles = 3*4 * numVertices / 2;
+
+        Vector3[] vertices = new Vector3[numVertices];
+        int[] triangles = new int[numTriangles];
+
+        for(int i = 0, y = 0; y < length; y++) {
+            for(int x=0; x < width; x++) {
+                vertices[i] = new Vector3(x, 0f, y);
+                i++;
+            }
+        }
+
+        return new MeshData(vertices, triangles);
+
     }
+
 }
 
 
@@ -52,5 +84,11 @@ public class MeshGeneratorEditor : Editor {
         if (GUILayout.Button("Generate")) {
             meshGen.DrawMesh();
         }
+
+        if (GUILayout.Button("Clear") {
+            meshGen.
+        }
     }
+
+
 }
