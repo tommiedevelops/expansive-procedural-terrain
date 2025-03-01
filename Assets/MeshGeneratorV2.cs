@@ -59,8 +59,8 @@ public class MeshGeneratorV2 : MonoBehaviour {
         int[] triangles = new int[numTriangleVertices];
 
         // Create vertices
-        for(int i = 0, y = 0; y < length; y++) {
-            for(int x=0; x < width; x++) {
+        for(int i = 0, x = 0; x < width; x++) {
+            for(int y=0; y < length; y++) {
                 vertices[i] = new Vector3(x, 0f, y);
                 i++;
             }
@@ -73,20 +73,22 @@ public class MeshGeneratorV2 : MonoBehaviour {
         // a is responsible for triangles (a,d,c) and (a,b,d)
         // e is responsible for triangles (e,h,g) and (e,f,h)
         // triangles = {}
-        for(int i = 0, y = 0; y < 5; y++) {
+        for (int i = 0, j = 0; i < vertices.Length; i++) {
 
-            for(int x = 0; x < 5; x++) {
-                // first triangle
-                triangles[i] = i;
-                triangles[i + 1] = i + width + 1;
-                triangles[i+2] = i + width;
-                // second triangle
-                triangles[i+3] = i;
-                triangles[i+4] = i + 1;
-                triangles[i+5] = i + width + 1;
-                i+=6;
-            }
-        }
+            // first triangle
+            triangles[i] = j;
+            triangles[i + 1] = j + width + 1;
+            triangles[i + 2] = j + width;
+            // second triangle
+            triangles[i + 3] = j;
+            triangles[i + 4] = j + 1;
+            triangles[i + 5] = j + width + 1;
+
+            i += 6;
+            j++;
+        } 
+
+
 
 
         return new MeshData(vertices, triangles);
