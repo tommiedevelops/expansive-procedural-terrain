@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 
@@ -8,7 +9,7 @@ public class MeshGeneratorV2 : MonoBehaviour {
 
     MeshData meshData;
     Mesh mesh;
-    [SerializeField] int planeWidth = 10;
+    [SerializeField] int planeWidth = 20;
     [SerializeField] int planeLength = 10;
 
     public struct MeshData {
@@ -45,6 +46,14 @@ public class MeshGeneratorV2 : MonoBehaviour {
         OnDrawGizmos();
     }
 
+    public void ClearMesh() {
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
+        mesh = new() {
+            vertices = null,
+            triangles = null
+        };
+        meshFilter.sharedMesh = mesh;
+    }
     public MeshData CreatePlaneMeshData(int width, int length) {
         /* 
          * Width and Length are measured in the number of vertices
@@ -58,7 +67,8 @@ public class MeshGeneratorV2 : MonoBehaviour {
         Vector3[] vertices = new Vector3[numVertices];
         int[] triangles = new int[numTriangleVertices];
 
-        // Create vertices
+        // Vertices constructed like so:
+        // (0,0), (0,1), (0,2) ... (0,width), (1,width), ... (length, width)
         for(int i = 0, x = 0; x < width; x++) {
             for(int y=0; y < length; y++) {
                 vertices[i] = new Vector3(x, 0f, y);
@@ -73,8 +83,7 @@ public class MeshGeneratorV2 : MonoBehaviour {
         // a is responsible for triangles (a,d,c) and (a,b,d)
         // e is responsible for triangles (e,h,g) and (e,f,h)
         // triangles = {}
-        for (int i = 0, j = 0; i < vertices.Length; i++) {
-
+        for (int i = 0, j = 0; j < (vertices.Length - width - 1) ; i+=6, j++) {
             // first triangle
             triangles[i] = j;
             triangles[i + 1] = j + width + 1;
@@ -83,13 +92,7 @@ public class MeshGeneratorV2 : MonoBehaviour {
             triangles[i + 3] = j;
             triangles[i + 4] = j + 1;
             triangles[i + 5] = j + width + 1;
-
-            i += 6;
-            j++;
         } 
-
-
-
 
         return new MeshData(vertices, triangles);
 
@@ -110,8 +113,8 @@ public class MeshGeneratorEditor : Editor {
             meshGen.DrawPlaneMesh();
         }
 
-        if(GUILayout.Button("Clear Gizmos")) {
-            SceneView.RepaintAll();
+        if(GUILayout.Button("Clear Mesh")) {
+            meshGen.ClearMesh();
         }
 
     }
