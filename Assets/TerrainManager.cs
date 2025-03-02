@@ -1,0 +1,65 @@
+﻿using System;
+using UnityEditor;
+using UnityEngine;
+public class TerrainManager : MonoBehaviour {
+    [Header("Plane Mesh Properties")]
+    [SerializeField] private int width = 10;
+    [SerializeField] private int length = 10;
+    [SerializeField] private float scale = 1f;
+
+    [Header("Perlin Noise Properties")]
+    [SerializeField] private float noiseScale = 0.1f;  // Controls the frequency of the noise
+    [SerializeField] private float heightMultiplier = 2f; // Controls the height variation
+
+    private void OnValidate() {
+        ValidateFields();
+    }
+
+    private void ValidateFields() {
+        if (width < 0) width = 0;
+        if (length < 0) length = 0;
+        if (noiseScale < 0) noiseScale = 0;
+    }
+
+    public void Generate() {
+        PerlinNoise perlinNoise = GetComponent<PerlinNoise>();
+        PlaneMeshGenerator meshGenerator = GetComponent<PlaneMeshGenerator>();
+
+        // Set properties
+        meshGenerator.SetWidth(width);
+        meshGenerator.SetLength(length);
+        meshGenerator.SetScale(scale);
+        perlinNoise.SetNoiseScale(noiseScale);
+        perlinNoise.SetHeightMultiplier(heightMultiplier);
+        meshGenerator.GeneratePlaneMesh();
+        perlinNoise.ApplyPerlinNoise();
+    }
+}
+
+[CustomEditor(typeof(TerrainManager))]
+public class TerrainManagerEditor : Editor {
+    public override void OnInspectorGUI() {
+        TerrainManager manager = (TerrainManager)target;
+
+        // Draw default inspector properties
+        bool changed = DrawDefaultInspector(); // Only detects changes in TerrainManager
+
+        // Check if values in the child components change
+        if (GUI.changed) {
+            changed = true;
+        }
+
+        if (changed) {
+            Undo.RecordObject(manager, "Modify Terrain Manager");
+            EditorUtility.SetDirty(manager); // Mark the object as changed
+            manager.Generate();
+        }
+
+        if (GUILayout.Button("Generate")) {
+            Undo.RecordObject(manager, "Generate Terrain");
+            EditorUtility.SetDirty(manager);
+            manager.Generate();
+        }
+    }
+}
+
