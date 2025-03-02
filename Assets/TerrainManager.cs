@@ -10,6 +10,9 @@ public class TerrainManager : MonoBehaviour {
     [Header("Perlin Noise Properties")]
     [SerializeField] private float noiseScale = 0.1f;  // Controls the frequency of the noise
     [SerializeField] private float heightMultiplier = 2f; // Controls the height variation
+    [SerializeField] private float persistance = 0.5f;
+    [SerializeField] private float lacunarity = 1f;
+    [SerializeField] private int octaves = 1;
 
     private void OnValidate() {
         ValidateFields();
@@ -31,6 +34,9 @@ public class TerrainManager : MonoBehaviour {
         meshGenerator.SetScale(scale);
         perlinNoise.SetNoiseScale(noiseScale);
         perlinNoise.SetHeightMultiplier(heightMultiplier);
+        perlinNoise.SetLacunarity(lacunarity);
+        perlinNoise.SetOctaves(octaves);
+        perlinNoise.SetPersistance(persistance);
         meshGenerator.GeneratePlaneMesh();
         perlinNoise.ApplyPerlinNoise();
     }
