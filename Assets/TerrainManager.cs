@@ -13,6 +13,9 @@ public class TerrainManager : MonoBehaviour {
     [SerializeField] private float persistance = 0.5f;
     [SerializeField] private float lacunarity = 1f;
     [SerializeField] private int octaves = 1;
+    [SerializeField] private int seed = 1;
+    [SerializeField] private Vector2 offsetV2 = Vector2.zero;
+    [SerializeField] private AnimationCurve heightCurve;
 
     private void OnValidate() {
         ValidateFields();
@@ -22,6 +25,9 @@ public class TerrainManager : MonoBehaviour {
         if (width < 0) width = 0;
         if (length < 0) length = 0;
         if (noiseScale < 0) noiseScale = 0;
+        if (persistance < 0) persistance = 0.01f;
+        if (persistance >= 1) persistance = 0.99f;
+        if (octaves < 0) octaves = 0;
     }
 
     public void Generate() {
@@ -37,6 +43,9 @@ public class TerrainManager : MonoBehaviour {
         perlinNoise.SetLacunarity(lacunarity);
         perlinNoise.SetOctaves(octaves);
         perlinNoise.SetPersistance(persistance);
+        perlinNoise.SetOffsetV2(offsetV2);
+        perlinNoise.SetSeed(seed);
+        perlinNoise.SetHeightCurve(heightCurve);
         meshGenerator.GeneratePlaneMesh();
         perlinNoise.ApplyPerlinNoise();
     }
