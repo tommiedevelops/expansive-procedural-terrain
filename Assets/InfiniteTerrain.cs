@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEditor.Rendering;
-using static EndlessTerrain;
+using System.Runtime.CompilerServices;
 
 public class InfiniteTerrain : MonoBehaviour {
     private const int CHUNK_SIZE = 240;
@@ -11,8 +11,6 @@ public class InfiniteTerrain : MonoBehaviour {
     int chunksRenderDistance;
     Vector2 viewerChunkCoords;
 
-
-
     private Dictionary<Vector2, TerrainChunkV2> terrainChunks = new();
 
     private void Start() {
@@ -20,16 +18,20 @@ public class InfiniteTerrain : MonoBehaviour {
     }
 
     private void Update() {
+
         UpdateVariables();
+        for (int yOffset = -chunksRenderDistance; yOffset <= chunksRenderDistance; yOffset++) {
+            for(int xOffset = -chunksRenderDistance; xOffset <= chunksRenderDistance; xOffset++) {
+                var specificChunkCoords = new Vector2(viewerChunkCoords.x + xOffset, viewerChunkCoords.y + yOffset);
 
-        Debug.Log(viewerChunkCoords);
-        foreach(Vector2 key in terrainChunks.Keys) { Debug.Log(key);  }
-
-        if(terrainChunks.ContainsKey(viewerChunkCoords)) {
-            // do something nice
-        } else {
-            terrainChunks.Add(viewerChunkCoords, new TerrainChunkV2(viewerChunkCoords));
+                if (terrainChunks.ContainsKey(specificChunkCoords)) {
+                    // do something nice
+                } else {
+                    terrainChunks.Add(specificChunkCoords, new TerrainChunkV2(specificChunkCoords));
+                }
+            }
         }
+
     }
     private void UpdateVariables() {
         viewerChunkCoords = new Vector2(Mathf.FloorToInt((float)viewer.position.x / CHUNK_SIZE), Mathf.FloorToInt((float)viewer.position.z / CHUNK_SIZE));
