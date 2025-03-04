@@ -32,7 +32,7 @@ public class InfiniteTerrain : MonoBehaviour {
         }
     }
     private void UpdateVariables() {
-        viewerChunkCoords = new Vector2(Mathf.RoundToInt(viewer.position.x / CHUNK_SIZE), Mathf.RoundToInt(viewer.position.z / CHUNK_SIZE));
+        viewerChunkCoords = new Vector2(Mathf.FloorToInt((float)viewer.position.x / CHUNK_SIZE), Mathf.FloorToInt((float)viewer.position.z / CHUNK_SIZE));
         chunksRenderDistance = Mathf.RoundToInt(renderDistance / CHUNK_SIZE);
     }
 
@@ -48,7 +48,7 @@ public class TerrainChunkV2 {
         chunkObject = new GameObject("Chunk", typeof(MeshFilter), typeof(MeshRenderer));
         chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
         // use default material for now
-        chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline?.defaultMaterial ?? new Material(Shader.Find("Standard"));
+        chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
         chunkObject.transform.position = new Vector3(viewerChunkCoords.x, 0f, viewerChunkCoords.y) * CHUNK_SIZE;
     }
 

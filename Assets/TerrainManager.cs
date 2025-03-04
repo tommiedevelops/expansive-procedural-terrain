@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
+[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class TerrainManager : MonoBehaviour {
     [Header("Plane Mesh Properties")]
     [SerializeField] private int width = 10;
@@ -18,6 +19,10 @@ public class TerrainManager : MonoBehaviour {
     [SerializeField] private Vector2 offsetV2 = Vector2.zero;
     [SerializeField] private AnimationCurve heightCurve;
 
+    [SerializeField] MeshFilter meshFilter;
+    [SerializeField] MeshRenderer meshRenderer;
+
+
     private void OnValidate() {
         ValidateFields();
     }
@@ -33,6 +38,9 @@ public class TerrainManager : MonoBehaviour {
 
     public void Generate() {
         PerlinNoise perlinNoise = GetComponent<PerlinNoise>();
+        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(width, length, scale);
+        meshFilter.sharedMesh = newMesh;
+        //meshRenderer.material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
 
         perlinNoise.SetNoiseScale(noiseScale);
         perlinNoise.SetHeightMultiplier(heightMultiplier);
@@ -54,20 +62,7 @@ public class TerrainManagerEditor : Editor {
         // Draw default inspector properties
         bool changed = DrawDefaultInspector(); // Only detects changes in TerrainManager
 
-        // Check if values in the child components change
-        if (GUI.changed) {
-            changed = true;
-        }
-
-        if (changed) {
-            Undo.RecordObject(manager, "Modify Terrain Manager");
-            EditorUtility.SetDirty(manager); // Mark the object as changed
-            manager.Generate();
-        }
-
-        if (GUILayout.Button("Generate")) {
-            Undo.RecordObject(manager, "Generate Terrain");
-            EditorUtility.SetDirty(manager);
+        if (GUILayout.Button("Generate") || changed) {
             manager.Generate();
         }
     }
