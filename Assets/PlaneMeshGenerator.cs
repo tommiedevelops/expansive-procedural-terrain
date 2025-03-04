@@ -1,21 +1,7 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine;
-using UnityEngine.UIElements.Experimental;
+﻿using UnityEngine;
 
-public class PlaneMeshGenerator : MonoBehaviour {
-    private int width = 10;
-    private int length = 10;
-    private float scale = 1f;
-
-    private void Awake() {
-        if (width < 0) width = 0;
-        if (length < 0) length = 0;
-
-        GeneratePlaneMesh();
-    }
-    public void GeneratePlaneMesh() {
-        Mesh mesh = new Mesh();
-        mesh.name = "Generated Plane";
+public static class PlaneMeshGenerator {
+    public static Mesh GeneratePlaneMesh(int width, int length, float scale) {
 
         int verticesCountX = width + 1;
         int verticesCountZ = length + 1;
@@ -55,28 +41,16 @@ public class PlaneMeshGenerator : MonoBehaviour {
         }
 
         // Assign mesh properties
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.uv = uv;
+        Mesh mesh = new() {
+            name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
+            vertices = vertices,
+            triangles = triangles,
+            uv = uv
+        };
+
         mesh.RecalculateNormals();
 
-        // Assign mesh to a MeshFilter and MeshRenderer
-        MeshFilter meshFilter = GetComponent<MeshFilter>();
-        if (!meshFilter) {
-            meshFilter = gameObject.AddComponent<MeshFilter>();
-        }
-
-        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        if (!meshRenderer) {
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        }
-
-        meshFilter.sharedMesh = mesh;
-
+        return mesh;
     }
 
-    // Setters
-    public void SetWidth(int width) => this.width = width;
-    public void SetLength(int length) => this.length = length;
-    public void SetScale(float scale) => this.scale = scale;
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+
 public class TerrainManager : MonoBehaviour {
     [Header("Plane Mesh Properties")]
     [SerializeField] private int width = 10;
@@ -32,12 +33,7 @@ public class TerrainManager : MonoBehaviour {
 
     public void Generate() {
         PerlinNoise perlinNoise = GetComponent<PerlinNoise>();
-        PlaneMeshGenerator meshGenerator = GetComponent<PlaneMeshGenerator>();
 
-        // Set properties
-        meshGenerator.SetWidth(width);
-        meshGenerator.SetLength(length);
-        meshGenerator.SetScale(scale);
         perlinNoise.SetNoiseScale(noiseScale);
         perlinNoise.SetHeightMultiplier(heightMultiplier);
         perlinNoise.SetLacunarity(lacunarity);
@@ -46,7 +42,6 @@ public class TerrainManager : MonoBehaviour {
         perlinNoise.SetOffsetV2(offsetV2);
         perlinNoise.SetSeed(seed);
         perlinNoise.SetHeightCurve(heightCurve);
-        meshGenerator.GeneratePlaneMesh();
         perlinNoise.ApplyPerlinNoise();
     }
 }

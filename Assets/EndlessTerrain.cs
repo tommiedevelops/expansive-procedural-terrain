@@ -44,7 +44,7 @@ public class EndlessTerrain : MonoBehaviour {
                 lodMeshes[i] = new LODMesh(detailLevels[i].lod);
             }
 
-           // TerrainGenerator.Instance.RequestMapData(OnMapDataReceived);
+           //TerrainGenerator.Instance.RequestMapData(OnMapDataReceived);
         }
 
         public void UpdateTerrainChunk() {
