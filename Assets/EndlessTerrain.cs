@@ -5,7 +5,7 @@ using System;
 public class EndlessTerrain : MonoBehaviour {
 
     #region Declarations
-    public class TerrainChunk {
+    public class TerrainChunkOLD {
         /* The properties here encompass a single Terrain Chunk, defined
          * as a 240x240 unit grid of vertices
          * 
@@ -25,7 +25,7 @@ public class EndlessTerrain : MonoBehaviour {
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
 
-        public TerrainChunk(Vector2 coord, int size, Transform parent, LODInfo[] detailLevels, Material material) {
+        public TerrainChunkOLD(Vector2 coord, int size, Transform parent, LODInfo[] detailLevels, Material material) {
             this.detailLevels = detailLevels;
             position = coord * size;
             bounds = new Bounds(position, Vector2.one * size);
@@ -107,8 +107,8 @@ public class EndlessTerrain : MonoBehaviour {
     private int chunksVisibleInViewDst;
     public static Vector2 viewerPosition;
 
-    Dictionary<Vector2, TerrainChunk> terrainChunkDict = new();
-    List<TerrainChunk> terrainChunksVisibleLastUpdate = new();
+    Dictionary<Vector2, TerrainChunkOLD> terrainChunkDict = new();
+    List<TerrainChunkOLD> terrainChunksVisibleLastUpdate = new();
     #endregion
 
     // Unity Methods
@@ -146,7 +146,7 @@ public class EndlessTerrain : MonoBehaviour {
                     }
 
                 } else {
-                    terrainChunkDict.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform, detailLevels, mapMaterial));
+                    terrainChunkDict.Add(viewedChunkCoord, new TerrainChunkOLD(viewedChunkCoord, chunkSize, transform, detailLevels, mapMaterial));
                 }
             }
         }

@@ -21,6 +21,7 @@ public class TerrainManager : MonoBehaviour {
 
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] MeshRenderer meshRenderer;
+    [SerializeField] PerlinNoise perlinNoise;
 
 
     private void OnValidate() {
@@ -37,7 +38,6 @@ public class TerrainManager : MonoBehaviour {
     }
 
     public void Generate() {
-        PerlinNoise perlinNoise = GetComponent<PerlinNoise>();
         Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(width, length, scale);
         meshFilter.sharedMesh = newMesh;
         //meshRenderer.material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;

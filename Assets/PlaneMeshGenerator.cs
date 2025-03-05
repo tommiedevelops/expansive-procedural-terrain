@@ -42,7 +42,7 @@ public static class PlaneMeshGenerator {
 
         // Assign mesh properties
         Mesh mesh = new() {
-            name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
+            //name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
             vertices = vertices,
             triangles = triangles,
             uv = uv
