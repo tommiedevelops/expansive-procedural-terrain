@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
 public class InfiniteTerrain : MonoBehaviour {
 
@@ -13,7 +14,7 @@ public class InfiniteTerrain : MonoBehaviour {
     public static readonly int[] CHUNK_SIZE_FACTORS = { 1, 2, 3, 4, 6, 8, 10, 12 };
 
     [SerializeField] Transform viewer;
-    [SerializeField] float renderDistance = CHUNK_SIZE;
+    [SerializeField] float renderDistance = CHUNK_SIZE * 3;
 
     int chunksRenderDistance;
     Vector2 viewerChunkCoords;
@@ -39,16 +40,32 @@ public class InfiniteTerrain : MonoBehaviour {
             for (int xOffset = -chunksRenderDistance; xOffset <= chunksRenderDistance; xOffset++) {
                 var specificChunkCoords = new Vector2(viewerChunkCoords.x + xOffset, viewerChunkCoords.y + yOffset);
 
-                int levelOfDetailIndex = 0;
+                int levelOfDetailIndex = CalculateLODIndex(specificChunkCoords);
 
                 if (terrainChunks.ContainsKey(specificChunkCoords)) {
                     terrainChunks[specificChunkCoords].UpdateTerrainChunk();
+                    terrainChunks[specificChunkCoords].UpdateTerrainChunkLOD(levelOfDetailIndex);
                 } else {
                     terrainChunks.Add(specificChunkCoords, new TerrainChunk(specificChunkCoords, levelOfDetailIndex));
                 }
             }
         }
     }
+
+    private int CalculateLODIndex(Vector2 specificChunkCoords) {
+        /* Calculates LOD Index based on dist of chunk from viewer*/
+        int levelOfDetailIndex;
+        Vector2 viewerToChunkVect = specificChunkCoords * InfiniteTerrain.CHUNK_SIZE - GetViewerPosition();
+        float viewerToChunkDist = Mathf.Sqrt(viewerToChunkVect.sqrMagnitude);
+
+        // code below is a bit hard coded. make more customisable when ur bothered
+        if (viewerToChunkDist < renderDistance / 3) levelOfDetailIndex = 0;
+        else if (viewerToChunkDist < renderDistance * 2 / 3) levelOfDetailIndex = 4;
+        else levelOfDetailIndex = 7;
+
+        return levelOfDetailIndex;
+    }
+
     private void UpdateVariables() {
         viewerChunkCoords = new Vector2(Mathf.FloorToInt((float)viewer.position.x / CHUNK_SIZE), Mathf.FloorToInt((float)viewer.position.z / CHUNK_SIZE));
         chunksRenderDistance = Mathf.RoundToInt(renderDistance / CHUNK_SIZE);
@@ -77,7 +94,8 @@ public class TerrainChunk {
          * levelOfDetailIndex: The index of the factors of CHUNK_SIZE to use in generating the chunk
          */
 
-        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(CHUNK_SIZE, CHUNK_SIZE, DEFAULT_SCALE);
+        int resolutionScale = InfiniteTerrain.CHUNK_SIZE_FACTORS[levelOfDetailIndex];
+        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(CHUNK_SIZE / resolutionScale, CHUNK_SIZE / resolutionScale, DEFAULT_SCALE * resolutionScale);
 
         chunkObject = new GameObject("Chunk", typeof(MeshFilter), typeof(MeshRenderer));
         chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
@@ -95,8 +113,11 @@ public class TerrainChunk {
         SetVisible(isVisible);
     }
 
-    public void UpdateTerrainChunkLOD() {
+    public void UpdateTerrainChunkLOD(int levelOfDetailIndex) {
         // TODO: Function for updating a chunk's LOD after viewer moves further from it
+        int resolutionScale = InfiniteTerrain.CHUNK_SIZE_FACTORS[levelOfDetailIndex];
+        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(CHUNK_SIZE / resolutionScale, CHUNK_SIZE / resolutionScale, DEFAULT_SCALE * resolutionScale);
+        chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
     }
     
     // SETTERS & GETTERS

@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewer: {fileID: 1838114455}
-  renderDistance: 240
+  renderDistance: 960
 --- !u!1 &1476893221
 GameObject:
   m_ObjectHideFlags: 0
