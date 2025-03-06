@@ -1,70 +1,58 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting.FullSerializer;
+using UnityEngine;
+public static class PerlinNoise {
+    public static void ApplyPerlinNoise(Vector2 offset, ref Mesh mesh, NoiseSettings noiseSettings) {
+        /*
+         * offset: the global offset in position
+         * mesh: Mesh we are applying noise to  
+         * noiseSettings: self explanatory
+         */
 
-public class PerlinNoise : MonoBehaviour {
-    private float noiseScale = 0.1f;  // Controls the frequency of the noise
-    private float heightMultiplier = 2f; // Controls the height variation
-    private int octaves = 1;
-    private float persistance = 0.5f;
-    private float lacunarity = 1f;
-    private int seed = 0;
-    private Vector2 offsetV2 = Vector2.zero;
-    AnimationCurve heightCurve;
-
-    private Mesh mesh;
-
-    private void Start() {
-        ApplyPerlinNoise();
-    }
-
-    public void ApplyPerlinNoise() {
-        /* Applies Perlin Noise directly to a meshFilter */
-        MeshFilter meshFilter = GetComponent<MeshFilter>();
-        if (meshFilter == null || meshFilter.sharedMesh == null) {
+        if (mesh == null) {
             Debug.LogError("No mesh found! Make sure a mesh exists before applying noise.");
             return;
         }
+        
 
         // No noise required
-        if (noiseScale == 0) return;
-
-        mesh = meshFilter.sharedMesh;
+        if (noiseSettings.noiseScale == 0) return;
         Vector3[] vertices = mesh.vertices;
-        Vector2[] octaveOffsets = GenerateOctaveOffsets(octaves, seed, offsetV2);
+        Vector2[] octaveOffsets = GenerateOctaveOffsets(noiseSettings.octaves, noiseSettings.seed, noiseSettings.offsetV2);
 
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
-
+        
         for (int i = 0; i < vertices.Length; i++) {
             float x = vertices[i].x;
             float z = vertices[i].z;
 
             // Add Perlin noise to the existing Y position
-            vertices[i].y += Mathf.PerlinNoise(x * noiseScale, z * noiseScale) * 2 - 1;
+            vertices[i].y += Mathf.PerlinNoise((x + offset.x) * noiseSettings.noiseScale, (z - offset.y) * noiseSettings.noiseScale) * 2 - 1;
 
             float amplitude = 1f;
             float frequency = 1f;
             float noiseHeight = 1f;
 
             // loop through octaves
-            for (int j = 0; j < octaves; j++) {
+            for (int j = 0; j < noiseSettings.octaves; j++) {
 
-                float sampleX = (x / noiseScale + octaveOffsets[j].x) * frequency;
-                float sampleY = (z / noiseScale - octaveOffsets[j].y) * frequency;
+                float sampleX = ((x + offset.x) / noiseSettings.noiseScale + octaveOffsets[j].x) * frequency;
+                float sampleY = ((z + offset.y) / noiseSettings.noiseScale - octaveOffsets[j].y) * frequency;
 
                 float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
 
                 noiseHeight += perlinValue * amplitude;
-                amplitude *= persistance;
-                frequency *= lacunarity;
+                amplitude *= noiseSettings.persistance;
+                frequency *= noiseSettings.lacunarity;
 
                 vertices[i].y = noiseHeight;
             }
 
             // Handle height Curve
-            vertices[i].y *= heightCurve.Evaluate(vertices[i].y);
+            vertices[i].y *= noiseSettings.amplitudeEnvelope.Evaluate(vertices[i].y);
 
             // Handle height multiplier
-            vertices[i].y *= heightMultiplier;
+            vertices[i].y *= noiseSettings.heightMultiplier;
 
 
             if (noiseHeight > maxNoiseHeight) maxNoiseHeight = noiseHeight;
@@ -74,18 +62,17 @@ public class PerlinNoise : MonoBehaviour {
         mesh.vertices = vertices;
         mesh.RecalculateNormals(); // Update normals for correct lighting
         RenormalizeHeightMap(mesh, maxNoiseHeight, minNoiseHeight);
-        meshFilter.sharedMesh = mesh;
     }
 
     // Helpers
-    private void RenormalizeHeightMap(Mesh mesh, float maxNoiseHeight, float minNoiseHeight) {
+    private static void RenormalizeHeightMap(Mesh mesh, float maxNoiseHeight, float minNoiseHeight) {
         /* 2D Perlin Noise Helper Function
            Re-normalizes noise map to be between 0 and 1.
         */
         for(int i = 0; i < mesh.vertices.Length; i++)
             mesh.vertices[i].y = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, mesh.vertices[i].y);
     }
-    private Vector2[] GenerateOctaveOffsets(int octaves, int seed, Vector2 offsetV2) {
+    private static Vector2[] GenerateOctaveOffsets(int octaves, int seed, Vector2 offsetV2) {
         /* Generates offsets for each octave based on the provided offset value */
         const int MIN = -100000;
         const int MAX = 100000;
@@ -100,18 +87,19 @@ public class PerlinNoise : MonoBehaviour {
 
         return octaveOffsets;
     }
+
     // Setters
-    public void SetHeightCurve(AnimationCurve heightCurve) => this.heightCurve = heightCurve;
-    public void SetNoiseScale(float noiseScale) => this.noiseScale = noiseScale;
-    public void SetHeightMultiplier(float heightMultiplier) => this.heightMultiplier = heightMultiplier;
+    //public void SetHeightCurve(AnimationCurve heightCurve) => this.heightCurve = heightCurve;
+    //public void SetNoiseScale(float noiseScale) => this.noiseScale = noiseScale;
+    //public void SetHeightMultiplier(float heightMultiplier) => this.heightMultiplier = heightMultiplier;
 
-    public void SetLacunarity(float lacunarity) => this.lacunarity = lacunarity;
+    //public void SetLacunarity(float lacunarity) => this.lacunarity = lacunarity;
 
-    public void SetPersistance(float persistance) => this.persistance = persistance;
+    //public void SetPersistance(float persistance) => this.persistance = persistance;
 
-    public void SetOctaves(int octaves) => this.octaves = octaves;
+    //public void SetOctaves(int octaves) => this.octaves = octaves;
 
-    public void SetSeed(int seed) => this.seed = seed;
+    //public void SetSeed(int seed) => this.seed = seed;
 
-    public void SetOffsetV2(Vector2 offsetV2) => this.offsetV2 = offsetV2;
+    //public void SetOffsetV2(Vector2 offsetV2) => this.offsetV2 = offsetV2;
 }

@@ -21,7 +21,7 @@ public class TerrainManager : MonoBehaviour {
 
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] MeshRenderer meshRenderer;
-    [SerializeField] PerlinNoise perlinNoise;
+    //[SerializeField] PerlinNoise perlinNoise;
 
 
     private void OnValidate() {
@@ -42,15 +42,15 @@ public class TerrainManager : MonoBehaviour {
         meshFilter.sharedMesh = newMesh;
         //meshRenderer.material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
 
-        perlinNoise.SetNoiseScale(noiseScale);
-        perlinNoise.SetHeightMultiplier(heightMultiplier);
-        perlinNoise.SetLacunarity(lacunarity);
-        perlinNoise.SetOctaves(octaves);
-        perlinNoise.SetPersistance(persistance);
-        perlinNoise.SetOffsetV2(offsetV2);
-        perlinNoise.SetSeed(seed);
-        perlinNoise.SetHeightCurve(heightCurve);
-        perlinNoise.ApplyPerlinNoise();
+        //perlinNoise.SetNoiseScale(noiseScale);
+        //perlinNoise.SetHeightMultiplier(heightMultiplier);
+        //perlinNoise.SetLacunarity(lacunarity);
+        //perlinNoise.SetOctaves(octaves);
+        //perlinNoise.SetPersistance(persistance);
+        //perlinNoise.SetOffsetV2(offsetV2);
+        //perlinNoise.SetSeed(seed);
+        //perlinNoise.SetHeightCurve(heightCurve);
+        //perlinNoise.ApplyPerlinNoise();
     }
 }
 
