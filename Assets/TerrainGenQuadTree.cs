@@ -22,6 +22,8 @@ public class TerrainGenQuadTree {
         }
 
         public Bounds GetBounds() { return bounds; }
+        public float GetSideLength() { return sideLength; }
+        public Vector2 GetBotLeftPoint() { return botLeftPoint; }
     }
 
 //    queue<node> = [root_node]
@@ -32,10 +34,10 @@ public class TerrainGenQuadTree {
 //        create 4 new nodes, set them to be children of curr and add to queue
     
     // CONSTRUCTOR
-    public TerrainGenQuadTree(Camera cam, float renderDistance, float minChunkSize) {
+    public TerrainGenQuadTree(Camera cam, float renderDistance, float minChunkSideLength) {
         // Assign Vars
         this.renderDistance = renderDistance;
-        this.minChunkSize = minChunkSize;
+        this.minChunkSize = minChunkSideLength;
         this.cam = cam;
 
         // Construct the quad tree
@@ -45,8 +47,19 @@ public class TerrainGenQuadTree {
 
         while(queue.Count > 0) {
             Node curr = queue.Dequeue();
-            //TODO
-            break;
+            if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
+                Vector2 botLeftPoint = curr.GetBotLeftPoint();
+                float sideLength = curr.GetSideLength();
+                Node botLeft = new Node(botLeftPoint, 0.5f * sideLength);
+                Node topLeft = new Node(new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
+                Node topRight = new Node(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
+                Node botRight = new Node(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y), 0.5f * sideLength);
+
+                queue.Enqueue(botLeft);
+                queue.Enqueue(topLeft);
+                queue.Enqueue(topRight);
+                queue.Enqueue(botRight);
+            }
         }
 
     }
