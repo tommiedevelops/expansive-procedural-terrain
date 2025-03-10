@@ -59,6 +59,7 @@ public class InfiniteTerrain : MonoBehaviour {
     }
 
     private void UpdateChunks() {
+        // O(n^2)
         for (int yOffset = -chunksRenderDistance; yOffset <= chunksRenderDistance; yOffset++) {
             for (int xOffset = -chunksRenderDistance; xOffset <= chunksRenderDistance; xOffset++) {
                 var specificChunkCoords = new Vector2(viewerChunkCoords.x + xOffset, viewerChunkCoords.y + yOffset);
@@ -80,8 +81,8 @@ public class InfiniteTerrain : MonoBehaviour {
         float viewerToChunkDist = Mathf.Sqrt(viewerToChunkVect.sqrMagnitude);
 
         // code below is a bit hard coded. make more customisable when ur bothered (QUAD TREE??)
-        if (viewerToChunkDist < renderDistance / 3) levelOfDetailIndex = 7;
-        else if (viewerToChunkDist < renderDistance * 2 / 3) levelOfDetailIndex = 7;
+        if (viewerToChunkDist < renderDistance / 3) levelOfDetailIndex = 3;
+        else if (viewerToChunkDist < renderDistance * 2 / 3) levelOfDetailIndex = 5;
         else levelOfDetailIndex = 7;
 
         return levelOfDetailIndex;

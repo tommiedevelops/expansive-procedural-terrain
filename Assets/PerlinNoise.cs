@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting.FullSerializer;
+﻿using System;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 public static class PerlinNoise {
     public static void ApplyPerlinNoise(Vector2 offset, ref Mesh mesh, NoiseSettings noiseSettings) {
@@ -102,4 +103,20 @@ public static class PerlinNoise {
     //public void SetSeed(int seed) => this.seed = seed;
 
     //public void SetOffsetV2(Vector2 offsetV2) => this.offsetV2 = offsetV2;
+}
+
+[Serializable]
+public class NoiseSettings {
+    /* An instance of this class can be used to configure the static NoiseMapGenerator */
+    public int width;
+    public int length;
+    public int seed;
+    public int octaves;
+    public float persistance;
+    public float lacunarity = 1f;
+    public float noiseScale;
+    public AnimationCurve amplitudeEnvelope;
+    public int previewLOD;
+    public Vector2 offsetV2;
+    public float heightMultiplier;
 }
