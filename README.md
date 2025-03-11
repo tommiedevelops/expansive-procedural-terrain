@@ -1,9 +1,9 @@
 # Procedural Terrain Generator
 
-A highly optimized and modular procedural terrain generation system designed for real-time rendering in Unity. This project implements a quad tree algorithm to efficiently generate large-scale terrain using a viewer-dependent level-of-detail system.
+An optimized and modular procedural terrain generation system designed for real-time rendering in Unity. This project implements a quad tree algorithm to efficiently generate large-scale terrain using a viewer-dependent level of detail system.
 
-## Demo (Current state)
-[![Procedural Terrain Demo](Screenshot 2025-03-07 150723.png)](video_for_post.mp4)
+## Click for Demo! (Current state)
+[![Procedural Terrain Demo](thumbnail.png)](https://drive.google.com/file/d/1HJoDGvHuP5sSsanhOqNad1f8N15f4TQM/view?usp=drive_link)
 
 ## Features
 - **Quad Tree-Based LOD**: Dynamically subdivides terrain based on the viewer's field of view for optimal performance.
@@ -29,7 +29,7 @@ A highly optimized and modular procedural terrain generation system designed for
    - Nodes close to the viewer are more detailed, while distant ones merge into larger chunks.
    - Uses a triangle-based intersection check with the view frustrum to determine which nodes should be subdivided.
 3. **Procedural Terrain Generation**:
-   - Heights are determined using customizable noise functions.
+   - Heights are determined using customizable noise functions (currently Perlin).
    - Terrain data is generated asynchronously to avoid performance hiccups.
 
 ## Planned Features
@@ -38,9 +38,6 @@ A highly optimized and modular procedural terrain generation system designed for
 - **Multiplayer Synchronization**: Ensure terrain consistency across players.
 - **Object Placement**: Procedural spawning of trees, rocks, and structures.
 - **Dynamic Weather & Erosion**: Simulate environmental changes over time.
-
-## Contributing
-Contributions are welcome! If you have ideas or bug fixes, feel free to submit a pull request or open an issue.
 
 ## Contact
 For questions, reach out via GitHub Issues or contact me @ thomasjdizon@gmail.com
