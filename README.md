@@ -2,6 +2,9 @@
 
 A highly optimized and modular procedural terrain generation system designed for real-time rendering in Unity. This project implements a quad tree algorithm to efficiently generate large-scale terrain using a viewer-dependent level-of-detail system.
 
+## Demo (Current state)
+[![Procedural Terrain Demo](Screenshot 2025-03-07 150723.png)](video_for_post.mp4)
+
 ## Features
 - **Quad Tree-Based LOD**: Dynamically subdivides terrain based on the viewer's field of view for optimal performance.
 - **Efficient Culling**: Uses a triangle-based FOV intersection test to limit unnecessary subdivisions.
@@ -9,6 +12,7 @@ A highly optimized and modular procedural terrain generation system designed for
 - **Customizable Noise Functions**: Supports various noise-based terrain generation methods (Perlin noise, Simplex noise, etc.).
 - **Shader-Based Rendering** (Planned): Optimized shaders for terrain visualization with dynamic tessellation.
 - **Multiplayer Ready** (Planned): Future support for synchronizing procedural terrain across networked players.
+
 ## Installation
 1. Clone the repository:
    ```sh
