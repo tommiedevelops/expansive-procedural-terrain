@@ -9,11 +9,10 @@ A highly optimized and modular procedural terrain generation system designed for
 - **Customizable Noise Functions**: Supports various noise-based terrain generation methods (Perlin noise, Simplex noise, etc.).
 - **Shader-Based Rendering** (Planned): Optimized shaders for terrain visualization with dynamic tessellation.
 - **Multiplayer Ready** (Planned): Future support for synchronizing procedural terrain across networked players.
-
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/procedural-terrain.git
+   git clone https://github.com/tommiedizon/Terrain-Proc-Gen.git
    ```
 2. Open the project in Unity (version 2023.x or later recommended).
 3. Run the scene to see the procedural generation in action.
