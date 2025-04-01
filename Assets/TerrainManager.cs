@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using static PlaneMeshGenerator;
 
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class TerrainManager : MonoBehaviour {
@@ -38,7 +39,7 @@ public class TerrainManager : MonoBehaviour {
     }
 
     public void Generate() {
-        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(width, length, scale);
+        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(new MeshData(width, length, scale));
         meshFilter.sharedMesh = newMesh;
         //meshRenderer.material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
 

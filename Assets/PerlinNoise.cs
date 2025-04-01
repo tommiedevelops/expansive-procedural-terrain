@@ -1,7 +1,11 @@
 ﻿using System;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using Unity.Jobs;
+using UnityEngine.Jobs;
+using Unity.Collections;
 public static class PerlinNoise {
+
     public static void ApplyPerlinNoise(Vector2 offset, ref Mesh mesh, NoiseSettings noiseSettings) {
         /*
          * offset: the global offset in position

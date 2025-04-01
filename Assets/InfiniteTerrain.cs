@@ -6,7 +6,10 @@ using Unity.VisualScripting;
 using System;
 
 public class InfiniteTerrain : MonoBehaviour {
+    // TODO: IMPLEMENT QUAD TREE FOR EXPANSIVE TERRAIN 
 
+
+    // DOES THIS RLY NEED TO BE A SINGLETON?
     public static InfiniteTerrain Instance { get; private set; }
 
     // Pre calculated constants
@@ -21,28 +24,48 @@ public class InfiniteTerrain : MonoBehaviour {
     int chunksRenderDistance;
     Vector2 viewerChunkCoords;
 
+    // Dictionary for storing terrainChunks based on their coordinate in chunk space
     private Dictionary<Vector2, TerrainChunk> terrainChunks = new();
 
+    // Unity core methods
     private void Awake() {
         if (Instance == null) Instance = this;
-        ValidateNoiseSettings();
-        
+        ValidateNoiseSettings(); 
     }
-    private void Start() {
-        UpdateVariables();
-    }
+    private void Update() {
+        // Every frame
 
+        // Update the viewer's position in chunk coordinates
+        viewerChunkCoords = new Vector2(Mathf.FloorToInt((float)viewer.position.x / CHUNK_SIZE), Mathf.FloorToInt((float)viewer.position.z / CHUNK_SIZE));
+
+        // Generate or update the chunks within range of the viewer
+        for (int yOffset = -chunksRenderDistance; yOffset <= chunksRenderDistance; yOffset++) {
+            for (int xOffset = -chunksRenderDistance; xOffset <= chunksRenderDistance; xOffset++) {
+                var specificChunkCoords = new Vector2(viewerChunkCoords.x + xOffset, viewerChunkCoords.y + yOffset);
+
+                if (terrainChunks.ContainsKey(specificChunkCoords)) {
+                    // THIS IS THE EXPENSIVE OPERATION
+                    //terrainChunks[specificChunkCoords].UpdateTerrainChunkActiveState(viewer.position, renderDistance);
+                    //terrainChunks[specificChunkCoords].UpdateTerrainChunkLOD(CalculateLODIndex(specificChunkCoords));
+                } else {
+                    terrainChunks.Add(specificChunkCoords, new TerrainChunk(specificChunkCoords, CalculateLODIndex(specificChunkCoords), noiseSettings));
+                }
+            }
+        }
+    }
     private void OnValidate() {
+        // I should really be configuring the noise separately then 
+        // running it on here.
         ValidateNoiseSettings();
-        UpdateNoise();
+        //UpdateNoise();
     }
-
+    
+    // HELPERS
     private void UpdateNoise() {
         foreach( TerrainChunk chunk in terrainChunks.Values) {
             chunk.UpdateNoise();
         }
     }
-
     private void ValidateNoiseSettings() {
         noiseSettings.width = CHUNK_SIZE;
         noiseSettings.length = CHUNK_SIZE;
@@ -51,27 +74,6 @@ public class InfiniteTerrain : MonoBehaviour {
         if (noiseSettings.octaves < 0) noiseSettings.octaves = 0;
         if (noiseSettings.octaves > 6) noiseSettings.octaves = 6;
         if (noiseSettings.lacunarity < 0) noiseSettings.lacunarity = 0.01f;
-    }
-
-    private void Update() {
-        UpdateVariables();
-        UpdateChunks();
-    }
-
-    private void UpdateChunks() {
-        // O(n^2)
-        for (int yOffset = -chunksRenderDistance; yOffset <= chunksRenderDistance; yOffset++) {
-            for (int xOffset = -chunksRenderDistance; xOffset <= chunksRenderDistance; xOffset++) {
-                var specificChunkCoords = new Vector2(viewerChunkCoords.x + xOffset, viewerChunkCoords.y + yOffset);
-
-                if (terrainChunks.ContainsKey(specificChunkCoords)) {
-                    terrainChunks[specificChunkCoords].UpdateTerrainChunk();
-                    //terrainChunks[specificChunkCoords].UpdateTerrainChunkLOD(CalculateLODIndex(specificChunkCoords));
-                } else {
-                    terrainChunks.Add(specificChunkCoords, new TerrainChunk(specificChunkCoords, CalculateLODIndex(specificChunkCoords), noiseSettings));
-                }
-            }
-        }
     }
 
     private int CalculateLODIndex(Vector2 specificChunkCoords) {
@@ -88,85 +90,9 @@ public class InfiniteTerrain : MonoBehaviour {
         return levelOfDetailIndex;
     }
 
-    private void UpdateVariables() {
-        viewerChunkCoords = new Vector2(Mathf.FloorToInt((float)viewer.position.x / CHUNK_SIZE), Mathf.FloorToInt((float)viewer.position.z / CHUNK_SIZE));
-        chunksRenderDistance = Mathf.RoundToInt(renderDistance / CHUNK_SIZE);
-    }
 
     // Getter
     public Vector2 GetViewerPosition() { return new Vector2(viewer.position.x, viewer.position.z); }
     public float GetRenderDistance() { return renderDistance; }
 
-}
-
-public class TerrainChunk {
-    // CONSTS
-    private const float DEFAULT_SCALE = 1.0f;
-
-    // VARS
-    private const int CHUNK_SIZE = InfiniteTerrain.CHUNK_SIZE;
-    private readonly GameObject chunkObject;
-    Bounds bounds; // Used for retrieving distance from chunk edge to viewer
-
-    Vector2 chunkCoords;
-    int levelOfDetailIndex;
-    NoiseSettings noiseSettings;
-
-    // CONSTRUCTOR
-    public TerrainChunk(Vector2 chunkCoords, int levelOfDetailIndex, NoiseSettings noiseSettings) {
-        /* PARAM DESCRIPTIONS
-         * viewerChunkCoords: The viewer's position in Chunk Coordinates (World coordinates / CHUNK_SIZE)
-         * levelOfDetailIndex: The index of the factors of CHUNK_SIZE to use in generating the chunk
-         */
-
-        this.chunkCoords = chunkCoords;
-        this.levelOfDetailIndex = levelOfDetailIndex;
-        this.noiseSettings = noiseSettings;
-
-        // Creating the Mesh
-        Mesh newMesh = GenerateMesh(chunkCoords, levelOfDetailIndex, noiseSettings);
-
-        // Creating the GameObject
-        chunkObject = new GameObject("Chunk", typeof(MeshFilter), typeof(MeshRenderer));
-        chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
-        chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
-        chunkObject.transform.position = new Vector3(chunkCoords.x, 0f, chunkCoords.y) * CHUNK_SIZE;
-
-        // Creating the Bounds
-        var viewerChunkCoordsCenter = new Vector2(chunkCoords.x + 0.5f, chunkCoords.y + 0.5f);
-        bounds = new Bounds(viewerChunkCoordsCenter * CHUNK_SIZE, Vector2.one * (float)CHUNK_SIZE / 2);
-    }
-
-    private static Mesh GenerateMesh(Vector2 chunkCoords, int levelOfDetailIndex, NoiseSettings noiseSettings) {
-        int resolutionScale = InfiniteTerrain.CHUNK_SIZE_FACTORS[levelOfDetailIndex];
-        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(CHUNK_SIZE / resolutionScale, CHUNK_SIZE / resolutionScale, DEFAULT_SCALE * resolutionScale);
-        noiseSettings.width = CHUNK_SIZE / resolutionScale;
-        noiseSettings.length = CHUNK_SIZE / resolutionScale;
-        PerlinNoise.ApplyPerlinNoise(chunkCoords * CHUNK_SIZE, ref newMesh, noiseSettings);
-        return newMesh;
-    }
-
-    // METHODS
-    public void UpdateTerrainChunk() {
-        float viewerDstFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(InfiniteTerrain.Instance.GetViewerPosition()));
-        bool isVisible = viewerDstFromNearestEdge <= InfiniteTerrain.Instance.GetRenderDistance();
-        SetVisible(isVisible);
-    }
-   
-
-    public void UpdateNoise() {
-        Mesh newMesh = GenerateMesh(chunkCoords, levelOfDetailIndex, noiseSettings);
-        PerlinNoise.ApplyPerlinNoise(chunkCoords * CHUNK_SIZE, ref newMesh, noiseSettings);
-        chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
-    }
-
-    public void UpdateTerrainChunkLOD(int LODIndex) {
-        Mesh newMesh = GenerateMesh(chunkCoords * CHUNK_SIZE, LODIndex, noiseSettings);
-        chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
-    }
-    
-    // SETTERS & GETTERS
-    private void SetVisible(bool isVisible) {
-        chunkObject.SetActive(isVisible);
-    }
 }

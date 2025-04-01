@@ -1,7 +1,23 @@
 ﻿using UnityEngine;
 
 public static class PlaneMeshGenerator {
-    public static Mesh GeneratePlaneMesh(int width, int length, float scale) {
+
+    public struct MeshData {
+        public int width;
+        public int length;
+        public float scale;
+
+        public MeshData(int width, int length, float scale) {
+            this.width = width;
+            this.length = length;
+            this.scale = scale;
+        }
+    }
+    public static Mesh GeneratePlaneMesh(MeshData meshData) {
+
+        int width = meshData.width;
+        int length = meshData.length;
+        float scale = meshData.scale;
 
         int verticesCountX = width + 1;
         int verticesCountZ = length + 1;
