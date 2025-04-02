@@ -83,10 +83,23 @@ public class TerrainGenQuadTree {
 
     public Bounds ComputeTriBounds() {
         // approximate triangle as rectangle for now
-        Vector3 camOrigin = viewTriangle[0];
-        Vector3 halfPoint = 0.5f*(viewTriangle[2] - viewTriangle[1]);
-        Vector3 triBoundsCenter = camOrigin + 0.5f * (halfPoint - camOrigin);
-        Bounds triBounds = new(triBoundsCenter, Vector3.one * (halfPoint-camOrigin).magnitude); // can approx better by using isoceles properties
+
+        Vector3 camPos = viewTriangle[0];
+        Vector3 leftPoint = viewTriangle[1];
+        Vector3 rightPoint = viewTriangle[2];
+
+        Debug.Log($"camPos:{camPos},leftPoint:{leftPoint},rightPoint:{rightPoint}");
+
+        Vector3 halfPoint = 0.5f * (leftPoint - rightPoint);
+        Vector3 camToHalfPoint = (halfPoint - camPos);
+
+        float renderDistance = camToHalfPoint.magnitude;
+
+        Vector3 boundsCenter = camPos + 0.5f * (halfPoint - camPos);
+        Vector3 boundsDimensions = Vector3.one * renderDistance;
+
+
+        Bounds triBounds = new(boundsCenter, boundsDimensions); // can approx better by using isoceles properties
         return triBounds;
     }
     private bool IntersectsWithViewTri(Node node) {
@@ -104,25 +117,38 @@ public class TerrainGenQuadTree {
     }
     private Vector3[] GetViewTriangleFromCamera(Camera cam, float renderDistance) {
         /* Calculates the view triangle from camera position and render distance */
+        /* This calculation only cares about the XZ plane */
+
+        // 3D Coords
         Vector3 camPos = cam.transform.position; //world
         Vector3 camForward = cam.transform.forward; 
         Vector3 camRight = cam.transform.right;
 
+        // Projected onto XZ plane
+        Vector3 camPosXZ = new(camPos.x, 0f, camPos.z);
+        Vector3 camForwardXZ = new(camForward.x, 0f, camForward.z);
+        Vector3 camRightXZ = new(camRight.x, 0f, camRight.z);
+
+        // Normalize directions
+        camForwardXZ = camForwardXZ.normalized;
+        camRightXZ = camRightXZ.normalized;
+
         // Get the base width of the view triangle
         float FOVAngle = cam.fieldOfView;
         float halfAngle = (float)FOVAngle / 2;
-        float halfWidth = 2 * renderDistance * Mathf.Tan(halfAngle);
+        float halfWidth = renderDistance * Mathf.Tan(DegToRad(halfAngle));
 
-        Vector3 leftPoint = camPos + camForward * renderDistance - camRight * halfWidth;
-        Vector3 rightPoint = camPos + camForward * renderDistance + camRight * halfWidth;
+        Vector3 leftPoint = camPosXZ + camForwardXZ * renderDistance - camRightXZ * halfWidth;
+        Vector3 rightPoint = camPosXZ + camForwardXZ * renderDistance + camRightXZ * halfWidth;
 
-        Vector3[] triangle = { camPos, leftPoint, rightPoint }; //all in world coords
+        Vector3[] triangle = { camPosXZ, leftPoint, rightPoint }; //all in world coords
 
         this.viewTriangle = triangle;
         return triangle;
 
     }
 
+    float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f;  }
     public void PrintTree(ref List<Bounds> boundsToDraw) {
         Queue<Node> queue = new();
         queue.Enqueue(rootNode);
