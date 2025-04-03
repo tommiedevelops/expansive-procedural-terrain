@@ -17,7 +17,7 @@ public class QuadTreeTester : MonoBehaviour {
 
         if (tree == null) return;
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(tree.ComputeTriBounds().center, tree.ComputeTriBounds().size);
+        Gizmos.DrawWireCube(tree.GetTriBounds().center, tree.GetTriBounds().size);
 
         // Draw Triangle
         Vector3[] viewTriangle = tree.GetViewTriangle();

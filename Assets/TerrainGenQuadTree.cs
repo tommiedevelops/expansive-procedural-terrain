@@ -21,8 +21,8 @@ public class TerrainGenQuadTree {
             this.botLeftPoint = botLeftPoint;
             this.sideLength = sideLength;
 
-            Vector3 boundsCenter = new(botLeftPoint.x, 0f, botLeftPoint.y);
-            Vector3 boundsDimensions = new(sideLength, 0f, sideLength);
+            Vector3 boundsCenter = new(botLeftPoint.x + sideLength / 2f, 0f, botLeftPoint.y + sideLength / 2f);
+            Vector3 boundsDimensions = new(sideLength / 2f, 0f, sideLength / 2f);
 
             this.bounds = new Bounds(boundsCenter, boundsDimensions);
 
@@ -156,6 +156,8 @@ public class TerrainGenQuadTree {
     }
     public Vector3[] GetViewTriangle() { return viewTriangle; }
     float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f;  }
+
+    public Bounds GetTriBounds() { return triBounds; }
     public void PrintTree(ref List<Bounds> boundsToDraw) {
         Queue<Node> queue = new();
         queue.Enqueue(rootNode);
