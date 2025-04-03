@@ -40,22 +40,22 @@ public class TerrainGenQuadTree {
 
     // CONSTRUCTOR
 
-    private Node CreateRootNode(Camera cam, float renderDistance) {
-        return new(ComputeBotLeftPoint(cam, renderDistance), renderDistance * 2);
+    private Node CreateRootNode(Camera cam, float worldSideLength) {
+        return new(ComputeBotLeftPoint(cam, worldSideLength), worldSideLength * 2);
     }
 
-    public TerrainGenQuadTree(Camera cam, float renderDistance, int minChunkSideLength) {
+    public TerrainGenQuadTree(Camera cam, float renderDistance, int minChunkSideLength, float worldSideLength) {
         // Assign Vars
         this.cam = cam;
         this.renderDistance = renderDistance;
         this.viewTriangle = GetViewTriangleFromCamera(cam, renderDistance);
-        this.rootNode = CreateRootNode(cam, renderDistance);
+        this.rootNode = CreateRootNode(cam, worldSideLength);
         this.triBounds = ComputeTriBounds();
         
-        ConstructQuadTree(minChunkSideLength);
+        ConstructQuadTree(minChunkSideLength, worldSideLength);
     }
 
-    private void ConstructQuadTree(int minChunkSideLength) {
+    private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
         // Construct the quad tree
         Queue<Node> queue = new();
         queue.Enqueue(rootNode);

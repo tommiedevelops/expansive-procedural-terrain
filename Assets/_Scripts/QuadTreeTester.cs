@@ -6,6 +6,7 @@ public class QuadTreeTester : MonoBehaviour {
     [SerializeField] Camera cam;
     [SerializeField] float renderDistance;
     [SerializeField] int minChunkSideLength;
+    [SerializeField] float worldSideLength;
 
     List<Bounds> boundsToDraw = new();
     TerrainGenQuadTree tree;
@@ -31,7 +32,7 @@ public class QuadTreeTester : MonoBehaviour {
     }
 
     private void Awake() {
-        TerrainGenQuadTree tree = new(cam, renderDistance, minChunkSideLength);
+        TerrainGenQuadTree tree = new(cam, renderDistance, minChunkSideLength, worldSideLength);
         this.tree = tree;
         tree.PrintTree(ref boundsToDraw);
     }
