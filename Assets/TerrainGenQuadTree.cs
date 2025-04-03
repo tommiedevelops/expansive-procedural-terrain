@@ -22,7 +22,7 @@ public class TerrainGenQuadTree {
             this.sideLength = sideLength;
 
             Vector3 boundsCenter = new(botLeftPoint.x + sideLength / 2f, 0f, botLeftPoint.y + sideLength / 2f);
-            Vector3 boundsDimensions = new(sideLength / 2f, 0f, sideLength / 2f);
+            Vector3 boundsDimensions = new(sideLength, 0f, sideLength);
 
             this.bounds = new Bounds(boundsCenter, boundsDimensions);
 
