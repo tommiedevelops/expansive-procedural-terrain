@@ -15,11 +15,19 @@ public class QuadTreeTester : MonoBehaviour {
             Gizmos.DrawWireCube(bounds.center, bounds.size);
         }
 
+        if (tree == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(tree.ComputeTriBounds().center, tree.ComputeTriBounds().size);
 
+        // Draw Triangle
+        Vector3[] viewTriangle = tree.GetViewTriangle();
+        Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
+        Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
+        Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
+
         //Gizmos.color = Color.blue;
         //Gizmos.DrawLine(cam.transform.position, cam.transform.position + cam.transform.forward * 10f);
+
     }
 
     private void Awake() {

@@ -5,6 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 public class TerrainGenQuadTree {
     Vector3[] viewTriangle;
+    Bounds triBounds;
+    float renderDistance;
+    Camera cam;
 
     Node rootNode;
     public class Node {
@@ -17,7 +20,11 @@ public class TerrainGenQuadTree {
         public Node(Vector2 botLeftPoint, float sideLength) {
             this.botLeftPoint = botLeftPoint;
             this.sideLength = sideLength;
-            this.bounds = new Bounds(botLeftPoint + new Vector2(0.5f * sideLength, 0.5f * sideLength), Vector3.one * sideLength);
+
+            Vector3 boundsCenter = new(botLeftPoint.x, 0f, botLeftPoint.y);
+            Vector3 boundsDimensions = new(sideLength, 0f, sideLength);
+
+            this.bounds = new Bounds(boundsCenter, boundsDimensions);
 
             this.botLeftChild = null;
             this.botRightChild = null;
@@ -39,8 +46,12 @@ public class TerrainGenQuadTree {
 
     public TerrainGenQuadTree(Camera cam, float renderDistance, int minChunkSideLength) {
         // Assign Vars
+        this.cam = cam;
+        this.renderDistance = renderDistance;
         this.viewTriangle = GetViewTriangleFromCamera(cam, renderDistance);
         this.rootNode = CreateRootNode(cam, renderDistance);
+        this.triBounds = ComputeTriBounds();
+        
         ConstructQuadTree(minChunkSideLength);
     }
 
@@ -48,7 +59,6 @@ public class TerrainGenQuadTree {
         // Construct the quad tree
         Queue<Node> queue = new();
         queue.Enqueue(rootNode);
-
         while (queue.Count > 0) {
 
             // Breadth First Search Construction of Quad Tree
@@ -88,18 +98,15 @@ public class TerrainGenQuadTree {
         Vector3 leftPoint = viewTriangle[1];
         Vector3 rightPoint = viewTriangle[2];
 
-        Debug.Log($"camPos:{camPos},leftPoint:{leftPoint},rightPoint:{rightPoint}");
+        Vector3 halfPoint = leftPoint + 0.5f*(rightPoint - leftPoint);
+        Vector3 median = halfPoint - camPos;
 
-        Vector3 halfPoint = 0.5f * (leftPoint - rightPoint);
-        Vector3 camToHalfPoint = (halfPoint - camPos);
+        Debug.Log($"halfpoint:{halfPoint}");
+        Debug.Log(median);
 
-        float renderDistance = camToHalfPoint.magnitude;
+        Vector3 boundsDimensions = new(renderDistance, 0f, renderDistance);
 
-        Vector3 boundsCenter = camPos + 0.5f * (halfPoint - camPos);
-        Vector3 boundsDimensions = Vector3.one * renderDistance;
-
-
-        Bounds triBounds = new(boundsCenter, boundsDimensions); // can approx better by using isoceles properties
+        Bounds triBounds = new(camPos + 0.5f*median, boundsDimensions); // can approx better by using isoceles properties
         return triBounds;
     }
     private bool IntersectsWithViewTri(Node node) {
@@ -107,7 +114,7 @@ public class TerrainGenQuadTree {
         // More info: https://dyn4j.org/2010/01/sat/
         
         Bounds nodeBounds = node.GetBounds();
-        return nodeBounds.Intersects(ComputeTriBounds());
+        return nodeBounds.Intersects(triBounds);
     }
 
     private Vector2 ComputeBotLeftPoint(Camera cam, float renderDistance) {
@@ -147,7 +154,7 @@ public class TerrainGenQuadTree {
         return triangle;
 
     }
-
+    public Vector3[] GetViewTriangle() { return viewTriangle; }
     float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f;  }
     public void PrintTree(ref List<Bounds> boundsToDraw) {
         Queue<Node> queue = new();
