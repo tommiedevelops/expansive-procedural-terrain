@@ -131,6 +131,8 @@ GameObject:
   - component: {fileID: 111722349}
   - component: {fileID: 111722348}
   - component: {fileID: 111722347}
+  - component: {fileID: 111722352}
+  - component: {fileID: 111722351}
   m_Layer: 0
   m_Name: Viewer
   m_TagString: Untagged
@@ -228,6 +230,46 @@ Transform:
   - {fileID: 786935567}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &111722351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111722346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fe421fa0144bbc4c87b75bbe68d4904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cam: {fileID: 786935566}
+  speed: 0
+  rotation: {x: 0, y: 0, z: 0, w: 0}
+--- !u!143 &111722352
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111722346}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &786935564
 GameObject:
   m_ObjectHideFlags: 0
@@ -396,8 +438,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 786935566}
-  renderDistance: 120000
+  renderDistance: 24000
   minChunkSideLength: 240
+  worldSideLength: 120000
 --- !u!4 &1640921430
 Transform:
   m_ObjectHideFlags: 0

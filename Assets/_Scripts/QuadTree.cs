@@ -3,21 +3,25 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using System.Linq;
 using System.Runtime.CompilerServices;
-public class TerrainGenQuadTree {
+public class QuadTree {
+    #region Fields
     Vector3[] viewTriangle;
     Bounds triBounds;
     float renderDistance;
     Camera cam;
+    QuadNode rootNode;
+    #endregion  
 
-    Node rootNode;
-    public class Node {
+    // CHILD CLASSES
+    public class QuadNode {
         /* Nodes only work in metres NOT in chunk units */
         Vector2 botLeftPoint;
         float sideLength; // in metres
-        public Node botLeftChild, topLeftChild, topRightChild, botRightChild;
+        public QuadNode botLeftChild, topLeftChild, topRightChild, botRightChild;
         Bounds bounds;
 
-        public Node(Vector2 botLeftPoint, float sideLength) {
+        // CONSTRUCTOR
+        public QuadNode(Vector2 botLeftPoint, float sideLength) {
             this.botLeftPoint = botLeftPoint;
             this.sideLength = sideLength;
 
@@ -32,6 +36,7 @@ public class TerrainGenQuadTree {
             this.topLeftChild = null;
         }
 
+        // HELPERS
         public Bounds GetBounds() { return bounds; }
         public float GetSideLength() { return sideLength; }
         public Vector2 GetBotLeftPoint() { return botLeftPoint; }
@@ -39,40 +44,39 @@ public class TerrainGenQuadTree {
     }
 
     // CONSTRUCTOR
-
-    private Node CreateRootNode(Camera cam, float worldSideLength) {
-        return new(ComputeBotLeftPoint(cam, worldSideLength), worldSideLength * 2);
-    }
-
-    public TerrainGenQuadTree(Camera cam, float renderDistance, int minChunkSideLength, float worldSideLength) {
+    public QuadTree(Camera cam, float renderDistance, int minChunkSideLength, float rootNodeSideLength) {
         // Assign Vars
         this.cam = cam;
         this.renderDistance = renderDistance;
         this.viewTriangle = GetViewTriangleFromCamera(cam, renderDistance);
-        this.rootNode = CreateRootNode(cam, worldSideLength);
+        this.rootNode = CreateRootNode(cam, rootNodeSideLength);
         this.triBounds = ComputeTriBounds();
         
-        ConstructQuadTree(minChunkSideLength, worldSideLength);
+        ConstructQuadTree(minChunkSideLength, rootNodeSideLength);
     }
 
+    // GETTERS
+    public QuadNode GetRootNode() { return rootNode; }
+
+    // HELPERS
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
         // Construct the quad tree
-        Queue<Node> queue = new();
+        Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
         while (queue.Count > 0) {
 
             // Breadth First Search Construction of Quad Tree
-            Node curr = queue.Dequeue();
+            QuadNode curr = queue.Dequeue();
 
             //Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
 
             if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
                 Vector2 botLeftPoint = curr.GetBotLeftPoint();
                 float sideLength = curr.GetSideLength();
-                Node botLeft = new(botLeftPoint, 0.5f * sideLength);
-                Node topLeft = new(new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
-                Node topRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
-                Node botRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y), 0.5f * sideLength);
+                QuadNode botLeft = new(botLeftPoint, 0.5f * sideLength);
+                QuadNode topLeft = new(new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
+                QuadNode topRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
+                QuadNode botRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y), 0.5f * sideLength);
 
                 curr.botLeftChild = botLeft;
                 curr.topLeftChild = topLeft;
@@ -86,11 +90,9 @@ public class TerrainGenQuadTree {
             }
         }
     }
-
-    // GETTERS
-    public Node GetRootNode() { return rootNode; }
-    // HELPERS
-
+    private QuadNode CreateRootNode(Camera cam, float worldSideLength) {
+        return new(ComputeBotLeftPoint(cam, worldSideLength), worldSideLength * 2);
+    }
     public Bounds ComputeTriBounds() {
         // approximate triangle as rectangle for now
 
@@ -109,14 +111,13 @@ public class TerrainGenQuadTree {
         Bounds triBounds = new(camPos + 0.5f*median, boundsDimensions); // can approx better by using isoceles properties
         return triBounds;
     }
-    private bool IntersectsWithViewTri(Node node) {
+    private bool IntersectsWithViewTri(QuadNode node) {
         // Test performed using Separating Axis Theorem
         // More info: https://dyn4j.org/2010/01/sat/
         
         Bounds nodeBounds = node.GetBounds();
         return nodeBounds.Intersects(triBounds);
     }
-
     private Vector2 ComputeBotLeftPoint(Camera cam, float renderDistance) {
         var botLeftPointV3 = cam.transform.position - new Vector3(renderDistance, 0f, renderDistance);
         var botLeftPointV2 = new Vector2(botLeftPointV3.x, botLeftPointV3.z);
@@ -156,13 +157,12 @@ public class TerrainGenQuadTree {
     }
     public Vector3[] GetViewTriangle() { return viewTriangle; }
     float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f;  }
-
     public Bounds GetTriBounds() { return triBounds; }
     public void PrintTree(ref List<Bounds> boundsToDraw) {
-        Queue<Node> queue = new();
+        Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
         while(queue.Count > 0) {
-            Node curr = queue.Dequeue();
+            QuadNode curr = queue.Dequeue();
 
             if (curr.botLeftChild != null) queue.Enqueue(curr.botLeftChild);
             if (curr.botRightChild != null) queue.Enqueue(curr.botRightChild);

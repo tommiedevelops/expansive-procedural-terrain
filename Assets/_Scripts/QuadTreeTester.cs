@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using static TerrainGenQuadTree;
+using static QuadTree;
 
 public class QuadTreeTester : MonoBehaviour {
     [SerializeField] Camera cam;
@@ -9,7 +9,7 @@ public class QuadTreeTester : MonoBehaviour {
     [SerializeField] float worldSideLength;
 
     List<Bounds> boundsToDraw = new();
-    TerrainGenQuadTree tree;
+    QuadTree tree;
     private void OnDrawGizmos() {
         Gizmos.color = Color.green;
         foreach (Bounds bounds in boundsToDraw) {
@@ -32,7 +32,7 @@ public class QuadTreeTester : MonoBehaviour {
     }
 
     private void Awake() {
-        TerrainGenQuadTree tree = new(cam, renderDistance, minChunkSideLength, worldSideLength);
+        QuadTree tree = new(cam, renderDistance, minChunkSideLength, worldSideLength);
         this.tree = tree;
         tree.PrintTree(ref boundsToDraw);
     }
