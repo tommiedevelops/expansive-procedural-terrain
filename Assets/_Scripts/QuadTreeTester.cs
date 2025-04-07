@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using static QuadTree;
 
 public class QuadTreeTester : MonoBehaviour {
-    [SerializeField] Camera cam;
-    [SerializeField] float renderDistance;
-    [SerializeField] int minChunkSideLength;
-    [SerializeField] float worldSideLength;
+
+    // Behaves like the main function of the program for now
+    const int minChunkSideLength = 240; // this shouldn't change
+    
+    [SerializeField] int rootNodeSideLengthMultiplier; // this should always be a multiple of the minChunkSideLength
+    [SerializeField] QTViewer viewer;
 
     List<Bounds> boundsToDraw = new();
     QuadTree tree;
@@ -32,10 +34,19 @@ public class QuadTreeTester : MonoBehaviour {
     }
 
     private void Awake() {
-        QuadTree tree = new(cam, renderDistance, minChunkSideLength, worldSideLength);
+        // create a QuadNode first and set the side length
+        // define a min chunk side length
+        
+        int rootNodeSideLength = minChunkSideLength * rootNodeSideLengthMultiplier;
+       
+        QuadNode rootNode = new(viewer.GetBotLeftPoint(), rootNodeSideLength * 2);
+        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
         this.tree = tree;
+
+    }
+
+    private void Start() {
         tree.PrintTree(ref boundsToDraw);
     }
 
 }
-;
