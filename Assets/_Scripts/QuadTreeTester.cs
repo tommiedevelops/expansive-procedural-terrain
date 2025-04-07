@@ -13,12 +13,16 @@ public class QuadTreeTester : MonoBehaviour {
     List<Bounds> boundsToDraw = new();
     QuadTree tree;
     private void OnDrawGizmos() {
+
+        // Draw each node in the QuadTree
         Gizmos.color = Color.green;
         foreach (Bounds bounds in boundsToDraw) {
             Gizmos.DrawWireCube(bounds.center, bounds.size);
         }
 
         if (tree == null) return;
+
+        // Draw TriBounds
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(tree.GetTriBounds().center, tree.GetTriBounds().size);
 
@@ -33,20 +37,22 @@ public class QuadTreeTester : MonoBehaviour {
 
     }
 
-    private void Awake() {
+    private void Start() {
         // create a QuadNode first and set the side length
         // define a min chunk side length
         
         int rootNodeSideLength = minChunkSideLength * rootNodeSideLengthMultiplier;
-       
-        QuadNode rootNode = new(viewer.GetBotLeftPoint(), rootNodeSideLength * 2);
+
+        // The first rootNode should be at x=0, z=0
+        Debug.Log($"The side length of root nodes is: {rootNodeSideLength}");
+
+        // initially, position of viewer is in the bottom left quadrant of the first chunk
+        QuadNode rootNode = new(new Vector2(-1f*rootNodeSideLength/2, -1f*rootNodeSideLength/2), rootNodeSideLength * 2);
+
         QuadTree tree = new(rootNode, viewer, minChunkSideLength);
         this.tree = tree;
-
-    }
-
-    private void Start() {
         tree.PrintTree(ref boundsToDraw);
+
     }
 
 }

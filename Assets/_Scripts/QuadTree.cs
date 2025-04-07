@@ -60,7 +60,7 @@ public class QuadTree {
             // Breadth First Search Construction of Quad Tree
             QuadNode curr = queue.Dequeue();
 
-            //Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
+            Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
 
             if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
                 Vector2 botLeftPoint = curr.GetBotLeftPoint();

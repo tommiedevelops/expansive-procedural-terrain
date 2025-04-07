@@ -15,6 +15,10 @@ public class QTViewer : MonoBehaviour {
     Bounds triBounds; //temporary
 
     // UNITY GAME LOOP
+    private void Awake() {
+        ComputeViewTriangle();
+        ComputeTriBounds();
+    }
     private void Start() {
         _cc = GetComponent<CharacterController>();
     }
@@ -59,7 +63,6 @@ public class QTViewer : MonoBehaviour {
         this.viewTriangle = triangle;
     }
     float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f; }
-
     void ComputeTriBounds() {
         // approximate triangle as rectangle for now
 
@@ -82,9 +85,6 @@ public class QTViewer : MonoBehaviour {
     }
     public Bounds GetTriBounds() { return triBounds; }
     public Transform GetCameraTransform() { return _cam.transform;  }
-    public Vector2 GetBotLeftPoint() {
-        var botLeftPointV3 = _cam.transform.position - new Vector3(renderDistance, 0f, renderDistance);
-        var botLeftPointV2 = new Vector2(botLeftPointV3.x, botLeftPointV3.z);
-        return botLeftPointV2;
-    }
+
+    public float GetRenderDist() { return renderDistance; }
 }
