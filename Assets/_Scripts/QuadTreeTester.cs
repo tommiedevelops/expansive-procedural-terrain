@@ -44,7 +44,7 @@ public class QuadTreeTester : MonoBehaviour {
         int rootNodeSideLength = minChunkSideLength * rootNodeSideLengthMultiplier;
 
         // The first rootNode should be at x=0, z=0
-        Debug.Log($"The side length of root nodes is: {rootNodeSideLength}");
+        //Debug.Log($"The side length of root nodes is: {rootNodeSideLength}");
 
         // initially, position of viewer is in the bottom left quadrant of the first chunk
         QuadNode rootNode = new(new Vector2(-1f*rootNodeSideLength/2, -1f*rootNodeSideLength/2), rootNodeSideLength * 2);

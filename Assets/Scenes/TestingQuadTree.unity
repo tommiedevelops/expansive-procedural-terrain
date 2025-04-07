@@ -245,6 +245,7 @@ MonoBehaviour:
   _cam: {fileID: 786935566}
   speed: 0
   rotation: {x: 0, y: 0, z: 0, w: 0}
+  renderDistance: 1200
 --- !u!143 &111722352
 CharacterController:
   m_ObjectHideFlags: 0
@@ -437,10 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2d2b75bfcb69ad47ba45a9bdc3f5e9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 786935566}
-  renderDistance: 24000
-  minChunkSideLength: 240
-  worldSideLength: 120000
+  rootNodeSideLengthMultiplier: 2400
+  viewer: {fileID: 111722351}
 --- !u!4 &1640921430
 Transform:
   m_ObjectHideFlags: 0

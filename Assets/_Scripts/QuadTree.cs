@@ -86,6 +86,33 @@ public class QuadTree {
         // Test performed using Separating Axis Theorem
         // More info: https://dyn4j.org/2010/01/sat/
         
+        // Get 3 points from the view triangle
+        Vector3[] triPoints = viewer.GetViewTriangle();
+
+        // Get all 4 points of the node 
+        Vector3[] nodePoints = new Vector3[4];
+
+        Vector3 bl = node.GetBotLeftPoint();
+        float l = node.GetSideLength();
+
+        // constructed clockwise from bot left point
+        nodePoints[0] = bl;
+        nodePoints[1] = new Vector3(bl.x, 0f, bl.z + l);
+        nodePoints[2] = new Vector3(bl.x + l, 0f, bl.z + l);
+        nodePoints[3] = new Vector3(bl.x + l, 0f, bl.z); 
+
+        // Use SAT to check for an intersection between the viewTri and Node
+
+        /* TO DO
+         * 1. get tri axes and squ axes from points
+         * 2. for each axis, proj tri and squ onto it and get tri-max, tri-min, squ-max, squ-min
+         * 3. perform 1D collision test (see GoodNotes) for each axis
+         * 
+         * if no collision, return False else return True.
+         * maybe can optimise instead of n^2, log(n)
+        */
+
+        // Below is temporary
         Bounds nodeBounds = node.GetBounds();
         return nodeBounds.Intersects(viewer.GetTriBounds());
     }
