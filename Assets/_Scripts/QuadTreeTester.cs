@@ -12,6 +12,7 @@ public class QuadTreeTester : MonoBehaviour {
 
     List<Bounds> boundsToDraw = new();
     QuadTree tree;
+    List<QuadNode> leafNodes; // For testing
     private void OnDrawGizmos() {
 
         // Draw each node in the QuadTree
@@ -32,6 +33,12 @@ public class QuadTreeTester : MonoBehaviour {
         Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
 
+        // Draw leaf node botleft points
+        Gizmos.color = Color.red;
+        foreach (QuadNode node in leafNodes) {
+            Debug.Log($"Bot left point: {node.GetBotLeftPoint()}");
+            Gizmos.DrawSphere(new Vector3(node.GetBotLeftPoint().x, 0f, node.GetBotLeftPoint().y), 10f);
+        }
         //Gizmos.color = Color.blue;
         //Gizmos.DrawLine(cam.transform.position, cam.transform.position + cam.transform.forward * 10f);
 
@@ -52,6 +59,8 @@ public class QuadTreeTester : MonoBehaviour {
         QuadTree tree = new(rootNode, viewer, minChunkSideLength);
         this.tree = tree;
         tree.PrintTree(ref boundsToDraw);
+
+        leafNodes = tree.GetAllLeafNodes();
 
     }
 

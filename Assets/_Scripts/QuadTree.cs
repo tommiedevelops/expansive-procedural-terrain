@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
 public class QuadTree {
     QuadNode rootNode;
     QTViewer viewer;
@@ -51,6 +52,44 @@ public class QuadTree {
     public Vector3[] GetViewTriangle() { return viewer.GetViewTriangle(); }
 
     // HELPERS
+    public List<QuadNode> GetAllLeafNodes() {
+        // ** UNTESTED **
+        List<QuadNode> leafNodes = new();
+
+        // Quick null check
+        if(null == rootNode) { Debug.Log("rootNode is null. Cannot proceed."); }
+
+        // BFS traverse the tree. If leaf node, add to array
+        Queue<QuadNode> queue = new();
+
+
+        queue.Enqueue(rootNode);
+
+        while(queue.Count > 0) {
+            QuadNode curr = queue.Dequeue();
+            //Debug.Log($"{curr.GetBotLeftPoint()}");
+
+            if (curr == null) continue;
+
+            // check if a leaf node
+            if(curr.botLeftChild == null
+            && curr.topLeftChild == null
+            && curr.botRightChild == null
+            && curr.topRightChild == null) {
+                leafNodes.Add(curr);
+            }
+
+            queue.Enqueue(curr.botLeftChild);
+            queue.Enqueue(curr.botRightChild);
+            queue.Enqueue(curr.topRightChild);
+            queue.Enqueue(curr.topLeftChild);
+           
+        }
+
+
+
+        return leafNodes;
+    }
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
         // Construct the quad tree
         Queue<QuadNode> queue = new();
@@ -60,7 +99,7 @@ public class QuadTree {
             // Breadth First Search Construction of Quad Tree
             QuadNode curr = queue.Dequeue();
 
-            Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
+            //Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
 
             if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
                 Vector2 botLeftPoint = curr.GetBotLeftPoint();
@@ -86,6 +125,8 @@ public class QuadTree {
         // Test performed using Separating Axis Theorem
         // More info: https://dyn4j.org/2010/01/sat/
         
+        // TODO: COMPLETE SAT IMPLEMENTATION
+
         // Get 3 points from the view triangle
         Vector3[] triPoints = viewer.GetViewTriangle();
 
