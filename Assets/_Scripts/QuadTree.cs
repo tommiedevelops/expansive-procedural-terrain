@@ -34,6 +34,28 @@ public class QuadTree {
         public float GetSideLength() { return sideLength; }
         public Vector2 GetBotLeftPoint() { return botLeftPoint; }
 
+        private void RenderLeafNodeChunk() {
+            // 1. Check if this node is a leaf node.
+            // this code is ugly af. surely can make this neater
+            if (botLeftChild != null
+            || botRightChild != null
+            || topRightChild != null
+            || topLeftChild != null) {
+                Debug.Log("This node is not a leaf node. Cannot render.");
+                return;
+            }
+
+            // 2. Initialise a thread for this chunk to request mesh data
+            // 3. Initialise a thread for this chunk to request noise data
+            // 4. 
+            // 3. 
+
+            // Ignoring all shading for now.
+
+            // This function should generate the mesh and overlay the correct noise values
+            // I should probably multithread this from the start
+            // I should only be calling this for leaf nodes
+        }
     }
 
     // CONSTRUCTOR
@@ -53,21 +75,16 @@ public class QuadTree {
 
     // HELPERS
     public List<QuadNode> GetAllLeafNodes() {
-        // ** UNTESTED **
         List<QuadNode> leafNodes = new();
 
         // Quick null check
         if(null == rootNode) { Debug.Log("rootNode is null. Cannot proceed."); }
-
         // BFS traverse the tree. If leaf node, add to array
         Queue<QuadNode> queue = new();
-
-
         queue.Enqueue(rootNode);
 
         while(queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
-            //Debug.Log($"{curr.GetBotLeftPoint()}");
 
             if (curr == null) continue;
 

@@ -14,35 +14,40 @@ public class QuadTreeTester : MonoBehaviour {
     QuadTree tree;
     List<QuadNode> leafNodes; // For testing
     private void OnDrawGizmos() {
+        if (tree == null) return;
 
         // Draw each node in the QuadTree
+        GizmosDrawNodeSquares();
+        GizmosDrawTriBounds();
+        GizmosDrawViewTriangle();
+        //GizmosDrawLeafNodes();
+    }
+
+    // Gizmos functions
+    private void GizmosDrawNodeSquares() {
         Gizmos.color = Color.green;
         foreach (Bounds bounds in boundsToDraw) {
             Gizmos.DrawWireCube(bounds.center, bounds.size);
         }
-
-        if (tree == null) return;
-
-        // Draw TriBounds
+    }
+    private void GizmosDrawTriBounds() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(tree.GetTriBounds().center, tree.GetTriBounds().size);
-
-        // Draw Triangle
+    }
+    private void GizmosDrawViewTriangle() {
         Vector3[] viewTriangle = tree.GetViewTriangle();
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
         Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
-
-        // Draw leaf node botleft points
+    }
+    private void GizmosDrawLeafNodes() {
         Gizmos.color = Color.red;
         foreach (QuadNode node in leafNodes) {
             Debug.Log($"Bot left point: {node.GetBotLeftPoint()}");
             Gizmos.DrawSphere(new Vector3(node.GetBotLeftPoint().x, 0f, node.GetBotLeftPoint().y), 10f);
         }
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawLine(cam.transform.position, cam.transform.position + cam.transform.forward * 10f);
-
     }
+
 
     private void Start() {
         // create a QuadNode first and set the side length
