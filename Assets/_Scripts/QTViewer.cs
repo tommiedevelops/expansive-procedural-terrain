@@ -63,7 +63,7 @@ public class QTViewer : MonoBehaviour {
         this.viewTriangle = triangle;
     }
     float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f; }
-    void ComputeTriBounds() {
+    public Bounds ComputeTriBounds() {
         // approximate triangle as rectangle for now
 
         Vector3 camPos = viewTriangle[0];
@@ -77,6 +77,7 @@ public class QTViewer : MonoBehaviour {
 
         Bounds triBounds = new(camPos + 0.5f * median, boundsDimensions); // can approx better by using isoceles properties
         this.triBounds = triBounds;
+        return triBounds;
     }
 
     // SETTERS & GETTERS

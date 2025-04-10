@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
+using Unity.Mathematics;
 public class QuadTree {
     QuadNode rootNode;
     QTViewer viewer;
@@ -33,14 +34,19 @@ public class QuadTree {
         public Bounds GetBounds() { return bounds; }
         public float GetSideLength() { return sideLength; }
         public Vector2 GetBotLeftPoint() { return botLeftPoint; }
-
-        private void RenderLeafNodeChunk() {
-            // 1. Check if this node is a leaf node.
-            // this code is ugly af. surely can make this neater
-            if (botLeftChild != null
+        private bool IsLeafNode() {
+            return botLeftChild != null
             || botRightChild != null
             || topRightChild != null
-            || topLeftChild != null) {
+            || topLeftChild != null;
+        }
+        public uint ComputeHash() {
+            float3 data = new float3(botLeftPoint.x, botLeftPoint.y, sideLength);
+            return math.hash(data);
+        }
+        private void RenderLeafNodeChunk() {
+            // 1. Check if this node is a leaf node.
+            if (IsLeafNode()) {
                 Debug.Log("This node is not a leaf node. Cannot render.");
                 return;
             }
@@ -70,9 +76,6 @@ public class QuadTree {
 
     // GETTERS
     public QuadNode GetRootNode() { return rootNode; }
-    public Bounds GetTriBounds() { return viewer.GetTriBounds(); }
-    public Vector3[] GetViewTriangle() { return viewer.GetViewTriangle(); }
-
     // HELPERS
     public List<QuadNode> GetAllLeafNodes() {
         List<QuadNode> leafNodes = new();
@@ -172,9 +175,9 @@ public class QuadTree {
 
         // Below is temporary
         Bounds nodeBounds = node.GetBounds();
-        return nodeBounds.Intersects(viewer.GetTriBounds());
+        return nodeBounds.Intersects(viewer.ComputeTriBounds());
     }
-    public void PrintTree(ref List<Bounds> boundsToDraw) {
+    public void SaveTree(ref List<Bounds> boundsToDraw) {
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
         while(queue.Count > 0) {
