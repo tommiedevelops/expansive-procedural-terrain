@@ -6,14 +6,14 @@ public class QuadChunk {
     Mesh mesh;
     Vector2 botLeftPoint;
     float sideLength;
-    float lodConstant;
+    int lodLevel;
 
     public QuadChunk(Vector3 botLeftPoint, float lodConstant, float sideLength) {
         this.botLeftPoint = botLeftPoint;
         this.sideLength = sideLength;
-        this.lodConstant = lodConstant;
+        //this.lodConstant = lodConstant;
 
-        MeshData meshData = new(Mathf.RoundToInt(sideLength / lodConstant), Mathf.RoundToInt(sideLength / lodConstant), lodConstant);
+        MeshData meshData = new((int)sideLength, (int)sideLength, lodConstant);
         mesh = GeneratePlaneMesh(meshData);
     }
 
@@ -26,4 +26,11 @@ public class QuadChunk {
         chunkObject.transform.position = new Vector3(botLeftPoint.x, 0f, botLeftPoint.y);
         return chunkObject;
     }
+}
+
+public class LODManager {
+    // The tree whose chunk LODs we are managing
+    QuadTree tree;
+
+
 }

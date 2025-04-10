@@ -7,18 +7,15 @@ using System;
 
 public class InfiniteTerrain : MonoBehaviour {
     // TODO: IMPLEMENT QUAD TREE FOR EXPANSIVE TERRAIN 
-
-
-    // DOES THIS RLY NEED TO BE A SINGLETON?
     public static InfiniteTerrain Instance { get; private set; }
 
     // Pre calculated constants
     // 240 chosen due to a sufficient number of factors
     public const int CHUNK_SIZE = 240;
     public static readonly int[] CHUNK_SIZE_FACTORS = { 1, 2, 3, 4, 6, 8, 10, 12 };
+    int renderDistance = 0;
 
     [SerializeField] Transform viewer;
-    [SerializeField] float renderDistance = CHUNK_SIZE * 4;
     [SerializeField] NoiseSettings noiseSettings;
 
     int chunksRenderDistance;
@@ -27,7 +24,8 @@ public class InfiniteTerrain : MonoBehaviour {
     // Dictionary for storing terrainChunks based on their coordinate in chunk space
     private Dictionary<Vector2, TerrainChunk> terrainChunks = new();
 
-    // Unity core methods
+    #region Unity Functions
+    // Unity Functions
     private void Awake() {
         if (Instance == null) Instance = this;
         ValidateNoiseSettings(); 
@@ -59,7 +57,9 @@ public class InfiniteTerrain : MonoBehaviour {
         ValidateNoiseSettings();
         //UpdateNoise();
     }
-    
+    #endregion
+
+    #region Helper Functions
     // HELPERS
     private void UpdateNoise() {
         foreach( TerrainChunk chunk in terrainChunks.Values) {
@@ -75,7 +75,6 @@ public class InfiniteTerrain : MonoBehaviour {
         if (noiseSettings.octaves > 6) noiseSettings.octaves = 6;
         if (noiseSettings.lacunarity < 0) noiseSettings.lacunarity = 0.01f;
     }
-
     private int CalculateLODIndex(Vector2 specificChunkCoords) {
         /* Calculates LOD Index based on dist of chunk from viewer*/
         int levelOfDetailIndex;
@@ -89,10 +88,11 @@ public class InfiniteTerrain : MonoBehaviour {
 
         return levelOfDetailIndex;
     }
+    #endregion
 
-
-    // Getter
+    #region Getter and Setter Functions
+    // GETTERS & SETTERS
     public Vector2 GetViewerPosition() { return new Vector2(viewer.position.x, viewer.position.z); }
     public float GetRenderDistance() { return renderDistance; }
-
+    #endregion
 }

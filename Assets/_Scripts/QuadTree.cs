@@ -111,6 +111,7 @@ public class QuadTree {
         return leafNodes;
     }
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
+
         // Construct the quad tree
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
@@ -122,8 +123,10 @@ public class QuadTree {
             //Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
 
             if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
+                
                 Vector2 botLeftPoint = curr.GetBotLeftPoint();
                 float sideLength = curr.GetSideLength();
+
                 QuadNode botLeft = new(botLeftPoint, 0.5f * sideLength);
                 QuadNode topLeft = new(new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
                 QuadNode topRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);

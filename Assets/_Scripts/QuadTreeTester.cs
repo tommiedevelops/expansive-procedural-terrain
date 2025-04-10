@@ -6,8 +6,9 @@ using UnityEngine.AI;
 
 public class QuadTreeTester : MonoBehaviour {
 
+    #region Fields
     // Behaves like the main function of the program for now
-    const int minChunkSideLength = 240; // this shouldn't change
+    const int minChunkSideLength = 240; // Decide on this
     
     [SerializeField] int rootNodeSideLengthMultiplier; // this should always be a multiple of the minChunkSideLength
     [SerializeField] QTViewer viewer;
@@ -17,6 +18,12 @@ public class QuadTreeTester : MonoBehaviour {
     List<Bounds> boundsToDraw = new();
     QuadTree tree;
     List<QuadNode> leafNodes; // For testing
+
+    Dictionary<uint, QuadChunk> chunkDictionary = new();
+    #endregion
+
+    #region Unity Functions
+    // Unity Functions
     private void OnDrawGizmos() {
         if (tree == null) return;
 
@@ -26,7 +33,65 @@ public class QuadTreeTester : MonoBehaviour {
         GizmosDrawViewTriangle();
         //GizmosDrawLeafNodes();
     }
+    private void OnValidate() {
+        if (rootNodeSideLengthMultiplier < 1) { rootNodeSideLengthMultiplier = 1; }
+    }
+    private void Start() {
+        // create a QuadNode first and set the side length
+        // define a min chunk side length
+        
+        int rootNodeSideLength = minChunkSideLength * rootNodeSideLengthMultiplier;
 
+        // The first rootNode should be at x=0, z=0
+        //Debug.Log($"The side length of root nodes is: {rootNodeSideLength}");
+
+        // initially, position of viewer is in the bottom left quadrant of the first chunk
+        rootNode = new(new Vector2(-1f*rootNodeSideLength/2, -1f*rootNodeSideLength/2), rootNodeSideLength * 2);
+
+        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
+        this.tree = tree;
+        tree.SaveTree(ref boundsToDraw);
+
+        leafNodes = tree.GetAllLeafNodes();
+
+    }
+    private void Update() {
+        viewer.UpdateViewTriangle();
+
+        // Compute quad tree based on viewer position and orientation
+        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
+        this.tree = tree;
+        tree.SaveTree(ref boundsToDraw);
+
+        // Get all leaf nodes of the quad tree
+        leafNodes = tree.GetAllLeafNodes();
+        /*
+        foreach(QuadNode leafNode in leafNodes) {
+            // Compute the hash
+            uint leafNodeHash = leafNode.ComputeHash();
+
+            // Check if hash exists
+            if(chunkDictionary.TryGetValue(leafNodeHash, out QuadChunk chunk)) {
+                // Chunk Exists already
+            } else {
+                // Chunk does not exist yet
+                Debug.Log($"hash: {leafNodeHash} does not exist yet. So creating it.");
+                // Create the chunk
+
+                // LOD will depend on ratio between sideLength and rootNodeSideLength
+                float lodConstant = (float) leafNode.GetSideLength() / rootNode.GetSideLength();
+
+
+                QuadChunk newChunk = new(leafNode.GetBotLeftPoint(), lodConstant, leafNode.GetSideLength());
+                GameObject chunkObject = new GameObject($"Chunk:{leafNodeHash}");
+            }
+        }
+        */
+
+    }
+    #endregion
+
+    #region Gizmos Functions
     // Gizmos functions
     private void GizmosDrawNodeSquares() {
         Gizmos.color = Color.green;
@@ -51,60 +116,5 @@ public class QuadTreeTester : MonoBehaviour {
             Gizmos.DrawSphere(new Vector3(node.GetBotLeftPoint().x, 0f, node.GetBotLeftPoint().y), 10f);
         }
     }
-
-
-    private void Start() {
-        // create a QuadNode first and set the side length
-        // define a min chunk side length
-        
-        int rootNodeSideLength = minChunkSideLength * rootNodeSideLengthMultiplier;
-
-        // The first rootNode should be at x=0, z=0
-        //Debug.Log($"The side length of root nodes is: {rootNodeSideLength}");
-
-        // initially, position of viewer is in the bottom left quadrant of the first chunk
-        rootNode = new(new Vector2(-1f*rootNodeSideLength/2, -1f*rootNodeSideLength/2), rootNodeSideLength * 2);
-
-        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
-        this.tree = tree;
-        tree.SaveTree(ref boundsToDraw);
-
-        leafNodes = tree.GetAllLeafNodes();
-
-    }
- 
-    Dictionary<uint, QuadChunk> chunkDictionary = new();
-    private void Update() {
-
-        // Compute quad tree based on viewer position and orientation
-        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
-        this.tree = tree;
-        tree.SaveTree(ref boundsToDraw);
-
-        // Get all leaf nodes of the quad tree
-        leafNodes = tree.GetAllLeafNodes();
-
-        foreach(QuadNode leafNode in leafNodes) {
-            // Compute the hash
-            uint leafNodeHash = leafNode.ComputeHash();
-
-            // Check if hash exists
-            if(chunkDictionary.TryGetValue(leafNodeHash, out QuadChunk chunk)) {
-                // Chunk Exists already
-            } else {
-                // Chunk does not exist yet
-
-                // Create the chunk
-
-                // LOD will depend on ratio between sideLength and rootNodeSideLength
-                float lodConstant = (float) leafNode.GetSideLength() / rootNode.GetSideLength();
-
-                QuadChunk newChunk = new(leafNode.GetBotLeftPoint(), lodConstant, leafNode.GetSideLength());
-                GameObject chunkObject = newChunk.RenderChunk();
-
-            }
-        }
-
-    }
-
+    #endregion
 }

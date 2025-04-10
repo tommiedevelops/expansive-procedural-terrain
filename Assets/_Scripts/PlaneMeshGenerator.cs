@@ -3,20 +3,22 @@
 public static class PlaneMeshGenerator {
 
     public struct MeshData {
-        public int width;
-        public int length;
+        public int numVerticesX;
+        public int numVerrticesZ;
         public float scale;
 
-        public MeshData(int width, int length, float scale) {
-            this.width = width;
-            this.length = length;
+        public MeshData(int numVerticesX, int numVerticesZ, float scale) {
+            this.numVerticesX = numVerticesX;
+            this.numVerrticesZ = numVerticesZ;
             this.scale = scale;
         }
     }
     public static Mesh GeneratePlaneMesh(MeshData meshData) {
+        // You need to create instantiate a meshData struct first and then pass it into
+        // this function.
 
-        int width = meshData.width;
-        int length = meshData.length;
+        int width = meshData.numVerticesX;
+        int length = meshData.numVerrticesZ;
         float scale = meshData.scale;
 
         int verticesCountX = width + 1;
