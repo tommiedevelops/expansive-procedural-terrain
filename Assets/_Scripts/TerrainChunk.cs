@@ -12,7 +12,7 @@ public class TerrainChunk {
     private const float DEFAULT_SCALE = 1.0f;
 
     // VARS
-    private const int CHUNK_SIZE = InfiniteTerrain.CHUNK_SIZE;
+    private const int CHUNK_SIZE = RealTerrainManager.MAX_NUM_VERTICES_PER_SIDE;
     private readonly GameObject chunkObject;
     Bounds bounds; // Used for retrieving distance from chunk edge to viewer
 
@@ -48,7 +48,7 @@ public class TerrainChunk {
 
     // METHODS
     private static Mesh GenerateMesh(Vector2 chunkCoords, int levelOfDetailIndex, NoiseSettings noiseSettings) {
-        int resolutionScale = InfiniteTerrain.CHUNK_SIZE_FACTORS[levelOfDetailIndex];
+        int resolutionScale = RealTerrainManager.FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[levelOfDetailIndex];
         Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(new MeshData(CHUNK_SIZE / resolutionScale, CHUNK_SIZE / resolutionScale, DEFAULT_SCALE * resolutionScale));
         noiseSettings.width = CHUNK_SIZE / resolutionScale;
         noiseSettings.length = CHUNK_SIZE / resolutionScale;
