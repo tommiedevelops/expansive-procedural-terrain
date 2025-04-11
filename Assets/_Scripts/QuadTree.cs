@@ -4,7 +4,8 @@ using UnityEngine.Rendering;
 using Unity.Mathematics;
 public class QuadTree {
     QuadNode rootNode;
-    QTViewer viewer;
+    Vector3[] viewTriangle;
+    Bounds tempTriBounds;
 
     // CHILD CLASSES
     public class QuadNode {
@@ -13,11 +14,14 @@ public class QuadTree {
         float sideLength; // in metres
         public QuadNode botLeftChild, topLeftChild, topRightChild, botRightChild;
         Bounds bounds;
+        int level;
+        bool levelSet;
 
         // CONSTRUCTOR
         public QuadNode(Vector2 botLeftPoint, float sideLength) {
             this.botLeftPoint = botLeftPoint;
             this.sideLength = sideLength;
+            levelSet = false;
 
             Vector3 boundsCenter = new(botLeftPoint.x + sideLength / 2f, 0f, botLeftPoint.y + sideLength / 2f);
             Vector3 boundsDimensions = new(sideLength, 0f, sideLength);
@@ -31,6 +35,9 @@ public class QuadTree {
         }
 
         // HELPERS
+        public bool IsLevelSet() { return levelSet; }
+        public void SetLevel(int level) { this.level = level; levelSet = true; }
+        public int GetLevel() { return this.level; }
         public Bounds GetBounds() { return bounds; }
         public float GetSideLength() { return sideLength; }
         public Vector2 GetBotLeftPoint() { return botLeftPoint; }
@@ -65,10 +72,11 @@ public class QuadTree {
     }
 
     // CONSTRUCTOR
-    public QuadTree(QuadNode rootNode, QTViewer viewer, int minChunkSideLength) {
+    public QuadTree(QuadNode rootNode, Vector3[] viewTriangle, Bounds tempTriBounds, int minChunkSideLength) {
         // Assign Vars
         this.rootNode = rootNode;
-        this.viewer = viewer;
+        this.viewTriangle = viewTriangle;
+        this.tempTriBounds = tempTriBounds;
 
         // Construct the Quad Tree
         ConstructQuadTree(minChunkSideLength, rootNode.GetSideLength());
@@ -115,8 +123,9 @@ public class QuadTree {
         // Construct the quad tree
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
-        while (queue.Count > 0) {
 
+        while (queue.Count > 0) {
+            
             // Breadth First Search Construction of Quad Tree
             QuadNode curr = queue.Dequeue();
 
@@ -131,6 +140,11 @@ public class QuadTree {
                 QuadNode topLeft = new(new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
                 QuadNode topRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
                 QuadNode botRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y), 0.5f * sideLength);
+
+                botLeft.SetLevel(curr.GetLevel() + 1);
+                botRight.SetLevel(curr.GetLevel() + 1);
+                topLeft.SetLevel(curr.GetLevel() + 1);
+                topRight.SetLevel(curr.GetLevel() + 1);
 
                 curr.botLeftChild = botLeft;
                 curr.topLeftChild = topLeft;
@@ -147,11 +161,11 @@ public class QuadTree {
     private bool IntersectsWithViewTri(QuadNode node) {
         // Test performed using Separating Axis Theorem
         // More info: https://dyn4j.org/2010/01/sat/
-        
+
         // TODO: COMPLETE SAT IMPLEMENTATION
 
         // Get 3 points from the view triangle
-        Vector3[] triPoints = viewer.GetViewTriangle();
+        Vector3[] triPoints = viewTriangle;
 
         // Get all 4 points of the node 
         Vector3[] nodePoints = new Vector3[4];
@@ -178,7 +192,7 @@ public class QuadTree {
 
         // Below is temporary
         Bounds nodeBounds = node.GetBounds();
-        return nodeBounds.Intersects(viewer.ComputeTriBounds());
+        return nodeBounds.Intersects(tempTriBounds);
     }
     public void SaveTree(ref List<Bounds> boundsToDraw) {
         Queue<QuadNode> queue = new();

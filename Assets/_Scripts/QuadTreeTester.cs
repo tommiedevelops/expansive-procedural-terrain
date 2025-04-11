@@ -29,8 +29,7 @@ public class QuadTreeTester : MonoBehaviour {
 
         // Draw each node in the QuadTree
         GizmosDrawNodeSquares();
-        GizmosDrawTriBounds();
-        GizmosDrawViewTriangle();
+        GizmosDrawViewTriangleAndTriBounds();
         //GizmosDrawLeafNodes();
     }
     private void OnValidate() {
@@ -48,7 +47,7 @@ public class QuadTreeTester : MonoBehaviour {
         // initially, position of viewer is in the bottom left quadrant of the first chunk
         rootNode = new(new Vector2(-1f*rootNodeSideLength/2, -1f*rootNodeSideLength/2), rootNodeSideLength * 2);
 
-        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
+        QuadTree tree = new(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), minChunkSideLength);
         this.tree = tree;
         tree.SaveTree(ref boundsToDraw);
 
@@ -59,7 +58,7 @@ public class QuadTreeTester : MonoBehaviour {
         viewer.UpdateViewTriangle();
 
         // Compute quad tree based on viewer position and orientation
-        QuadTree tree = new(rootNode, viewer, minChunkSideLength);
+        QuadTree tree = new(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), minChunkSideLength);
         this.tree = tree;
         tree.SaveTree(ref boundsToDraw);
 
@@ -99,15 +98,14 @@ public class QuadTreeTester : MonoBehaviour {
             Gizmos.DrawWireCube(bounds.center, bounds.size);
         }
     }
-    private void GizmosDrawTriBounds() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(viewer.GetTriBounds().center, viewer.GetTriBounds().size);
-    }
-    private void GizmosDrawViewTriangle() {
+
+    private void GizmosDrawViewTriangleAndTriBounds() {
         Vector3[] viewTriangle = viewer.GetViewTriangle();
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
         Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(viewer.GetTriBounds().center, viewer.GetTriBounds().size);
     }
     private void GizmosDrawLeafNodes() {
         Gizmos.color = Color.red;
