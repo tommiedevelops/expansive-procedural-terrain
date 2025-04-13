@@ -4,13 +4,13 @@ public static class PlaneMeshGenerator {
 
     public struct MeshData {
         public int numVerticesX;
-        public int numVerrticesZ;
-        public float scale;
+        public int numVerticesZ;
+        public float meshLength;
 
-        public MeshData(int numVerticesX, int numVerticesZ, float scale) {
+        public MeshData(int numVerticesX, int numVerticesZ, float meshLength) {
             this.numVerticesX = numVerticesX;
-            this.numVerrticesZ = numVerticesZ;
-            this.scale = scale;
+            this.numVerticesZ = numVerticesZ;
+            this.meshLength = meshLength;
         }
     }
     public static Mesh GeneratePlaneMesh(MeshData meshData) {
@@ -18,8 +18,8 @@ public static class PlaneMeshGenerator {
         // this function.
 
         int width = meshData.numVerticesX;
-        int length = meshData.numVerrticesZ;
-        float scale = meshData.scale;
+        int length = meshData.numVerticesZ;
+        float scale = meshData.meshLength;
 
         int verticesCountX = width + 1;
         int verticesCountZ = length + 1;
@@ -34,7 +34,10 @@ public static class PlaneMeshGenerator {
         for (int z = 0; z < verticesCountZ; z++) {
             for (int x = 0; x < verticesCountX; x++) {
                 int index = z * verticesCountX + x;
-                vertices[index] = new Vector3(x * scale, 0, z * scale);
+
+                float stepSize = meshData.meshLength / width;
+
+                vertices[index] = new Vector3(x * stepSize, 0, z * stepSize);
                 uv[index] = new Vector2((float)x / width, (float)z / length);
             }
         }

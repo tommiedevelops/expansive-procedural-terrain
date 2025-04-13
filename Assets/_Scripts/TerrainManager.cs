@@ -8,7 +8,7 @@ public class TerrainManager : MonoBehaviour {
     [Header("Plane Mesh Properties")]
     [SerializeField] private int width = 10;
     [SerializeField] private int length = 10;
-    [SerializeField] private float scale = 1f;
+    [SerializeField] private int scale = 2;
 
     [Header("Perlin Noise Properties")]
     [SerializeField] private float noiseScale = 0.1f;  // Controls the frequency of the noise

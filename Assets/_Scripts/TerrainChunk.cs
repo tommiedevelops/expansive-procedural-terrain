@@ -47,7 +47,7 @@ public class TerrainChunk {
     // METHODS
     private static Mesh GenerateMesh(Vector2 botLeftPoint, float chunkSize, int levelOfDetailIndex, NoiseSettings noiseSettings) {
         int resolutionScale = RealTerrainManager.FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[levelOfDetailIndex];
-        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(new MeshData(CHUNK_SIZE / resolutionScale, CHUNK_SIZE / resolutionScale, DEFAULT_SCALE * resolutionScale));
+        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(new MeshData(CHUNK_SIZE / resolutionScale, CHUNK_SIZE / resolutionScale, (int)DEFAULT_SCALE * resolutionScale));
         noiseSettings.width = CHUNK_SIZE / resolutionScale;
         noiseSettings.length = CHUNK_SIZE / resolutionScale;
         PerlinNoise.ApplyPerlinNoise(botLeftPoint, ref newMesh, noiseSettings);

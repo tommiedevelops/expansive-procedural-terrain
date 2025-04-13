@@ -8,7 +8,7 @@ public class QuadChunk {
     float sideLength;
     int lodLevel;
 
-    public QuadChunk(Vector3 botLeftPoint, float lodConstant, float sideLength) {
+    public QuadChunk(Vector3 botLeftPoint, int lodConstant, float sideLength) {
         this.botLeftPoint = botLeftPoint;
         this.sideLength = sideLength;
         //this.lodConstant = lodConstant;

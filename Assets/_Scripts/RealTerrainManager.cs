@@ -5,28 +5,34 @@ using static PlaneMeshGenerator;
 using System.Linq;
 
 public class RealTerrainManager : MonoBehaviour {
+
     public static RealTerrainManager Instance { get; private set; }
     /* It is assumed here that all vertices lie on integers only.
      */
+    [SerializeField] QTViewer viewer;
+    [SerializeField] NoiseSettings noiseSettings;
+    [SerializeField] int rootNodeLengthMultiplier = 1;
 
     // PRE-CALCULATED
     public const int MAX_NUM_VERTICES_PER_SIDE = 120;
     public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
-    int rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE.Length;
+    int rootNodeLength;
     QuadNode rootNode;
     /* For any Mesh generated, the number of vertices per side is required to be a factor of 
      * MAX_NUM_VERTICES_PER_SIDE
      */
 
-    [SerializeField] QTViewer viewer;
-    [SerializeField] NoiseSettings noiseSettings;
-
     QuadTree quadTree; // Generalise this to a collection in the future
     Dictionary<uint, QuadChunk> chunks = new();
+
+    // For Debugging
+    List<Bounds> boundsToDraw = new();
 
     #region Unity Functions
     // Unity Functions
     private void Awake() {
+        rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
+
         if (Instance == null) Instance = this;
         ValidateNoiseSettings();
 
@@ -38,10 +44,12 @@ public class RealTerrainManager : MonoBehaviour {
     private void OnDrawGizmos() {
         if (null == viewer) return;
         GizmosDrawViewTriangleAndTriBounds();
+        GizmosDrawNodeSquares();
     }
     private void Update() {
         // Generate the quad tree
         quadTree = new QuadTree(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), MAX_NUM_VERTICES_PER_SIDE);
+        quadTree.SaveTree(ref boundsToDraw);
 
         // Retrieve all leaf nodes
         List<QuadNode> leafNodes = quadTree.GetAllLeafNodes();
@@ -56,15 +64,22 @@ public class RealTerrainManager : MonoBehaviour {
                 // Chunk does not exist
 
                 // Generate new chunk
-                int chunkLODIndex = leafNode.GetLevel();
+                int leafNodeLevel = leafNode.GetLevel();
+                int chunkLODIndex = quadTree.GetTreeHeight() - leafNodeLevel;
                 int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex];
 
-                int numVerticesPerSide = MAX_NUM_VERTICES_PER_SIDE / chunkScaleFactor;
+                float requiredMeshLength = leafNode.GetSideLength();
 
-                MeshData newMeshData = new MeshData(numVerticesPerSide, numVerticesPerSide, chunkScaleFactor);
+                int numVertsPerSide = MAX_NUM_VERTICES_PER_SIDE / chunkScaleFactor;
+
+                Debug.Log($"chunkLOD:{chunkLODIndex}, chunkScaleFactor:{chunkScaleFactor}, numVerticesPerSide:{numVertsPerSide}");
+
+                MeshData newMeshData = new MeshData(numVertsPerSide, numVertsPerSide, requiredMeshLength);
                 Mesh newMesh = GeneratePlaneMesh(newMeshData);
+
                 GameObject chunkObject;
-                chunkObject = new GameObject("Chunk", typeof(MeshFilter), typeof(MeshRenderer));
+                string chunkName = $"BotLeftPoint:{leafNode.GetBotLeftPoint()},chunkLOD:{chunkLODIndex}, chunkScaleFactor:{chunkScaleFactor}, numVerticesPerSide:{numVertsPerSide} ";
+                chunkObject = new GameObject(chunkName, typeof(MeshFilter), typeof(MeshRenderer));
                 chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
                 chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
                 chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
@@ -85,6 +100,12 @@ public class RealTerrainManager : MonoBehaviour {
 
     #region Helper Functions
     // HELPERS
+    private void GizmosDrawNodeSquares() {
+        Gizmos.color = Color.green;
+        foreach (Bounds bounds in boundsToDraw) {
+            Gizmos.DrawWireCube(bounds.center, bounds.size);
+        }
+    }
     private void GizmosDrawViewTriangleAndTriBounds() {
         Vector3[] viewTriangle = viewer.GetViewTriangle();
         if (viewTriangle == null || viewTriangle.Length == 0) return;

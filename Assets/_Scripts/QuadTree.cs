@@ -7,6 +7,8 @@ public class QuadTree {
     Vector3[] viewTriangle;
     Bounds tempTriBounds;
 
+    int treeHeight;
+
     // CHILD CLASSES
     public class QuadNode {
         /* Nodes only work in metres NOT in chunk units */
@@ -84,6 +86,8 @@ public class QuadTree {
 
     // GETTERS
     public QuadNode GetRootNode() { return rootNode; }
+
+    public int GetTreeHeight() { return treeHeight; }
     // HELPERS
     public List<QuadNode> GetAllLeafNodes() {
         List<QuadNode> leafNodes = new();
@@ -120,6 +124,7 @@ public class QuadTree {
     }
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
 
+        int maxHeight = 0;
         // Construct the quad tree
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
@@ -128,6 +133,9 @@ public class QuadTree {
             
             // Breadth First Search Construction of Quad Tree
             QuadNode curr = queue.Dequeue();
+
+            // Update maxHeight
+            if (curr.GetLevel() > maxHeight) maxHeight = curr.GetLevel();
 
             //Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
 
@@ -157,6 +165,8 @@ public class QuadTree {
                 queue.Enqueue(botRight);
             }
         }
+
+        treeHeight = maxHeight;
     }
     private bool IntersectsWithViewTri(QuadNode node) {
         // Test performed using Separating Axis Theorem
