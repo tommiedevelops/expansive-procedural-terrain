@@ -24,7 +24,7 @@ public class RealTerrainManager : MonoBehaviour {
      */
 
     QuadTree quadTree; // Generalise this to a collection in the future
-    Dictionary<uint, QuadChunk> chunks = new();
+    Dictionary<uint, GameObject> chunks = new();
 
     // For Debugging
     List<Bounds> boundsToDraw = new();
@@ -40,6 +40,8 @@ public class RealTerrainManager : MonoBehaviour {
         // Create the rootNode
         rootNode = new QuadNode(new Vector2(-0.5f * rootNodeLength, -0.5f * rootNodeLength), rootNodeLength);
         rootNode.SetLevel(0);
+
+        quadTree = new QuadTree(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), MAX_NUM_VERTICES_PER_SIDE);
     }
 
     private void OnDrawGizmos() {
@@ -48,9 +50,17 @@ public class RealTerrainManager : MonoBehaviour {
         GizmosDrawNodeSquares();
     }
     private void Update() {
-        // Generate the quad tree
-        quadTree = new QuadTree(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), MAX_NUM_VERTICES_PER_SIDE);
+        // Generate the quad tree (Maybe can just modify the quadtree for better performance)
+        List<QuadNode> culledNodes = quadTree.UpdateQuadTree(viewer.GetViewTriangle(), viewer.GetTriBounds());
         quadTree.SaveTree(ref boundsToDraw);
+
+        // Deal with culledNodes
+        foreach(QuadNode culledNode in culledNodes) {
+            uint culledNodeHash = culledNode.ComputeHash();
+            GameObject culledChunk = chunks[culledNodeHash];
+            Destroy(culledChunk);
+            chunks.Remove(culledNodeHash);
+        }
 
         // Retrieve all leaf nodes
         List<QuadNode> leafNodes = quadTree.GetAllLeafNodes();
@@ -59,7 +69,7 @@ public class RealTerrainManager : MonoBehaviour {
         foreach(QuadNode leafNode in leafNodes) {
             uint hash = leafNode.ComputeHash();
 
-            if (chunks.TryGetValue(hash, out QuadChunk value)) {
+            if (chunks.TryGetValue(hash, out GameObject value)) {
                 // Chunk exists
             } else {
                 // Chunk does not exist
@@ -67,14 +77,14 @@ public class RealTerrainManager : MonoBehaviour {
                 // Generate new chunk
                 int leafNodeLevel = leafNode.GetLevel();
                 int chunkLODIndex = quadTree.GetTreeHeight() - leafNodeLevel;
-                int chunkLODIndexOffset = 2;
-                int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex+chunkLODIndexOffset];
+                //int chunkLODIndexOffset = 2;
+                int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex];
 
                 float requiredMeshLength = leafNode.GetSideLength();
 
                 int numVertsPerSide = MAX_NUM_VERTICES_PER_SIDE / chunkScaleFactor;
 
-                Debug.Log($"chunkLOD:{chunkLODIndex}, chunkScaleFactor:{chunkScaleFactor}, numVerticesPerSide:{numVertsPerSide}");
+                //Debug.Log($"chunkLOD:{chunkLODIndex}, chunkScaleFactor:{chunkScaleFactor}, numVerticesPerSide:{numVertsPerSide}");
 
                 MeshData newMeshData = new MeshData(numVertsPerSide, numVertsPerSide, requiredMeshLength);
                 Mesh newMesh = GeneratePlaneMesh(newMeshData);
@@ -85,9 +95,10 @@ public class RealTerrainManager : MonoBehaviour {
                 chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
                 chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
                 chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
+                chunkObject.transform.SetParent(quadChunkParent.transform);
 
                 // Add it to the dictionary
-
+                chunks[hash] = chunkObject;
             }
         }
 

@@ -28,6 +28,8 @@ public class QTViewer : MonoBehaviour {
         Vector3 forward = new Vector3(diff.x, 0f, diff.z);
         transform.rotation = rotation;
         if (Input.GetKey(KeyCode.W)) _cc.Move(speed * Time.deltaTime * forward);
+
+        UpdateViewTriangle();
     }
     
     // HELPERS
