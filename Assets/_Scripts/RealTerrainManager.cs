@@ -12,6 +12,7 @@ public class RealTerrainManager : MonoBehaviour {
     [SerializeField] QTViewer viewer;
     [SerializeField] NoiseSettings noiseSettings;
     [SerializeField] int rootNodeLengthMultiplier = 1;
+    [SerializeField] GameObject quadChunkParent;
 
     // PRE-CALCULATED
     public const int MAX_NUM_VERTICES_PER_SIDE = 120;
@@ -66,7 +67,8 @@ public class RealTerrainManager : MonoBehaviour {
                 // Generate new chunk
                 int leafNodeLevel = leafNode.GetLevel();
                 int chunkLODIndex = quadTree.GetTreeHeight() - leafNodeLevel;
-                int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex];
+                int chunkLODIndexOffset = 2;
+                int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex+chunkLODIndexOffset];
 
                 float requiredMeshLength = leafNode.GetSideLength();
 
@@ -83,6 +85,7 @@ public class RealTerrainManager : MonoBehaviour {
                 chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
                 chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
                 chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
+
                 // Add it to the dictionary
 
             }
