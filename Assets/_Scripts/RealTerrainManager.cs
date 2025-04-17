@@ -6,6 +6,7 @@ using System.Linq;
 
 public class RealTerrainManager : MonoBehaviour {
 
+    #region Fields
     public static RealTerrainManager Instance { get; private set; }
     /* It is assumed here that all vertices lie on integers only.
      */
@@ -13,6 +14,7 @@ public class RealTerrainManager : MonoBehaviour {
     [SerializeField] NoiseSettings noiseSettings;
     [SerializeField] int rootNodeLengthMultiplier = 1;
     [SerializeField] GameObject quadChunkParent;
+    [SerializeField] GameObject bin;
 
     // PRE-CALCULATED
     public const int MAX_NUM_VERTICES_PER_SIDE = 120;
@@ -25,9 +27,11 @@ public class RealTerrainManager : MonoBehaviour {
 
     QuadTree quadTree; // Generalise this to a collection in the future
     Dictionary<uint, GameObject> chunks = new();
+    Vector3 viewerPos;
 
     // For Debugging
     List<Bounds> boundsToDraw = new();
+    #endregion
 
     #region Unity Functions
     // Unity Functions
@@ -50,20 +54,26 @@ public class RealTerrainManager : MonoBehaviour {
         GizmosDrawNodeSquares();
     }
     private void Update() {
-        // Generate the quad tree (Maybe can just modify the quadtree for better performance)
-        List<QuadNode> culledNodes = quadTree.UpdateQuadTree(viewer.GetViewTriangle(), viewer.GetTriBounds());
-        quadTree.SaveTree(ref boundsToDraw);
-
-        // Deal with culledNodes
-        foreach(QuadNode culledNode in culledNodes) {
-            uint culledNodeHash = culledNode.ComputeHash();
-            GameObject culledChunk = chunks[culledNodeHash];
-            Destroy(culledChunk);
-            chunks.Remove(culledNodeHash);
+        List<QuadNode> culledNodes = new();
+        //Update the Quad Tree
+        if (!viewerPos.Equals(viewer.GetPosition())) {
+            viewerPos = viewer.GetPosition();
+            quadTree.UpdateQuadTree(viewer.GetViewTriangle(), viewer.GetTriBounds());
+            quadTree.SaveTree(ref boundsToDraw);
         }
 
+        // Deal with culledNodes
+        foreach (QuadNode culledNode in culledNodes) {
+            uint culledNodeHash = culledNode.ComputeHash();
+
+            if (chunks.TryGetValue(culledNodeHash, out GameObject culledChunk)) {
+                culledChunk.transform.SetParent(bin.transform);
+                culledChunk.SetActive(false);
+                chunks.Remove(culledNodeHash);
+            }
+        }
         // Retrieve all leaf nodes
-        List<QuadNode> leafNodes = quadTree.GetAllLeafNodes();
+        List<QuadNode> leafNodes = quadTree.GetAllLeafNodes(rootNode);
 
         // Hash leaf nodes
         foreach(QuadNode leafNode in leafNodes) {
@@ -140,6 +150,4 @@ public class RealTerrainManager : MonoBehaviour {
     }
     #endregion
 
-    #region Getter and Setter Functions
-    #endregion
 }

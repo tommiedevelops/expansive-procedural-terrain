@@ -245,7 +245,7 @@ MonoBehaviour:
   _cam: {fileID: 786935566}
   speed: 0
   rotation: {x: 0, y: 0, z: 0, w: 0}
-  renderDistance: 1200
+  renderDistance: 3000
 --- !u!143 &111722352
 CharacterController:
   m_ObjectHideFlags: 0
@@ -336,7 +336,7 @@ MonoBehaviour:
     previewLOD: 0
     offsetV2: {x: 0, y: 0}
     heightMultiplier: 1.63
-  rootNodeLengthMultiplier: 50
+  rootNodeLengthMultiplier: 1000
   quadChunkParent: {fileID: 2017250964}
 --- !u!4 &368722010
 Transform:

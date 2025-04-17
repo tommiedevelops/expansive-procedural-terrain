@@ -51,11 +51,11 @@ public class QuadTreeTester : MonoBehaviour {
         this.tree = tree;
         tree.SaveTree(ref boundsToDraw);
 
-        leafNodes = tree.GetAllLeafNodes();
+        leafNodes = tree.GetAllLeafNodes(rootNode);
 
     }
     private void Update() {
-        viewer.UpdateViewTriangle();
+       
 
         // Compute quad tree based on viewer position and orientation
         QuadTree tree = new(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), minChunkSideLength);
@@ -63,7 +63,7 @@ public class QuadTreeTester : MonoBehaviour {
         tree.SaveTree(ref boundsToDraw);
 
         // Get all leaf nodes of the quad tree
-        leafNodes = tree.GetAllLeafNodes();
+        leafNodes = tree.GetAllLeafNodes(rootNode);
         /*
         foreach(QuadNode leafNode in leafNodes) {
             // Compute the hash

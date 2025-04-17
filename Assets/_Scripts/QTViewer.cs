@@ -1,3 +1,4 @@
+using UnityEditorInternal;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -28,8 +29,6 @@ public class QTViewer : MonoBehaviour {
         Vector3 forward = new Vector3(diff.x, 0f, diff.z);
         transform.rotation = rotation;
         if (Input.GetKey(KeyCode.W)) _cc.Move(speed * Time.deltaTime * forward);
-
-        UpdateViewTriangle();
     }
     
     // HELPERS
@@ -80,14 +79,17 @@ public class QTViewer : MonoBehaviour {
 
     // SETTERS & GETTERS
     public Vector3[] GetViewTriangle() {
+        ComputeViewTriangle();
         return viewTriangle;
     }
-    public Bounds GetTriBounds() { return triBounds; }
-    public Transform GetCameraTransform() { return _cam.transform;  }
-
-    public void UpdateViewTriangle() {
-        ComputeViewTriangle();
-        ComputeTriBounds(); //Temporary
+    public Bounds GetTriBounds() {
+        ComputeTriBounds();
+        return triBounds;
     }
+
+    public Vector3 GetPosition() {
+        return transform.position;
+    }
+    public Transform GetCameraTransform() { return _cam.transform;  }
     public float GetRenderDist() { return renderDistance; }
 }
