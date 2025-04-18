@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
-using UnityEditor.Rendering;
-using Unity.Jobs;
-using System;
-using System.Linq;
 public class QuadTree {
 
     // CONSTRUCTOR
@@ -31,14 +26,12 @@ public class QuadTree {
     #endregion
     
     #region Getters & Setters
-    // GETTERS
     public QuadNode GetRootNode() { return rootNode; }
     public int GetTreeHeight() { return treeHeight; }
     #endregion
 
     #region Helper Functions
-    // HELPERS
-    public List<uint> UpdateQuadTree(Vector3[] viewTriangle, Bounds triBounds) {
+    public List<uint> Update(Vector3[] viewTriangle, Bounds triBounds) {
         /* Function returns a list of leaf nodes that have been culled in this frame
          */
 
@@ -63,6 +56,9 @@ public class QuadTree {
             } else {
                 if (!curr.HasChildren()) culledLeafNodeHashes.Add(curr.ComputeHash()); // leaf node
                 else EnqueueChildren(queue, curr);
+
+                // remove from quad tree
+                curr.GetParent().RemoveChild(curr.GetNodeType());
             }
         }
        
@@ -100,19 +96,12 @@ public class QuadTree {
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
 
         int maxHeight = 0;
-        // Construct the quad tree
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
 
         while (queue.Count > 0) {
-            
-            // Breadth First Search Construction of Quad Tree
             QuadNode curr = queue.Dequeue();
-
-            // Update maxHeight
             if (curr.GetLevel() > maxHeight) maxHeight = curr.GetLevel();
-
-            //Debug.Log($"{curr.GetBotLeftPoint()} intersects with view tri: {IntersectsWithViewTri(curr)}");
 
             if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
                 SplitNode(curr);
@@ -126,10 +115,10 @@ public class QuadTree {
         Vector2 botLeftPoint = curr.GetBotLeftPoint();
         float sideLength = curr.GetSideLength();
 
-        QuadNode botLeft = new(botLeftPoint, 0.5f * sideLength);
-        QuadNode topLeft = new(new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
-        QuadNode topRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
-        QuadNode botRight = new(new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y), 0.5f * sideLength);
+        QuadNode botLeft = new(curr, botLeftPoint, 0.5f * sideLength);
+        QuadNode topLeft = new(curr, new Vector2(botLeftPoint.x, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
+        QuadNode topRight = new(curr, new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y + 0.5f * sideLength), 0.5f * sideLength);
+        QuadNode botRight = new(curr, new Vector2(botLeftPoint.x + 0.5f * sideLength, botLeftPoint.y), 0.5f * sideLength);
         
         botLeft.SetLevel(curr.GetLevel() + 1);
         botRight.SetLevel(curr.GetLevel() + 1);
@@ -181,7 +170,7 @@ public class QuadTree {
         Bounds nodeBounds = node.GetBounds();
         return nodeBounds.Intersects(tempTriBounds);
     }
-    public void SaveTree(ref List<Bounds> boundsToDraw) {
+    public void DrawTreeForDebugging(ref List<Bounds> boundsToDraw) {
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
         while(queue.Count > 0) {

@@ -6,6 +6,8 @@ using UnityEngine;
 // For a player to interact with the quad tree, I could define an interface for it to implement
 // which enforces the requried fields and methods
 public class QTViewer : MonoBehaviour {
+
+    #region Fields
     CharacterController _cc;
     [SerializeField] Camera _cam;
     [SerializeField] float speed;
@@ -14,24 +16,28 @@ public class QTViewer : MonoBehaviour {
 
     Vector3[] viewTriangle;
     Bounds triBounds; //temporary
+    #endregion
 
+    #region Unity Functions
     // UNITY GAME LOOP
     private void Awake() {
         ComputeViewTriangle();
         ComputeTriBounds();
-    }
-    private void Start() {
         _cc = GetComponent<CharacterController>();
     }
     private void Update() {
-        // Handle movement and orientation
+        HandleMovement();
+    }
+    #endregion
+
+    #region Helpers
+    // HELPERS
+    private void HandleMovement() {
         Vector3 diff = transform.position - _cam.transform.position;
         Vector3 forward = new Vector3(diff.x, 0f, diff.z);
         transform.rotation = rotation;
         if (Input.GetKey(KeyCode.W)) _cc.Move(speed * Time.deltaTime * forward);
     }
-    
-    // HELPERS
     void ComputeViewTriangle() {
         // 3D Coords
         Vector3 camPos = _cam.transform.position; //world
@@ -76,7 +82,9 @@ public class QTViewer : MonoBehaviour {
         this.triBounds = triBounds;
         return triBounds;
     }
+    #endregion
 
+    #region Setters & Getters
     // SETTERS & GETTERS
     public Vector3[] GetViewTriangle() {
         ComputeViewTriangle();
@@ -92,4 +100,7 @@ public class QTViewer : MonoBehaviour {
     }
     public Transform GetCameraTransform() { return _cam.transform;  }
     public float GetRenderDist() { return renderDistance; }
+
+    #endregion
+
 }

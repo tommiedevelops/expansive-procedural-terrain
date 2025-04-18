@@ -1,71 +1,139 @@
-﻿using System;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
+using static QuadTree;
 using static PlaneMeshGenerator;
 
-[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class TerrainManager : MonoBehaviour {
-    [Header("Plane Mesh Properties")]
-    [SerializeField] private int width = 10;
-    [SerializeField] private int length = 10;
-    [SerializeField] private int scale = 2;
 
-    [Header("Perlin Noise Properties")]
-    [SerializeField] private float noiseScale = 0.1f;  // Controls the frequency of the noise
-    [SerializeField] private float heightMultiplier = 2f; // Controls the height variation
-    [SerializeField] private float persistance = 0.5f;
-    [SerializeField] private float lacunarity = 1f;
-    [SerializeField] private int octaves = 1;
-    [SerializeField] private int seed = 1;
-    [SerializeField] private Vector2 offsetV2 = Vector2.zero;
-    [SerializeField] private AnimationCurve heightCurve;
-
-    [SerializeField] MeshFilter meshFilter;
-    [SerializeField] MeshRenderer meshRenderer;
-    //[SerializeField] PerlinNoise perlinNoise;
-
-
-    private void OnValidate() {
-        ValidateFields();
+    public const int MAX_NUM_VERTICES_PER_SIDE = 120;
+    public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
+   
+    #region Debugging
+    List<Bounds> boundsToDraw = new(); // For Debugging
+    private void OnDrawGizmos() {
+        //if (null == viewer) return;
+        GizmosDrawViewTriangleAndTriBounds();
+        GizmosDrawNodeSquares();
     }
+    #endregion
+    
+    #region Serialize Fields
+    [SerializeField] QTViewer viewer;
+    [SerializeField] int rootNodeLengthMultiplier = 1;
+    [SerializeField] GameObject quadChunkParent;
+    [SerializeField] GameObject bin;
+    #endregion
 
-    private void ValidateFields() {
-        if (width < 0) width = 0;
-        if (length < 0) length = 0;
-        if (noiseScale < 0) noiseScale = 0;
-        if (persistance < 0) persistance = 0.01f;
-        if (persistance >= 1) persistance = 0.99f;
-        if (octaves < 0) octaves = 0;
+    #region Regular Fields
+    QuadTree quadTree; // Generalise this to a collection in the future
+    readonly Dictionary<uint, GameObject> quadTreeChunks = new();
+    
+    int rootNodeLength;
+    Vector3 storedViewerPosition;
+    #endregion
+
+    #region Unity Functions
+    void Awake() {
+        rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
+        storedViewerPosition = viewer.GetPosition();
+
+        // Create root node
+        QuadNode rootNode = new QuadNode(null, new Vector2(-0.5f * rootNodeLength, -0.5f * rootNodeLength), rootNodeLength);
+        rootNode.SetLevel(0);
+
+        // Create quad tree
+        quadTree = new QuadTree(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), MAX_NUM_VERTICES_PER_SIDE);
     }
+    private void Update() {
 
-    public void Generate() {
-        Mesh newMesh = PlaneMeshGenerator.GeneratePlaneMesh(new MeshData(width, length, scale));
-        meshFilter.sharedMesh = newMesh;
-        //meshRenderer.material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
+        List<uint> culledLeafNodeHashes = quadTree.Update(viewer.GetViewTriangle(), viewer.GetTriBounds());
+        quadTree.DrawTreeForDebugging(ref boundsToDraw);
 
-        //perlinNoise.SetNoiseScale(noiseScale);
-        //perlinNoise.SetHeightMultiplier(heightMultiplier);
-        //perlinNoise.SetLacunarity(lacunarity);
-        //perlinNoise.SetOctaves(octaves);
-        //perlinNoise.SetPersistance(persistance);
-        //perlinNoise.SetOffsetV2(offsetV2);
-        //perlinNoise.SetSeed(seed);
-        //perlinNoise.SetHeightCurve(heightCurve);
-        //perlinNoise.ApplyPerlinNoise();
+        DealWithCulledNodes(culledLeafNodeHashes); // Still WIP
+
+        List<QuadNode> leafNodes = quadTree.GetAllLeafNodes(quadTree.GetRootNode());
+
+        foreach (QuadNode leafNode in leafNodes) {
+            uint hash = leafNode.ComputeHash();
+
+            if (quadTreeChunks.TryGetValue(hash, out GameObject value)) {
+                // Chunk exists
+            } else {
+                // Chunk does not exist
+
+                // Generate new chunk
+                int leafNodeLevel = leafNode.GetLevel();
+                int chunkLODIndex = quadTree.GetTreeHeight() - leafNodeLevel;
+                //int chunkLODIndexOffset = 2;
+                int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex];
+
+                float requiredMeshLength = leafNode.GetSideLength();
+
+                int numVertsPerSide = MAX_NUM_VERTICES_PER_SIDE / chunkScaleFactor;
+
+                MeshData newMeshData = new MeshData(numVertsPerSide, numVertsPerSide, requiredMeshLength);
+                Mesh newMesh = GeneratePlaneMesh(newMeshData);
+
+                GameObject chunkObject;
+                string chunkName = $"BotLeftPoint:{leafNode.GetBotLeftPoint()},chunkLOD:{chunkLODIndex}, chunkScaleFactor:{chunkScaleFactor}, numVerticesPerSide:{numVertsPerSide} ";
+                chunkObject = new GameObject(chunkName, typeof(MeshFilter), typeof(MeshRenderer));
+                chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
+                chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
+                chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
+                chunkObject.transform.SetParent(quadChunkParent.transform);
+
+                // Add it to the dictionary
+                quadTreeChunks[hash] = chunkObject;
+            }
+        }
+
+        // Debugging
     }
-}
+    private void DealWithCulledNodes(List<uint> culledLeafNodeHashes) {
+        foreach (uint hash in culledLeafNodeHashes) {
 
-[CustomEditor(typeof(TerrainManager))]
-public class TerrainManagerEditor : Editor {
-    public override void OnInspectorGUI() {
-        TerrainManager manager = (TerrainManager)target;
-
-        // Draw default inspector properties
-        bool changed = DrawDefaultInspector(); // Only detects changes in TerrainManager
-
-        if (GUILayout.Button("Generate") || changed) {
-            manager.Generate();
+            if (quadTreeChunks.TryGetValue(hash, out GameObject culledChunk)) {
+                culledChunk.transform.SetParent(bin.transform);
+                culledChunk.SetActive(false);
+                quadTreeChunks.Remove(hash);
+            }
         }
     }
-}
+    private void OnValidate() {
+        // I should really be configuring the noise separately then 
+        // running it on here.
+        ValidateNoiseSettings();
+        //UpdateNoise();
+    }
+    #endregion
 
+    #region Helper Functions
+    // HELPERS
+    private void GizmosDrawNodeSquares() {
+        Gizmos.color = Color.green;
+        foreach (Bounds bounds in boundsToDraw) {
+            Gizmos.DrawWireCube(bounds.center, bounds.size);
+        }
+    }
+    private void GizmosDrawViewTriangleAndTriBounds() {
+        Vector3[] viewTriangle = viewer.GetViewTriangle();
+        if (viewTriangle == null || viewTriangle.Length == 0) return;
+        Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
+        Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
+        Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(viewer.GetTriBounds().center, viewer.GetTriBounds().size);
+    }
+    private void ValidateNoiseSettings() {
+        //noiseSettings.width = MAX_NUM_VERTICES_PER_SIDE;
+        //noiseSettings.length = MAX_NUM_VERTICES_PER_SIDE;
+        //if (noiseSettings.persistance > 1) noiseSettings.persistance = 0.99f;
+        //if (noiseSettings.persistance < 0) noiseSettings.persistance = 0.01f;
+        //if (noiseSettings.octaves < 0) noiseSettings.octaves = 0;
+        //if (noiseSettings.octaves > 6) noiseSettings.octaves = 6;
+        //if (noiseSettings.lacunarity < 0) noiseSettings.lacunarity = 0.01f;
+    }
+    #endregion
+
+
+}
