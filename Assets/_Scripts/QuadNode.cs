@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Mathematics;
+using System.Collections.Generic;
+using System;
 public class QuadNode {
     public enum NodeType {
         BL, TL, TR,
@@ -44,6 +46,8 @@ public class QuadNode {
         float3 data = new float3(bottomLeftPoint.x, bottomLeftPoint.y, sideLength);
         return math.hash(data);
     }
+    
+    public bool IsLeafNode() { return !HasChildren(); }
     public bool HasChildren() {
         bool hasChildren = false;
         foreach(QuadNode child in children)
@@ -60,6 +64,49 @@ public class QuadNode {
         children[(int)nodeType] = null;
     }
     internal NodeType GetNodeType() { return type; }
+    internal void ReplaceChild(QuadNode oldChild, QuadNode newChild) {
+        NodeType type = oldChild.GetNodeType();
+
+        switch(type) {
+            case NodeType.BL:
+                SetBotLeftChild(newChild);
+                break;
+            case NodeType.TL:
+                SetTopLeftChild(newChild);
+                break;
+            case NodeType.TR:
+                SetTopRightChild(newChild);
+                break;
+            case NodeType.BR:
+                SetBotRightChild(newChild);
+                break;
+        }
+    }
+    public List<QuadNode> GetAllLeafNodes() {
+        List<QuadNode> leafNodes = new();
+
+        // BFS traverse the tree. If leaf node, add to array
+        Queue<QuadNode> queue = new();
+        queue.Enqueue(this);
+
+        while (queue.Count > 0) {
+            QuadNode curr = queue.Dequeue();
+
+            if (curr == null) continue;
+
+            // check if a leaf node
+            if (!curr.HasChildren()) {
+                leafNodes.Add(curr);
+            }
+
+            foreach (QuadNode child in curr.GetChildren()) {
+                queue.Enqueue(child);
+            }
+
+        }
+
+        return leafNodes;
+    }
     public void PrintNode() { Debug.Log($"BotLeftPoint:{GetBotLeftPoint()} SideLength:{GetSideLength()}"); }
     #endregion
 
@@ -90,6 +137,7 @@ public class QuadNode {
         this.type = NodeType.BR;
         children[3] = botRight;
     }
+
     #endregion
 }
 

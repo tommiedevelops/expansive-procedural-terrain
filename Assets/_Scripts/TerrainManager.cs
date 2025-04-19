@@ -10,13 +10,38 @@ public class TerrainManager : MonoBehaviour {
    
     #region Debugging
     List<Bounds> boundsToDraw = new(); // For Debugging
+    List<Bounds> culledBounds = new();
     private void OnDrawGizmos() {
         //if (null == viewer) return;
         GizmosDrawViewTriangleAndTriBounds();
         GizmosDrawNodeSquares();
+        GizmosDrawCulledNodes();
+    }
+
+    void GizmosDrawCulledNodes() {
+        Gizmos.color = Color.red;
+        foreach (Bounds bounds in culledBounds) {
+            Gizmos.DrawWireCube(bounds.center, bounds.size);
+        }
+    }
+
+    private void GizmosDrawNodeSquares() {
+        Gizmos.color = Color.green;
+        foreach (Bounds bounds in boundsToDraw) {
+            Gizmos.DrawWireCube(bounds.center, bounds.size);
+        }
+    }
+    private void GizmosDrawViewTriangleAndTriBounds() {
+        Vector3[] viewTriangle = viewer.GetViewTriangle();
+        if (viewTriangle == null || viewTriangle.Length == 0) return;
+        Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
+        Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
+        Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(viewer.GetTriBounds().center, viewer.GetTriBounds().size);
     }
     #endregion
-    
+
     #region Serialize Fields
     [SerializeField] QTViewer viewer;
     [SerializeField] int rootNodeLengthMultiplier = 1;
@@ -42,16 +67,17 @@ public class TerrainManager : MonoBehaviour {
         rootNode.SetLevel(0);
 
         // Create quad tree
-        quadTree = new QuadTree(rootNode, viewer, MAX_NUM_VERTICES_PER_SIDE);
+        quadTree = new QuadTree(rootNode, viewer);
     }
     private void Update() {
         
-        //List<uint> culledLeafNodeHashes = quadTree.Update(viewer.GetViewTriangle(), viewer.GetTriBounds());
+        List<uint> culledLeafNodeHashes = quadTree.Update(viewer.GetViewTriangle(), viewer.GetTriBounds());
         quadTree.DrawTreeForDebugging(ref boundsToDraw);
+        //quadTree.DrawCulledNodesForDebugging(ref culledBounds);
 
         //DealWithCulledNodes(culledLeafNodeHashes); // Still WIP
 
-        List<QuadNode> leafNodes = quadTree.GetAllLeafNodes(quadTree.GetRootNode());
+        List<QuadNode> leafNodes = quadTree.GetRootNode().GetAllLeafNodes();
 
         foreach (QuadNode leafNode in leafNodes) {
             uint hash = leafNode.ComputeHash();
@@ -109,21 +135,7 @@ public class TerrainManager : MonoBehaviour {
 
     #region Helper Functions
     // HELPERS
-    private void GizmosDrawNodeSquares() {
-        Gizmos.color = Color.green;
-        foreach (Bounds bounds in boundsToDraw) {
-            Gizmos.DrawWireCube(bounds.center, bounds.size);
-        }
-    }
-    private void GizmosDrawViewTriangleAndTriBounds() {
-        Vector3[] viewTriangle = viewer.GetViewTriangle();
-        if (viewTriangle == null || viewTriangle.Length == 0) return;
-        Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
-        Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
-        Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(viewer.GetTriBounds().center, viewer.GetTriBounds().size);
-    }
+
     private void ValidateNoiseSettings() {
         //noiseSettings.width = MAX_NUM_VERTICES_PER_SIDE;
         //noiseSettings.length = MAX_NUM_VERTICES_PER_SIDE;

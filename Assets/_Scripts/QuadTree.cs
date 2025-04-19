@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using System.Data;
 public class QuadTree {
 
-    // CONSTRUCTOR
-    public QuadTree(QuadNode rootNode, QTViewer viewer, int minChunkSideLength) {
-        // Assign Vars
-        this.rootNode = rootNode;
-        this.minChunkSideLength = minChunkSideLength;
-        this.viewer = viewer;
-
-        // Construct the Quad Tree
-        ConstructQuadTree(minChunkSideLength, rootNode.GetSideLength());
-    }
-
     #region Fields
-    QuadNode rootNode;
-    QTViewer viewer;
+    readonly QuadNode rootNode;
+    readonly QTViewer viewer;
 
-    int minChunkSideLength;
+    public const int MIN_CHUNK_SIZE = 120;
     int treeHeight;
     private const int maxLOD = 7;
 
+    // Debugging
+    List<QuadNode> recentlyCulledNodes;
     #endregion
-    
+
+    public QuadTree(QuadNode rootNode, QTViewer viewer) {
+        // Assign Vars
+        this.rootNode = rootNode;
+        this.viewer = viewer;
+
+        // Construct the Quad Tree
+        ConstructQuadTree(MIN_CHUNK_SIZE, rootNode.GetSideLength());
+    }
+
     #region Getters & Setters
     public QuadNode GetRootNode() { return rootNode; }
     public int GetTreeHeight() { return treeHeight; }
@@ -31,61 +31,43 @@ public class QuadTree {
 
     #region Helper Functions
     public List<uint> Update(Vector3[] viewTriangle, Bounds triBounds) {
-        
-        // Returns a list of culled leaf nodes
-        List<QuadNode> culledNodes = new();
 
         // BFS to detect culled nodes and split nodes
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
-        List<uint> culledLeafNodeHashes = new();
 
+        List<QuadNode> nodesToCull = new();
+
+        // Detect nodes to cull and split
         while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
             if (null == curr) continue;
 
-            if(IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
-                if (!curr.HasChildren()) SplitNode(curr);
+            if(!IntersectsWithViewTri(curr) && !curr.IsLeafNode()) {
+                // Add node to nodesToCull
+                nodesToCull.Add(curr);
+                // Create a new node to replace it
+                QuadNode newNode = new(curr.GetParent(), curr.GetBotLeftPoint(), curr.GetSideLength());
+                // Replace the node
+                curr.GetParent().ReplaceChild(curr, newNode);
+            }
+
+            if(IntersectsWithViewTri(curr) && curr.IsLeafNode() && curr.GetSideLength() > MIN_CHUNK_SIZE) {
+                SplitNode(curr);
                 EnqueueChildren(queue,curr);
-            } else {
-                if (!curr.HasChildren()) culledLeafNodeHashes.Add(curr.ComputeHash()); // leaf node
-                else EnqueueChildren(queue, curr);
-
-                // remove from quad tree
-                curr.GetParent().RemoveChild(curr.GetNodeType());
             }
+
         }
-       
+        
+        List<uint> culledLeafNodeHashes = new();
+
+        foreach (QuadNode node in nodesToCull) {
+            var leafNodes = node.GetAllLeafNodes();
+            recentlyCulledNodes.AddRange(leafNodes); // Debugging
+            foreach(QuadNode leafNode in leafNodes) { culledLeafNodeHashes.Add(leafNode.ComputeHash()); }
+        }
+
         return culledLeafNodeHashes;
-    }
-    public List<QuadNode> GetAllLeafNodes(QuadNode root) {
-        List<QuadNode> leafNodes = new();
-
-        // Quick null check
-        if(null == root) { Debug.Log("root is null. Cannot proceed."); }
-        // BFS traverse the tree. If leaf node, add to array
-        Queue<QuadNode> queue = new();
-        queue.Enqueue(root);
-
-        while(queue.Count > 0) {
-            QuadNode curr = queue.Dequeue();
-
-            if (curr == null) continue;
-
-            // check if a leaf node
-            if(!curr.HasChildren()) {
-                leafNodes.Add(curr);
-            }
-
-            foreach(QuadNode child in curr.GetChildren()) {
-                queue.Enqueue(child);
-            }
-           
-        }
-
-
-
-        return leafNodes;
     }
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
 
@@ -121,10 +103,10 @@ public class QuadTree {
         topLeft.SetLevel(curr.GetLevel() + 1);
         topRight.SetLevel(curr.GetLevel() + 1);
 
-        if(IntersectsWithViewTri(botLeft)) curr.SetBotLeftChild(botLeft);
-        if(IntersectsWithViewTri(topLeft)) curr.SetTopLeftChild(topLeft);
-        if(IntersectsWithViewTri(botRight)) curr.SetBotRightChild(botRight);
-        if(IntersectsWithViewTri(topRight)) curr.SetTopRightChild(topRight);
+        curr.SetBotLeftChild(botLeft);
+        curr.SetTopLeftChild(topLeft);
+        curr.SetBotRightChild(botRight);
+        curr.SetTopRightChild(topRight);
 
     }
     private void EnqueueChildren(Queue<QuadNode> queue, QuadNode curr) {
@@ -165,6 +147,9 @@ public class QuadTree {
         // Below is temporary
         Bounds nodeBounds = node.GetBounds();
         return nodeBounds.Intersects(viewer.GetTriBounds());
+    }
+    public void DrawCulledNodesForDebugging(ref List<Bounds> culledBounds) {
+        foreach(QuadNode node in recentlyCulledNodes) { culledBounds.Add(node.GetBounds()); }
     }
     public void DrawTreeForDebugging(ref List<Bounds> boundsToDraw) {
         Queue<QuadNode> queue = new();
