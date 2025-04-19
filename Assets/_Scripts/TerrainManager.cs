@@ -42,14 +42,14 @@ public class TerrainManager : MonoBehaviour {
         rootNode.SetLevel(0);
 
         // Create quad tree
-        quadTree = new QuadTree(rootNode, viewer.GetViewTriangle(), viewer.GetTriBounds(), MAX_NUM_VERTICES_PER_SIDE);
+        quadTree = new QuadTree(rootNode, viewer, MAX_NUM_VERTICES_PER_SIDE);
     }
     private void Update() {
-
-        List<uint> culledLeafNodeHashes = quadTree.Update(viewer.GetViewTriangle(), viewer.GetTriBounds());
+        
+        //List<uint> culledLeafNodeHashes = quadTree.Update(viewer.GetViewTriangle(), viewer.GetTriBounds());
         quadTree.DrawTreeForDebugging(ref boundsToDraw);
 
-        DealWithCulledNodes(culledLeafNodeHashes); // Still WIP
+        //DealWithCulledNodes(culledLeafNodeHashes); // Still WIP
 
         List<QuadNode> leafNodes = quadTree.GetAllLeafNodes(quadTree.GetRootNode());
 

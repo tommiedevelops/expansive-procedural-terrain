@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Data;
 public class QuadTree {
 
     // CONSTRUCTOR
-    public QuadTree(QuadNode rootNode, Vector3[] viewTriangle, Bounds tempTriBounds, int minChunkSideLength) {
+    public QuadTree(QuadNode rootNode, QTViewer viewer, int minChunkSideLength) {
         // Assign Vars
         this.rootNode = rootNode;
-        this.viewTriangle = viewTriangle;
-        this.tempTriBounds = tempTriBounds;
         this.minChunkSideLength = minChunkSideLength;
+        this.viewer = viewer;
 
         // Construct the Quad Tree
         ConstructQuadTree(minChunkSideLength, rootNode.GetSideLength());
@@ -16,8 +16,7 @@ public class QuadTree {
 
     #region Fields
     QuadNode rootNode;
-    Vector3[] viewTriangle;
-    Bounds tempTriBounds;
+    QTViewer viewer;
 
     int minChunkSideLength;
     int treeHeight;
@@ -32,15 +31,9 @@ public class QuadTree {
 
     #region Helper Functions
     public List<uint> Update(Vector3[] viewTriangle, Bounds triBounds) {
-        /* Function returns a list of leaf nodes that have been culled in this frame
-         */
-
+        
         // Returns a list of culled leaf nodes
         List<QuadNode> culledNodes = new();
-
-        // Update variables
-        this.viewTriangle = viewTriangle;
-        this.tempTriBounds = triBounds;
 
         // BFS to detect culled nodes and split nodes
         Queue<QuadNode> queue = new();
@@ -49,6 +42,7 @@ public class QuadTree {
 
         while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
+            if (null == curr) continue;
 
             if(IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
                 if (!curr.HasChildren()) SplitNode(curr);
@@ -101,6 +95,8 @@ public class QuadTree {
 
         while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
+            if (null == curr) continue;
+
             if (curr.GetLevel() > maxHeight) maxHeight = curr.GetLevel();
 
             if (IntersectsWithViewTri(curr) && (curr.GetSideLength() > minChunkSideLength)) {
@@ -125,10 +121,10 @@ public class QuadTree {
         topLeft.SetLevel(curr.GetLevel() + 1);
         topRight.SetLevel(curr.GetLevel() + 1);
 
-        curr.SetBotLeftChild(botLeft);
-        curr.SetTopLeftChild(topLeft);
-        curr.SetBotRightChild(botRight);
-        curr.SetTopRightChild(topRight);
+        if(IntersectsWithViewTri(botLeft)) curr.SetBotLeftChild(botLeft);
+        if(IntersectsWithViewTri(topLeft)) curr.SetTopLeftChild(topLeft);
+        if(IntersectsWithViewTri(botRight)) curr.SetBotRightChild(botRight);
+        if(IntersectsWithViewTri(topRight)) curr.SetTopRightChild(topRight);
 
     }
     private void EnqueueChildren(Queue<QuadNode> queue, QuadNode curr) {
@@ -141,7 +137,7 @@ public class QuadTree {
         // TODO: COMPLETE SAT IMPLEMENTATION
 
         // Get 3 points from the view triangle
-        Vector3[] triPoints = viewTriangle;
+        Vector3[] triPoints = viewer.GetViewTriangle();
 
         // Get all 4 points of the node 
         Vector3[] nodePoints = new Vector3[4];
@@ -168,7 +164,7 @@ public class QuadTree {
 
         // Below is temporary
         Bounds nodeBounds = node.GetBounds();
-        return nodeBounds.Intersects(tempTriBounds);
+        return nodeBounds.Intersects(viewer.GetTriBounds());
     }
     public void DrawTreeForDebugging(ref List<Bounds> boundsToDraw) {
         Queue<QuadNode> queue = new();
