@@ -32,6 +32,10 @@ public class QTViewer : MonoBehaviour {
 
     #region Helpers
     // HELPERS
+    public void UpdateViewTriangle() {
+        ComputeTriBounds();
+        ComputeViewTriangle();
+    }
     private void HandleMovement() {
         Vector3 diff = transform.position - _cam.transform.position;
         Vector3 forward = new Vector3(diff.x, 0f, diff.z);

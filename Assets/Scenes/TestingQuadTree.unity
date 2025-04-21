@@ -119,6 +119,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &33850765
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 33850767}
+  - component: {fileID: 33850766}
+  m_Layer: 0
+  m_Name: QuadTreeDebugger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &33850766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 33850765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68e8486a87092174bb03cf7acd5ff04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewer: {fileID: 111722351}
+  manager: {fileID: 368722013}
+--- !u!4 &33850767
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 33850765}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1629.4316, y: 147.41066, z: 473.45132}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &111722346
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,9 +558,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2d2b75bfcb69ad47ba45a9bdc3f5e9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootNodeSideLengthMultiplier: 2400
-  viewer: {fileID: 111722351}
-  boundsToDraw: []
 --- !u!4 &1640921430
 Transform:
   m_ObjectHideFlags: 0
@@ -731,3 +774,4 @@ SceneRoots:
   - {fileID: 368722010}
   - {fileID: 2017250965}
   - {fileID: 1647788469}
+  - {fileID: 33850767}
