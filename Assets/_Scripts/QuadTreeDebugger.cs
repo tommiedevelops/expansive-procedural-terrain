@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class QuadTreeDebugger : MonoBehaviour {
     [SerializeField] QTViewer viewer;
-    [SerializeField] TerrainManager manager;
+    [SerializeField] TerrainGenerator manager;
     QuadTree quadTree;
 
      // For Debugging

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using static QuadTree;
 using static PlaneMeshGenerator;
+using System;
 
-public class TerrainManager : MonoBehaviour {
+public class TerrainGenerator : MonoBehaviour {
+
+    public event Action<IEnumerable<QuadNode>> OnLeafNodesReady;
 
     public const int MAX_NUM_VERTICES_PER_SIDE = 120;
     public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
@@ -35,11 +38,14 @@ public class TerrainManager : MonoBehaviour {
         // Update the Quad Tree based on the new view triangle
         List<uint> culledLeafNodeHashes = quadTree.Update();
 
-        //DealWithCulledNodes(culledLeafNodeHashes); // Still WIP
+        OnLeafNodesReady?.Invoke(quadTree.GetRootNode().GetAllLeafNodes());
 
-        //List<QuadNode> leafNodes = quadTree.GetRootNode().GetAllLeafNodes();
+        //UpdateChunks();
 
-        /*
+    }
+    private void UpdateChunks() {
+        List<QuadNode> leafNodes = quadTree.GetRootNode().GetAllLeafNodes();
+
         foreach (QuadNode leafNode in leafNodes) {
             uint hash = leafNode.ComputeHash();
 
@@ -73,12 +79,7 @@ public class TerrainManager : MonoBehaviour {
                 quadTreeChunks[hash] = chunkObject;
             }
         }
-        */
-    
     }
-
-
     public QuadTree GetQuadTree() { return quadTree; }
-
 
 }

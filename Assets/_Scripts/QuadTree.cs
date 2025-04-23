@@ -36,7 +36,7 @@ public class QuadTree {
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
 
-        List<QuadNode> nodesToCull = new();
+        List<QuadNode> culledNodes = new();
 
         // Detect nodes to cull and split
         while (queue.Count > 0) {
@@ -50,7 +50,7 @@ public class QuadTree {
 
             if(!curr.IsLeafNode() && !curr.IntersectsWithViewTri(updatedTriBounds)) {
                 // turn this bad boy into a leaf node
-                nodesToCull.AddRange(curr.GetAllLeafNodes());
+                culledNodes.AddRange(curr.GetAllLeafNodes());
                 curr.ClearChildren();
                 continue;
             }
@@ -67,10 +67,15 @@ public class QuadTree {
                 continue;
             }
 
-            Debug.Log($"curr={curr.GetBotLeftPoint()}, {curr.GetSideLength()} isLeafNode{curr.IsLeafNode()} Int:{curr.IntersectsWithViewTri(updatedTriBounds)} ");
+            throw new System.Exception("The code shouldn't reach this point");         
         }
         
         List<uint> culledLeafNodeHashes = new();
+        foreach(QuadNode culledNode in culledNodes) {
+            uint hash = culledNode.ComputeHash();
+            culledLeafNodeHashes.Add(hash);
+        }
+
         return culledLeafNodeHashes;
     }
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
