@@ -2,57 +2,48 @@
 using System.Collections.Generic;
 using UnityEditorInternal;
 using System.Linq;
+using static ChunkPool;
 public class ChunkManager : MonoBehaviour {
 
     [SerializeField] TerrainGenerator terrainGenerator;
     ChunkPool chunkPool;
-
     Dictionary<QuadNode, GameObject> activeChunks;
 
+    #region Unity Methods
     private void Awake() {
         chunkPool = new ChunkPool();
     }
     private void Start() {
         terrainGenerator.OnLeafNodesReady += HandleLeafNodes;
+        terrainGenerator.OnCulledLeafNodesReady += HandleCulledLeafNodes;
     }
+    private void OnDisable() {
+        if (terrainGenerator != null) {
+            terrainGenerator.OnLeafNodesReady -= HandleLeafNodes;
+            terrainGenerator.OnCulledLeafNodesReady -= HandleCulledLeafNodes;
+        }
+    }
+    #endregion
 
-    private void HandleCulledNodes() { 
-        // For handling culled nodes from the terrain generator
-        // Deload the node, tell the chunk pool so it can store the node in the pool
+    private void HandleCulledLeafNodes(IEnumerable<QuadNode> culledLeafNodes) {
+        throw new System.NotImplementedException();
     }
     private void HandleLeafNodes(IEnumerable<QuadNode> leafNodes) {
         foreach(QuadNode leafNode in leafNodes) {
-            // Try to get a chunk from the chunk pool
-            float sideLength = leafNode.GetSideLength();
 
-            // Calculate leafNode LOD
-            int lod = 0; // NOT IMPLEMENTED
+            ChunkPoolRequestResult result = chunkPool.RequestChunkFromPool(leafNode.GetSideLength(), leafNode.GetLOD()); // NOT IMPLEMENTED
 
-            ChunkPool.ChunkRequestResult result = chunkPool.RequestChunkFromPool(sideLength, lod); // NOT IMPLEMENTED
-            
-            // ChunkPool doesn't have what we need
-            if(!result.HasChunk) {
-                // Request a new chunk to be generated from ChunkGenerator
-                // chunk = new chunk generated
-                // chunk.SetActive(true)
-                // activeChunks[leafNode] = chunk
-            } else {
-                // pool has what we need
-                //GameObject chunk = result.Chunk;
-                // activeChunks[leafnode] = chunk;
-                //chunk.SetActive(true);
-            }
+            GameObject leafNodeChunk;
+
+            if(!result.HasChunk)
+                leafNodeChunk = ChunkGenerator.RequestNewChunk();
+            else
+                leafNodeChunk = result.Chunk;
+
+            leafNodeChunk.SetActive(true);
+            activeChunks[leafNode] = leafNodeChunk;
         }
     }
-
-    private void OnDisable() {
-        if (terrainGenerator != null)
-            terrainGenerator.OnLeafNodesReady -= HandleLeafNodes;
-    }
-
-    
-}
-public class LODSelector {
 
 }
 public class ChunkPool {
@@ -62,13 +53,13 @@ public class ChunkPool {
 
     // maybe even a dictionary: Dictionary< (int size, int lod), Queue<GameObject> chunkPool>
 
-    Dictionary<(float sideLength, int levelOfDetail), Queue<ChunkRequestResult>> chunkPool = new();
+    Dictionary<(float sideLength, int levelOfDetail), Queue<ChunkPoolRequestResult>> chunkPool = new();
 
-    public struct ChunkRequestResult {
+    public struct ChunkPoolRequestResult {
         public GameObject Chunk;
         public ChunkType ReturnType;
 
-        public ChunkRequestResult(GameObject chunk, ChunkType returnType) {
+        public ChunkPoolRequestResult(GameObject chunk, ChunkType returnType) {
             Chunk = chunk;
             ReturnType = returnType;
         }
@@ -83,13 +74,15 @@ public class ChunkPool {
     public void AddToPool(ChunkType chunkType, GameObject chunk) {
         chunk.SetActive(false);
     }
-    public ChunkRequestResult RequestChunkFromPool(float sideLength, int levelOfDetail) {
+    public ChunkPoolRequestResult RequestChunkFromPool(float sideLength, int levelOfDetail) {
         
         return chunkPool[(sideLength, levelOfDetail)].Count > 0
                 ? chunkPool[(sideLength, levelOfDetail)].Dequeue()                         
-                :new ChunkRequestResult(null, ChunkType.NULL);
+                :new ChunkPoolRequestResult(null, ChunkType.NULL);
     }
 }
-public class ChunkGenerator {
-
+public static class ChunkGenerator {
+    public static GameObject RequestNewChunk() {
+        return new GameObject();
+    }
 }

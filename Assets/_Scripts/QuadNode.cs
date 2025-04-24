@@ -13,6 +13,7 @@ public class QuadNode {
     NodeType type;
     bool levelSet;
     int level;
+    int maxLOD;
     QuadNode parent;
     QuadNode[] children = null;
     
@@ -178,6 +179,14 @@ public class QuadNode {
         for(int i = 0; i < children.Length; i++) {
             children[i] = null;
         }
+    }
+
+    internal int GetLOD() {
+        return maxLOD - level;
+    }
+
+    internal void SetMaxLOD(int maxHeight) {
+        maxLOD = maxHeight;
     }
 
     #endregion

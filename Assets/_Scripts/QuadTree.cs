@@ -28,7 +28,7 @@ public class QuadTree {
     #endregion
 
     #region Helper Functions
-    public List<uint> Update() {
+    public List<QuadNode> Update() {
 
         Bounds updatedTriBounds = viewer.GetTriBounds();
 
@@ -69,24 +69,21 @@ public class QuadTree {
 
             throw new System.Exception("The code shouldn't reach this point");         
         }
-        
-        List<uint> culledLeafNodeHashes = new();
-        foreach(QuadNode culledNode in culledNodes) {
-            uint hash = culledNode.ComputeHash();
-            culledLeafNodeHashes.Add(hash);
-        }
 
-        return culledLeafNodeHashes;
+        return culledNodes;
     }
     private void ConstructQuadTree(int minChunkSideLength, float worldSideLength) {
 
         int maxHeight = 0;
         Queue<QuadNode> queue = new();
         queue.Enqueue(rootNode);
+        
 
         while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
             if (null == curr) continue;
+
+            curr.SetMaxLOD(maxHeight);
 
             if (curr.GetLevel() > maxHeight) maxHeight = curr.GetLevel();
 

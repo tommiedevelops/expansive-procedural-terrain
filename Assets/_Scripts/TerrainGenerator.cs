@@ -7,6 +7,7 @@ using System;
 public class TerrainGenerator : MonoBehaviour {
 
     public event Action<IEnumerable<QuadNode>> OnLeafNodesReady;
+    public event Action<IEnumerable<QuadNode>> OnCulledLeafNodesReady;
 
     public const int MAX_NUM_VERTICES_PER_SIDE = 120;
     public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
@@ -36,8 +37,10 @@ public class TerrainGenerator : MonoBehaviour {
         viewer.UpdateViewTriangle();
 
         // Update the Quad Tree based on the new view triangle
-        List<uint> culledLeafNodeHashes = quadTree.Update();
+        List<QuadNode> culledLeafNodes = quadTree.Update();
 
+        // Fire events
+        OnCulledLeafNodesReady?.Invoke(culledLeafNodes);
         OnLeafNodesReady?.Invoke(quadTree.GetRootNode().GetAllLeafNodes());
 
         //UpdateChunks();
