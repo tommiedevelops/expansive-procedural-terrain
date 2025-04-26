@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public static class PlaneMeshGenerator {
 
@@ -74,4 +75,11 @@ public static class PlaneMeshGenerator {
         return mesh;
     }
 
+    public static Vector3[] GenerateVertexGrid(float worldSpaceXLength, float worldSpaceYLength, int numXVerts, int numYVerts) {
+        throw new NotImplementedException();
+    }
+
+    public static int[] GenerateTriangleArray(Vector3[] vertexArray) {
+        throw new NotImplementedException();
+    }
 }
