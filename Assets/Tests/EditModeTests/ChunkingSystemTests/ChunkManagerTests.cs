@@ -74,5 +74,6 @@ namespace EditModeTests
             Assert.That(!chunksToBeRecycled.Contains(chunkToBeRecycled));
 
         }
+
     }
 }

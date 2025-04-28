@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class QuadTreeDebugger : MonoBehaviour {
     [SerializeField] QTViewer viewer;

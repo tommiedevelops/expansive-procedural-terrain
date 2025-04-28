@@ -4,7 +4,9 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "ChunkingSystem"
+        "ChunkingSystem",
+        "Core",
+        "QuadTreeSystem"
     ],
     "includePlatforms": [
         "Editor"

@@ -94,6 +94,7 @@ namespace EditModeTests {
         #region Mesh Generation Tests
         [Test]
         public void TestSimpleMeshGeneration() { }
+
         #endregion
 
     }

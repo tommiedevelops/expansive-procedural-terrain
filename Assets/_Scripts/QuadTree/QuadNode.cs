@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Unity.Mathematics;
 using System.Collections.Generic;
 using System;
 public class QuadNode {
@@ -43,10 +42,6 @@ public class QuadNode {
 
     #region Helper Functions
     // HELPERS
-    public uint ComputeHash() {
-        float3 data = new float3(bottomLeftPoint.x, bottomLeftPoint.y, sideLength);
-        return math.hash(data);
-    }
 
     public bool IntersectsWithViewTri(Bounds triBounds) {
         // Test performed using Separating Axis Theorem
