@@ -1,3 +1,4 @@
+using System;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -25,6 +26,15 @@ public class QTViewer : MonoBehaviour {
         ComputeTriBounds();
         _cc = GetComponent<CharacterController>();
     }
+
+    public void SetRenderDistance(int renderDistance) {
+        this.renderDistance = renderDistance;
+    }
+
+    public void SetCamera(Camera camera) {
+        _cam = camera;
+    }
+
     private void Update() {
         HandleMovement();
     }

@@ -14,6 +14,18 @@ namespace Core {
         public const int MAX_NUM_VERTICES_PER_SIDE = 120;
         public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
 
+        public void SetRootNodeLengthMultiplier(int rootNodeLengthMultiplier) {
+            this.rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
+        }
+
+        public void SetQuadChunkParentGameObject(GameObject quadChunkParent) {
+            this.quadChunkParent = quadChunkParent;
+        }
+
+        public void SetBinGameObject(GameObject bin) {
+            this.bin = bin;
+        }
+
         [SerializeField] QTViewer viewer;
         [SerializeField] int rootNodeLengthMultiplier = 1;
         [SerializeField] GameObject quadChunkParent;
