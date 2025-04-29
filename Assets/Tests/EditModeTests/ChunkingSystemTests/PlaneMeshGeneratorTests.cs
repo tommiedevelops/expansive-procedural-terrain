@@ -60,17 +60,11 @@ namespace EditModeTests {
             }
         }
 
-        [Test]
-        public void CheckCorrectErrorWhenNotEvenVertsEachSide() { }
-
-        [Test]
-        public void TestVerticesAreEvenlySpaced() { }
-
         #endregion
 
         #region Triangle Array Tests
         [Test]
-        public void TestSimpleTriangleArrayGeneration() {
+        public void TestTwoByTwoTriangleArrayGeneration() {
             // Arrange
             var point_1 = new Vector3(0f, 0f, 0f);
             var point_2 = new Vector3(1f, 0f, 0f);
@@ -80,7 +74,7 @@ namespace EditModeTests {
             // Act
             Vector3[] vertexArray = { point_1, point_2, point_3, point_4 };
             int[] expectedTriangleArray = { 0, 2, 3, 0, 3, 1 }; // Triangles defined clockwise
-            int[] actualTriangleArray = PlaneMeshGenerator.GenerateTriangleArray(vertexArray);
+            int[] actualTriangleArray = PlaneMeshGenerator.GenerateTriangleArray(vertexArray, 2, 2);
 
             // Assert
             Assert.That(actualTriangleArray.Length, Is.EqualTo(expectedTriangleArray.Length));
@@ -93,7 +87,20 @@ namespace EditModeTests {
 
         #region Mesh Generation Tests
         [Test]
-        public void TestSimpleMeshGeneration() { }
+        public void TestTwoByTwoMeshGeneration() {
+            PlaneMeshGenerator.MeshData meshData = new(2, 2, 1);
+            Mesh mesh = PlaneMeshGenerator.GeneratePlaneMesh(meshData);
+
+            var point_1 = new Vector3(0f, 0f, 0f);
+            var point_2 = new Vector3(1f, 0f, 0f);
+            var point_3 = new Vector3(0f, 0f, 1f);
+            var point_4 = new Vector3(1f, 0f, 1f);
+            Vector3[] expectedVertexArray = { point_1, point_2, point_3, point_4 };
+            int[] expectedTriangleArray = { 0, 2, 3, 0, 3, 1 }; // Triangles defined clockwise
+
+            Assert.That(mesh.vertices, Is.EqualTo(expectedVertexArray));
+            Assert.That(mesh.triangles, Is.EqualTo(expectedTriangleArray));
+        }
 
         #endregion
 

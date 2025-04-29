@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public static class PlaneMeshGenerator {
 
@@ -22,34 +23,54 @@ public static class PlaneMeshGenerator {
         int length = meshData.numVerticesZ;
         float scale = meshData.meshLength;
 
-        int verticesCountX = width + 1;
-        int verticesCountZ = length + 1;
-        int totalVertices = verticesCountX * verticesCountZ;
-        int totalTriangles = width * length * 6;
+        var vertices = GenerateVertexGrid(scale, scale, width, length);
 
+        // Generate triangles
+        var triangles = GenerateTriangleArray(vertices, width, length);
+
+        // Assign mesh properties
+        Mesh mesh = new() {
+            //name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
+            vertices = vertices,
+            triangles = triangles,
+        };
+
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+
+    public static Vector3[] GenerateVertexGrid(float worldSpaceXLength, float worldSpaceZLength, int numXVerts, int numZVerts) {
+        float distBetweenXPoints = worldSpaceXLength / (numXVerts-1);
+        float distBetweenZPoints = worldSpaceZLength / (numZVerts-1);
+
+        int totalVertices = numXVerts * numZVerts;
         Vector3[] vertices = new Vector3[totalVertices];
-        int[] triangles = new int[totalTriangles];
-        Vector2[] uv = new Vector2[totalVertices];
 
-        // Generate vertices and UVs
-        for (int z = 0; z < verticesCountZ; z++) {
-            for (int x = 0; x < verticesCountX; x++) {
-                int index = z * verticesCountX + x;
+        int vertexIndex = 0;
 
-                float stepSize = meshData.meshLength / width;
-
-                vertices[index] = new Vector3(x * stepSize, 0, z * stepSize);
-                uv[index] = new Vector2((float)x / width, (float)z / length);
+        for(int z = 0; z < numZVerts; z++) {
+            for(int x = 0; x < numXVerts; x++) {
+                vertices[vertexIndex] = new Vector3(x * distBetweenXPoints, 0f, z * distBetweenZPoints);
+                vertexIndex++;
             }
         }
 
+        return vertices;
+    }
+    public static int[] GenerateTriangleArray(Vector3[] vertexArray, int numXVerts, int numZVerts) {
+
+        int totalTrianglePoints = (numXVerts - 1) * (numZVerts - 1) * 6;
+
+        int[] triangles = new int[totalTrianglePoints];
+
         // Generate triangles
         int triIndex = 0;
-        for (int z = 0; z < length; z++) {
-            for (int x = 0; x < width; x++) {
-                int bottomLeft = z * verticesCountX + x;
+        for (int z = 0; z < (numZVerts-1); z++) {
+            for (int x = 0; x < (numXVerts-1); x++) {
+                int bottomLeft = z * numXVerts + x;
                 int bottomRight = bottomLeft + 1;
-                int topLeft = bottomLeft + verticesCountX;
+                int topLeft = bottomLeft + numZVerts;
                 int topRight = topLeft + 1;
 
                 triangles[triIndex++] = bottomLeft;
@@ -62,24 +83,6 @@ public static class PlaneMeshGenerator {
             }
         }
 
-        // Assign mesh properties
-        Mesh mesh = new() {
-            //name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
-            vertices = vertices,
-            triangles = triangles,
-            uv = uv
-        };
-
-        mesh.RecalculateNormals();
-
-        return mesh;
-    }
-
-    public static Vector3[] GenerateVertexGrid(float worldSpaceXLength, float worldSpaceYLength, int numXVerts, int numYVerts) {
-        throw new NotImplementedException();
-    }
-
-    public static int[] GenerateTriangleArray(Vector3[] vertexArray) {
-        throw new NotImplementedException();
+        return triangles;
     }
 }

@@ -29,12 +29,12 @@ public class QuadTreeDebugger : MonoBehaviour {
         Gizmos.color = Color.green;
         Queue<QuadNode> queue = new();
         queue.Enqueue(quadTree.GetRootNode());
-        
-        while(queue.Count > 0) {
+
+        while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
             if (null == curr) continue;
             boundsToDraw.Add(curr.GetBounds());
-            foreach(QuadNode child in curr.GetChildren()) {
+            foreach (QuadNode child in curr.GetChildren()) {
                 queue.Enqueue(child);
             }
         }

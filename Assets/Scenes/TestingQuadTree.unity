@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewer: {fileID: 111722351}
-  rootNodeLengthMultiplier: 10000
+  rootNodeLengthMultiplier: 100
   quadChunkParent: {fileID: 2017250964}
   bin: {fileID: 1647788468}
 --- !u!1 &786935564
