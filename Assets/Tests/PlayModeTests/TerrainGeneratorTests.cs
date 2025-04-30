@@ -8,15 +8,21 @@ public class TerrainGeneratorTests {
 
     [UnityTest]
     public IEnumerator CanInitialiseTerrainGenerator() {
-
-        // Arrange
         var go = new GameObject();
+        var cameraGO = new GameObject();
+        cameraGO.transform.position = Vector3.zero;
+        cameraGO.transform.LookAt(Vector3.one);
+
+        var viewerGO = new GameObject();
+
+        var viewer = viewerGO.AddComponent<QTViewer>();
+
         var terrainGeneratorUnderTest = go.AddComponent<TerrainGenerator>();
 
-        // Act
+        viewer.SetCameraTransform(cameraGO.transform);
+        
+        Assert.That(terrainGeneratorUnderTest, Is.Not.Null);
 
-
-        // Assert
         yield return null;
     }
 }

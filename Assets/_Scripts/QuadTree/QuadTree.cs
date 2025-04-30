@@ -87,7 +87,7 @@ public class QuadTree {
 
             if (curr.GetLevel() > maxHeight) maxHeight = curr.GetLevel();
 
-            if (curr.IntersectsWithViewTri(viewer.GetTriBounds()) && (curr.GetSideLength() > minChunkSideLength)) {
+            if (curr.IntersectsWithViewTri(viewer.ComputeTriBounds()) && (curr.GetSideLength() > minChunkSideLength)) {
                 SplitNode(curr);
                 EnqueueChildren(queue, curr);
             }

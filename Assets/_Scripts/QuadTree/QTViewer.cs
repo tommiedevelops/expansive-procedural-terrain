@@ -10,29 +10,33 @@ public class QTViewer : MonoBehaviour {
 
     #region Fields
     CharacterController _cc;
-    [SerializeField] Camera _cam;
+    [SerializeField] Transform cameraTransform;
     [SerializeField] float speed;
     [SerializeField] Quaternion rotation;
     [SerializeField] float renderDistance;
 
     Vector3[] viewTriangle;
     Bounds triBounds; //temporary
+    float cameraFOV = 60;
     #endregion
 
     #region Unity Functions
     // UNITY GAME LOOP
     private void Awake() {
+        _cc = GetComponent<CharacterController>();
+    }
+
+    void Start() {
         ComputeViewTriangle();
         ComputeTriBounds();
-        _cc = GetComponent<CharacterController>();
     }
 
     public void SetRenderDistance(int renderDistance) {
         this.renderDistance = renderDistance;
     }
 
-    public void SetCamera(Camera camera) {
-        _cam = camera;
+    public void SetCameraTransform(Transform cameraTransform) {
+        this.cameraTransform = cameraTransform;
     }
 
     private void Update() {
@@ -47,16 +51,16 @@ public class QTViewer : MonoBehaviour {
         ComputeViewTriangle();
     }
     private void HandleMovement() {
-        Vector3 diff = transform.position - _cam.transform.position;
+        Vector3 diff = transform.position - cameraTransform.transform.position;
         Vector3 forward = new Vector3(diff.x, 0f, diff.z);
         transform.rotation = rotation;
         if (Input.GetKey(KeyCode.W)) _cc.Move(speed * Time.deltaTime * forward);
     }
     void ComputeViewTriangle() {
         // 3D Coords
-        Vector3 camPos = _cam.transform.position; //world
-        Vector3 camForward = _cam.transform.forward;
-        Vector3 camRight = _cam.transform.right;
+        Vector3 camPos = cameraTransform.position; //world
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
 
         // Projected onto XZ plane
         Vector3 camPosXZ = new(camPos.x, 0f, camPos.z);
@@ -68,7 +72,7 @@ public class QTViewer : MonoBehaviour {
         camRightXZ = camRightXZ.normalized;
 
         // Get the base width of the view triangle
-        float FOVAngle = _cam.fieldOfView;
+        float FOVAngle = cameraFOV;
         float halfAngle = (float)FOVAngle / 2;
         float halfWidth = renderDistance * Mathf.Tan(DegToRad(halfAngle));
 
@@ -112,7 +116,7 @@ public class QTViewer : MonoBehaviour {
     public Vector3 GetPosition() {
         return transform.position;
     }
-    public Transform GetCameraTransform() { return _cam.transform;  }
+    public Transform GetCameraTransform() { return cameraTransform.transform;  }
     public float GetRenderDist() { return renderDistance; }
 
     #endregion

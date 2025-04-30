@@ -18,29 +18,17 @@ namespace Core {
             this.rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
         }
 
-        public void SetQuadChunkParentGameObject(GameObject quadChunkParent) {
-            this.quadChunkParent = quadChunkParent;
-        }
-
-        public void SetBinGameObject(GameObject bin) {
-            this.bin = bin;
-        }
-
         [SerializeField] QTViewer viewer;
         [SerializeField] int rootNodeLengthMultiplier = 1;
-        [SerializeField] GameObject quadChunkParent;
-        [SerializeField] GameObject bin;
 
         QuadTree quadTree; // Generalise this to a collection in the future
         readonly Dictionary<uint, GameObject> quadTreeChunks = new();
 
         int rootNodeLength;
 
-        void Awake() {
+        void Start() {
             rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
-
             quadTree = GenerateQuadTree(viewer);
-
         }
         private void Update() {
             // Update view triangle based on viewer's position
@@ -86,7 +74,6 @@ namespace Core {
                     chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
                     chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
                     chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
-                    chunkObject.transform.SetParent(quadChunkParent.transform);
 
                     // Add it to the dictionary
                     quadTreeChunks[hash] = chunkObject;
