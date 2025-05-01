@@ -1,26 +1,23 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace ChunkingSystem {
+namespace _Scripts.ChunkingSystem {
     public class ChunkPool {
-        
-        Dictionary<(float sideLength, int lod), Queue<GameObject>> chunkPool = new();
-        private Queue<GameObject> chunkQueue = new();
-        public Queue<GameObject> GetChunkQueue() {
-            return chunkQueue;
+        private readonly Dictionary<float, Queue<GameObject>> _chunkPool = new();
+        public Queue<GameObject> GetChunkQueue(float sideLength) {
+            return _chunkPool[sideLength];
         }
-        
-        public void AddChunkToPool(GameObject chunk) {
-            chunkQueue.Enqueue(chunk);
+        public void RecycleChunk(GameObject chunk, float sideLength)
+        {
+            if (!_chunkPool.ContainsKey(sideLength))
+                _chunkPool[sideLength] = new Queue<GameObject>();
+            
+            _chunkPool[sideLength].Enqueue(chunk);
         }
-        
-        public GameObject RequestChunk() {
-            return chunkQueue.Count > 0 ? chunkQueue.Dequeue() : null;
-        }
-
-        public GameObject RequestChunk(float meshSideLength, int lod) {
-            throw new NotImplementedException();
+        public GameObject RequestChunk(float sideLength)
+        {
+            _chunkPool.TryGetValue(sideLength, out var chunkQueue);
+            return chunkQueue?.Count > 0 ? chunkQueue.Dequeue() : null;
         }
     }
 }

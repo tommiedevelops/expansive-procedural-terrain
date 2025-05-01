@@ -370,7 +370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   renderDistance: 10
-  camera: {fileID: 0}
+  camera: {fileID: 786935566}
   rootNodeLengthMultiplier: 100
 --- !u!1 &786935564
 GameObject:

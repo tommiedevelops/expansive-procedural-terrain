@@ -3,77 +3,44 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using ChunkingSystem;
 using System.Collections.Generic;
+using _Scripts.ChunkingSystem;
 
 namespace EditModeTests
 {
-    public class ChunkManagerTests {
+    public class ChunkManagerTests
+    {
         [Test]
-        public void ChunkManagerCanCreateANewGameObject() {
-            // Arrange
+        public void Can_Instantiate_A_Chunk_Manager()
+        {
             var chunkManagerUnderTest = new ChunkManager();
-
-            // Act
-            GameObject gameObject = chunkManagerUnderTest.InstantiateNewGameObject();
-
-            // Assert
-            Assert.That(gameObject, Is.Not.Null);
+            Assert.That(chunkManagerUnderTest, Is.Not.Null);
         }
-
+        
         [Test]
-        public void ChunkManagerCanSetChunkPosition() {
-            //Arrange
+        public void Can_Set_Chunk_Position()
+        {
             var chunkManagerUnderTest = new ChunkManager();
-            GameObject gameObjectUnderTest = new GameObject();
-            Vector3 expectedPosition = Vector3.zero;
+            var gameObjectUnderTest = new GameObject();
+            var expectedPosition = Vector3.zero;
 
-            //Act
-            chunkManagerUnderTest.SetChunkPosition(gameObjectUnderTest, Vector3.zero);
-
-            //Assert
+            ChunkManager.SetChunkPosition(gameObjectUnderTest, Vector3.zero);
             Assert.That(gameObjectUnderTest.transform.position, Is.EqualTo(expectedPosition));
-            
         }
 
         [Test]
-        public void ChunkManagerCanRequestChunkFromChunkPool() {
-            // Arrange
+        public void Stores_Reference_To_All_Active_Chunks()
+        {
             var chunkManagerUnderTest = new ChunkManager();
-            var chunkPool = chunkManagerUnderTest.GetChunkPool();
-            
-            GameObject chunkToAddToPool = new GameObject();
-
-            chunkPool.AddChunkToPool(chunkToAddToPool);
-
-            // Act
-            GameObject receivedGameObject = chunkManagerUnderTest.RequestChunkFromChunkPool();
-
-            // Assert
-            Assert.That(receivedGameObject, Is.Not.Null);
-
-
+            var activeChunks = chunkManagerUnderTest.GetActiveChunks();
+            Assert.That(activeChunks, Is.Not.Null);
         }
 
         [Test]
-        public void ChunkManagerCanRecycleChunksWithNoMesh() {
-            // Arrange
+        public void Stores_Reference_To_All_Chunks_To_Be_Recycled()
+        {
             var chunkManagerUnderTest = new ChunkManager();
-            var chunkPool = chunkManagerUnderTest.GetChunkPool();
-            string chunkName = "ChunkToBeRecycled";
-
-            var chunkToBeRecycled = new GameObject(chunkName);
-            List<GameObject> chunksToBeRecycled = chunkManagerUnderTest.GetChunksToBeRecycled();
-            chunksToBeRecycled.Add(chunkToBeRecycled);
-
-            // Act
-            chunkManagerUnderTest.RecycleChunks();
-            var chunkRetrievedFromChunkPool = chunkPool.RequestChunk();
-
-            // Assert
-            Assert.That(chunkRetrievedFromChunkPool, Is.Not.Null);
-            Assert.That(chunkRetrievedFromChunkPool.name, Is.EqualTo(chunkName));
-            Assert.That(!chunksToBeRecycled.Contains(chunkToBeRecycled));
-
+            var chunksToBeRecycled = chunkManagerUnderTest.GetChunksToBeRecycled();
+            Assert.That(chunksToBeRecycled, Is.Not.Null);
         }
-
     }
 }

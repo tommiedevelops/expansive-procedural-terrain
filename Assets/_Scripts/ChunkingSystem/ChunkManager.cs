@@ -1,51 +1,20 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using UnityEditorInternal;
-using System.Linq;
-using static ChunkingSystem.ChunkPool;
-using System;
+using NUnit.Framework.Constraints;
+using UnityEngine;
 
-namespace ChunkingSystem {
+namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
-
-        ChunkPool chunkPool;
-        List<GameObject> chunksToBeRecycled;
-
-        public ChunkManager() {
-            this.chunkPool = new ChunkPool();
-            this.chunksToBeRecycled = new List<GameObject>();
-        }
-
-        public GameObject InstantiateNewGameObject() {
-            return new GameObject();
-        }
-
-        public void SetChunkPosition(GameObject chunk, Vector3 position) {
-            chunk.transform.position = position;
-        }
-
-        public GameObject RequestChunkFromChunkPool() {
-            return chunkPool.RequestChunk();
-        }
-
-        public void SetChunkPool(ChunkPool chunkPool) {
-            this.chunkPool = chunkPool;
-        }
-
-        public ChunkPool GetChunkPool() {
-            return chunkPool;
-        }
-
-        public List<GameObject> GetChunksToBeRecycled() {
-            return this.chunksToBeRecycled;
-        }
-
-        public void RecycleChunks() {
-            foreach(GameObject chunk in chunksToBeRecycled) {
-                chunkPool.AddChunkToPool(chunk);
-            }
-            chunksToBeRecycled.Clear();
-        }
+        
+        private ChunkPool _chunkPool = new();
+        private readonly List<GameObject> _chunksToBeRecycled = new();
+        private readonly List<GameObject> _activeChunks = new();
+        public static GameObject InstantiateNewGameObject() { return new GameObject(); }
+        public static void SetChunkPosition(GameObject chunk, Vector3 position) { chunk.transform.position = position; }
+        public List<GameObject> GetActiveChunks() { return _activeChunks; }
+        public List<GameObject> GetChunksToBeRecycled() { return _chunksToBeRecycled; } 
+        
+        
     }
 
 }

@@ -16,7 +16,7 @@ namespace Core {
         public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
 
         public void SetRootNodeLengthMultiplier(int rootNodeLengthMultiplier) {
-            this.rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
+            this._rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
         }
 
         [SerializeField] private float renderDistance;
@@ -27,10 +27,10 @@ namespace Core {
         private QuadTree _quadTree; // Generalise this to a collection in the future
         private readonly Dictionary<uint, GameObject> _quadTreeChunks = new();
 
-        int rootNodeLength;
+        private int _rootNodeLength;
 
         void Awake() {
-            rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
+            _rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
             _viewer = new QTViewer(camera.transform, camera.fieldOfView, renderDistance);
             
             _quadTree = GenerateQuadTree(_viewer);
@@ -47,20 +47,8 @@ namespace Core {
             //UpdateChunks();
             var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
             
-            // LEARN LINQ!!!
-            var frequencyMap = leafNodes
-                .GroupBy(node => node.GetSideLength())
-                .Select(group => new { SideLength = group.Key, Count = group.Count() })
-                .OrderBy(entry => entry.SideLength) // Sort by side length (ascending)
-                .ToList();
-            
-            Debug.Log("===================");
-            foreach (var entry in frequencyMap)
-            {
-                Debug.Log($"Side Length: {entry.SideLength}, Count: {entry.Count}");
-            }
-            Debug.Log("===================");
         }
+        
         private void UpdateChunks() {
             List<QuadNode> leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
 
@@ -101,7 +89,7 @@ namespace Core {
 
         public QuadTree GenerateQuadTree(QTViewer viewer) {
             // Create root node
-            QuadNode rootNode = new QuadNode(null, new Vector2(-0.5f * rootNodeLength, -0.5f * rootNodeLength), rootNodeLength);
+            QuadNode rootNode = new QuadNode(null, new Vector2(-0.5f * _rootNodeLength, -0.5f * _rootNodeLength), _rootNodeLength);
             rootNode.SetLevel(0);
 
             // Create quad tree
@@ -117,5 +105,6 @@ namespace Core {
         {
             return _viewer;
         }
+
     }
 }
