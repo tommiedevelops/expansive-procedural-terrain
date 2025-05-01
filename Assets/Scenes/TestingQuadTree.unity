@@ -369,6 +369,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75079b266c7edd8439a42deace39634a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderDistance: 10
+  camera: {fileID: 0}
   rootNodeLengthMultiplier: 100
 --- !u!1 &786935564
 GameObject:

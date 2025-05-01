@@ -18,44 +18,49 @@ namespace Core {
             this.rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
         }
 
-        [SerializeField] QTViewer viewer;
-        [SerializeField] int rootNodeLengthMultiplier = 1;
+        [SerializeField] private float renderDistance;
+        [SerializeField] private Camera camera;
+        [SerializeField] private int rootNodeLengthMultiplier = 1;
 
-        QuadTree quadTree; // Generalise this to a collection in the future
-        readonly Dictionary<uint, GameObject> quadTreeChunks = new();
+        private QTViewer _viewer;
+        private QuadTree _quadTree; // Generalise this to a collection in the future
+        private readonly Dictionary<uint, GameObject> _quadTreeChunks = new();
 
         int rootNodeLength;
 
-        void Start() {
+        void Awake() {
             rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
-            quadTree = GenerateQuadTree(viewer);
+            _viewer = new QTViewer(camera.transform, camera.fieldOfView, renderDistance);
+            
+            _quadTree = GenerateQuadTree(_viewer);
         }
         private void Update() {
 
             // Update the Quad Tree based on the new view triangle
-            List<QuadNode> culledLeafNodes = quadTree.Update();
+            List<QuadNode> culledLeafNodes = _quadTree.Update();
 
             // Fire events
             OnCulledLeafNodesReady?.Invoke(culledLeafNodes);
-            OnLeafNodesReady?.Invoke(quadTree.GetRootNode().GetAllLeafNodes());
+            OnLeafNodesReady?.Invoke(_quadTree.GetRootNode().GetAllLeafNodes());
 
             //UpdateChunks();
+            Debug.Log($"number of chunks: {_quadTree.GetRootNode().GetAllLeafNodes().Count}");
 
         }
         private void UpdateChunks() {
-            List<QuadNode> leafNodes = quadTree.GetRootNode().GetAllLeafNodes();
+            List<QuadNode> leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
 
             foreach (QuadNode leafNode in leafNodes) {
                 uint hash = 0;
 
-                if (quadTreeChunks.TryGetValue(hash, out GameObject value)) {
+                if (_quadTreeChunks.TryGetValue(hash, out GameObject value)) {
                     // Chunk exists
                 } else {
                     // Chunk does not exist
 
                     // Generate new chunk
                     int leafNodeLevel = leafNode.GetLevel();
-                    int chunkLODIndex = quadTree.GetTreeHeight() - leafNodeLevel;
+                    int chunkLODIndex = _quadTree.GetTreeHeight() - leafNodeLevel;
                     //int chunkLODIndexOffset = 2;
                     int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex];
 
@@ -74,11 +79,11 @@ namespace Core {
                     chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
 
                     // Add it to the dictionary
-                    quadTreeChunks[hash] = chunkObject;
+                    _quadTreeChunks[hash] = chunkObject;
                 }
             }
         }
-        public QuadTree GetQuadTree() { return quadTree; }
+        public QuadTree GetQuadTree() { return _quadTree; }
 
         public QuadTree GenerateQuadTree(QTViewer viewer) {
             // Create root node
@@ -86,10 +91,17 @@ namespace Core {
             rootNode.SetLevel(0);
 
             // Create quad tree
-            return new QuadTree(rootNode);
+            QuadTree tree = new QuadTree(rootNode);
 
             // Add viewer to the quad tree
+            tree.SetViewer(viewer);
 
+            return tree;
+        }
+
+        public QTViewer GetQTViewer()
+        {
+            return _viewer;
         }
     }
 }

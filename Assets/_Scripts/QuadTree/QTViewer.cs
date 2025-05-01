@@ -5,11 +5,12 @@ using UnityEngine;
 public class QTViewer {
   
     #region Fields
-    Transform cameraTransform;
-    float renderDistance;
-    Vector3[] viewTriangle;
-    Bounds triBounds; //temporary
-    float cameraFOV = 60;
+
+    private Transform _cameraTransform;
+    private float _renderDistance;
+    private Vector3[] _viewTriangle;
+    private Bounds _triBounds; //temporary
+    private readonly float _cameraFOV;
     #endregion
 
     public QTViewer(Transform cameraTransform, float cameraFOV, float renderDistance) {
@@ -18,17 +19,19 @@ public class QTViewer {
             throw new SystemException("cannot create viewer, inputs invalid");
         }
 
-        this.cameraTransform = cameraTransform;
-        this.cameraFOV = cameraFOV;
-        this.renderDistance = renderDistance;
+        _cameraTransform = cameraTransform;
+        _cameraFOV = cameraFOV;
+        _renderDistance = renderDistance;
     }
+    
 
     #region Helpers
-    void ComputeViewTriangle() {
+
+    private void ComputeViewTriangle() {
         // 3D Coords
-        Vector3 camPos = cameraTransform.position; //world
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
+        Vector3 camPos = _cameraTransform.position; //world
+        Vector3 camForward = _cameraTransform.forward;
+        Vector3 camRight = _cameraTransform.right;
 
         // Projected onto XZ plane
         Vector3 camPosXZ = new(camPos.x, 0f, camPos.z);
@@ -40,59 +43,60 @@ public class QTViewer {
         camRightXZ = camRightXZ.normalized;
 
         // Get the base width of the view triangle
-        float FOVAngle = cameraFOV;
-        float halfAngle = (float)FOVAngle / 2;
-        float halfWidth = renderDistance * Mathf.Tan(DegToRad(halfAngle));
+        float fovAngle = _cameraFOV;
+        float halfAngle = (float)fovAngle / 2;
+        float halfWidth = _renderDistance * Mathf.Tan(DegToRad(halfAngle));
 
-        Vector3 leftPoint = camPosXZ + camForwardXZ * renderDistance - camRightXZ * halfWidth;
-        Vector3 rightPoint = camPosXZ + camForwardXZ * renderDistance + camRightXZ * halfWidth;
+        Vector3 leftPoint = camPosXZ + camForwardXZ * _renderDistance - camRightXZ * halfWidth;
+        Vector3 rightPoint = camPosXZ + camForwardXZ * _renderDistance + camRightXZ * halfWidth;
 
         Vector3[] triangle = { camPosXZ, leftPoint, rightPoint }; //all in world coords
 
-        this.viewTriangle = triangle;
+        this._viewTriangle = triangle;
     }
     public Bounds ComputeTriBounds() {
         // approximate triangle as rectangle for now
         ComputeViewTriangle();
 
-        Vector3 camPos = viewTriangle[0];
-        Vector3 leftPoint = viewTriangle[1];
-        Vector3 rightPoint = viewTriangle[2];
+        Vector3 camPos = _viewTriangle[0];
+        Vector3 leftPoint = _viewTriangle[1];
+        Vector3 rightPoint = _viewTriangle[2];
 
         Vector3 halfPoint = leftPoint + 0.5f * (rightPoint - leftPoint);
         Vector3 median = halfPoint - camPos;
 
-        Vector3 boundsDimensions = new(renderDistance, 0f, renderDistance);
+        Vector3 boundsDimensions = new(_renderDistance, 0f, _renderDistance);
 
         Bounds triBounds = new(camPos + 0.5f * median, boundsDimensions); // can approx better by using isoceles properties
-        this.triBounds = triBounds;
+        this._triBounds = triBounds;
         return triBounds;
     }
-    float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f; }
+
+    private float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f; }
     #endregion
 
     #region Setters & Getters
     // SETTERS & GETTERS
     public void SetRenderDistance(int renderDistance) {
-        this.renderDistance = renderDistance;
+        this._renderDistance = renderDistance;
     }
     public void SetCameraTransform(Transform cameraTransform) {
-        this.cameraTransform = cameraTransform;
+        this._cameraTransform = cameraTransform;
     }
 
     public Vector3[] GetViewTriangle() {
         ComputeViewTriangle();
-        return viewTriangle;
+        return _viewTriangle;
     }
     public Bounds GetTriBounds() {
         ComputeTriBounds();
-        return triBounds;
+        return _triBounds;
     }
-    public Transform GetCameraTransform() { return cameraTransform.transform;  }
-    public float GetRenderDist() { return renderDistance; }
+    public Transform GetCameraTransform() { return _cameraTransform.transform;  }
+    public float GetRenderDist() { return _renderDistance; }
 
     public float GetFOV() {
-        return cameraFOV;
+        return _cameraFOV;
     }
 
     #endregion

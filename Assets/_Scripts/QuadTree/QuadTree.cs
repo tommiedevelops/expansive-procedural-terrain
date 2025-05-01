@@ -119,7 +119,7 @@ public class QuadTree {
         foreach (QuadNode child in curr.GetChildren()) queue.Enqueue(child);
     }
     public void SetViewer(QTViewer viewer) { this.viewer = viewer; }
-
+    
     public object GetViewer() {
         return viewer;
     }

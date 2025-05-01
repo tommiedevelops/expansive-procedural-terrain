@@ -3,15 +3,16 @@ using UnityEngine;
 using Core;
 
 public class QuadTreeDebugger : MonoBehaviour {
-    [SerializeField] QTViewer viewer;
-    [SerializeField] TerrainGenerator manager;
-    QuadTree quadTree;
+    [SerializeField] private TerrainGenerator manager;
+    private QuadTree _quadTree;
+    private QTViewer _viewer;
 
      // For Debugging
-    List<Bounds> culledBounds = new();
+     private readonly List<Bounds> _culledBounds = new();
 
     private void Start() {
-        quadTree = manager.GetQuadTree();
+        _quadTree = manager.GetQuadTree();
+        _viewer = manager.GetQTViewer();
     }
     private void OnDrawGizmos() {
         if (!Application.isPlaying) return;
@@ -20,7 +21,7 @@ public class QuadTreeDebugger : MonoBehaviour {
     }
     void GizmosDrawCulledNodes() {
         Gizmos.color = Color.red;
-        foreach (Bounds bounds in culledBounds) {
+        foreach (Bounds bounds in _culledBounds) {
             Gizmos.DrawWireCube(bounds.center, bounds.size);
         }
     }
@@ -28,7 +29,7 @@ public class QuadTreeDebugger : MonoBehaviour {
         List<Bounds> boundsToDraw = new();
         Gizmos.color = Color.green;
         Queue<QuadNode> queue = new();
-        queue.Enqueue(quadTree.GetRootNode());
+        queue.Enqueue(_quadTree.GetRootNode());
 
         while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
@@ -44,21 +45,21 @@ public class QuadTreeDebugger : MonoBehaviour {
         }
     }
     private void GizmosDrawViewTriangleAndTriBounds() {
-        Vector3[] viewTriangle = viewer.GetViewTriangle();
+        var viewTriangle = _viewer.GetViewTriangle();
 
         if (viewTriangle == null || viewTriangle.Length == 0) return;
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[1]);
         Gizmos.DrawLine(viewTriangle[1], viewTriangle[2]);
         Gizmos.DrawLine(viewTriangle[0], viewTriangle[2]);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(viewer.GetTriBounds().center, viewer.GetTriBounds().size);
+        Gizmos.DrawWireCube(_viewer.GetTriBounds().center, _viewer.GetTriBounds().size);
     }
     public void DrawTreeForDebugging(ref List<Bounds> boundsToDraw) {
 
         boundsToDraw = new();
 
         Queue<QuadNode> queue = new();
-        queue.Enqueue(quadTree.GetRootNode());
+        queue.Enqueue(_quadTree.GetRootNode());
         while (queue.Count > 0) {
             QuadNode curr = queue.Dequeue();
 
