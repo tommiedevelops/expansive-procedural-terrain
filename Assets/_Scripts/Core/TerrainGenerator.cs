@@ -4,6 +4,7 @@ using ChunkingSystem;
 using static QuadTree;
 using static PlaneMeshGenerator;
 using System;
+using System.Linq;
 
 namespace Core {
     public class TerrainGenerator : MonoBehaviour {
@@ -44,8 +45,21 @@ namespace Core {
             OnLeafNodesReady?.Invoke(_quadTree.GetRootNode().GetAllLeafNodes());
 
             //UpdateChunks();
-            Debug.Log($"number of chunks: {_quadTree.GetRootNode().GetAllLeafNodes().Count}");
-
+            var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
+            
+            // LEARN LINQ!!!
+            var frequencyMap = leafNodes
+                .GroupBy(node => node.GetSideLength())
+                .Select(group => new { SideLength = group.Key, Count = group.Count() })
+                .OrderBy(entry => entry.SideLength) // Sort by side length (ascending)
+                .ToList();
+            
+            Debug.Log("===================");
+            foreach (var entry in frequencyMap)
+            {
+                Debug.Log($"Side Length: {entry.SideLength}, Count: {entry.Count}");
+            }
+            Debug.Log("===================");
         }
         private void UpdateChunks() {
             List<QuadNode> leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
