@@ -148,7 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e8486a87092174bb03cf7acd5ff04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewer: {fileID: 111722351}
   manager: {fileID: 368722013}
 --- !u!4 &33850767
 Transform:
@@ -178,7 +177,6 @@ GameObject:
   - component: {fileID: 111722348}
   - component: {fileID: 111722347}
   - component: {fileID: 111722352}
-  - component: {fileID: 111722351}
   m_Layer: 0
   m_Name: Viewer
   m_TagString: Untagged
@@ -276,22 +274,6 @@ Transform:
   - {fileID: 786935567}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &111722351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111722346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fe421fa0144bbc4c87b75bbe68d4904, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cam: {fileID: 786935566}
-  speed: 0
-  rotation: {x: 0, y: 0, z: 0, w: 0}
-  renderDistance: 3000
 --- !u!143 &111722352
 CharacterController:
   m_ObjectHideFlags: 0
@@ -387,7 +369,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75079b266c7edd8439a42deace39634a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewer: {fileID: 111722351}
   rootNodeLengthMultiplier: 100
 --- !u!1 &786935564
 GameObject:

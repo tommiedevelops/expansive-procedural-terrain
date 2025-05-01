@@ -2,60 +2,28 @@ using System;
 using UnityEditorInternal;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-
-// For a player to interact with the quad tree, I could define an interface for it to implement
-// which enforces the requried fields and methods
-public class QTViewer : MonoBehaviour {
-
+public class QTViewer {
+  
     #region Fields
-    CharacterController _cc;
-    [SerializeField] Transform cameraTransform;
-    [SerializeField] float speed;
-    [SerializeField] Quaternion rotation;
-    [SerializeField] float renderDistance;
-
+    Transform cameraTransform;
+    float renderDistance;
     Vector3[] viewTriangle;
     Bounds triBounds; //temporary
     float cameraFOV = 60;
     #endregion
 
-    #region Unity Functions
-    // UNITY GAME LOOP
-    private void Awake() {
-        _cc = GetComponent<CharacterController>();
-    }
+    public QTViewer(Transform cameraTransform, float cameraFOV, float renderDistance) {
+        // Validate inputs
+        if (cameraTransform == null || cameraFOV < 0 || cameraFOV > 90 || renderDistance < 0) {
+            throw new SystemException("cannot create viewer, inputs invalid");
+        }
 
-    void Start() {
-        ComputeViewTriangle();
-        ComputeTriBounds();
-    }
-
-    public void SetRenderDistance(int renderDistance) {
+        this.cameraTransform = cameraTransform;
+        this.cameraFOV = cameraFOV;
         this.renderDistance = renderDistance;
     }
 
-    public void SetCameraTransform(Transform cameraTransform) {
-        this.cameraTransform = cameraTransform;
-    }
-
-    private void Update() {
-        HandleMovement();
-    }
-    #endregion
-
     #region Helpers
-    // HELPERS
-    public void UpdateViewTriangle() {
-        ComputeTriBounds();
-        ComputeViewTriangle();
-    }
-    private void HandleMovement() {
-        Vector3 diff = transform.position - cameraTransform.transform.position;
-        Vector3 forward = new Vector3(diff.x, 0f, diff.z);
-        transform.rotation = rotation;
-        if (Input.GetKey(KeyCode.W)) _cc.Move(speed * Time.deltaTime * forward);
-    }
     void ComputeViewTriangle() {
         // 3D Coords
         Vector3 camPos = cameraTransform.position; //world
@@ -83,9 +51,9 @@ public class QTViewer : MonoBehaviour {
 
         this.viewTriangle = triangle;
     }
-    float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f; }
     public Bounds ComputeTriBounds() {
         // approximate triangle as rectangle for now
+        ComputeViewTriangle();
 
         Vector3 camPos = viewTriangle[0];
         Vector3 leftPoint = viewTriangle[1];
@@ -100,10 +68,18 @@ public class QTViewer : MonoBehaviour {
         this.triBounds = triBounds;
         return triBounds;
     }
+    float DegToRad(float angleInDeg) { return angleInDeg * Mathf.PI / 180f; }
     #endregion
 
     #region Setters & Getters
     // SETTERS & GETTERS
+    public void SetRenderDistance(int renderDistance) {
+        this.renderDistance = renderDistance;
+    }
+    public void SetCameraTransform(Transform cameraTransform) {
+        this.cameraTransform = cameraTransform;
+    }
+
     public Vector3[] GetViewTriangle() {
         ComputeViewTriangle();
         return viewTriangle;
@@ -112,12 +88,12 @@ public class QTViewer : MonoBehaviour {
         ComputeTriBounds();
         return triBounds;
     }
-
-    public Vector3 GetPosition() {
-        return transform.position;
-    }
     public Transform GetCameraTransform() { return cameraTransform.transform;  }
     public float GetRenderDist() { return renderDistance; }
+
+    public float GetFOV() {
+        return cameraFOV;
+    }
 
     #endregion
 

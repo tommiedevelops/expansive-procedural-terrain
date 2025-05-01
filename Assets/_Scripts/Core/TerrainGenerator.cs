@@ -31,8 +31,6 @@ namespace Core {
             quadTree = GenerateQuadTree(viewer);
         }
         private void Update() {
-            // Update view triangle based on viewer's position
-            viewer.UpdateViewTriangle();
 
             // Update the Quad Tree based on the new view triangle
             List<QuadNode> culledLeafNodes = quadTree.Update();
@@ -88,7 +86,9 @@ namespace Core {
             rootNode.SetLevel(0);
 
             // Create quad tree
-            return new QuadTree(rootNode, viewer);
+            return new QuadTree(rootNode);
+
+            // Add viewer to the quad tree
 
         }
     }

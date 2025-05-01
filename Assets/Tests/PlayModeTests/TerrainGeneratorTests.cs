@@ -15,11 +15,8 @@ public class TerrainGeneratorTests {
 
         var viewerGO = new GameObject();
 
-        var viewer = viewerGO.AddComponent<QTViewer>();
-
         var terrainGeneratorUnderTest = go.AddComponent<TerrainGenerator>();
 
-        viewer.SetCameraTransform(cameraGO.transform);
         
         Assert.That(terrainGeneratorUnderTest, Is.Not.Null);
 

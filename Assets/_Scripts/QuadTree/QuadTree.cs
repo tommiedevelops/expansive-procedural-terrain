@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Data;
+using System;
 public class QuadTree {
 
     #region Fields
     readonly QuadNode rootNode;
-    readonly QTViewer viewer;
+    QTViewer viewer;
 
     public const int MIN_CHUNK_SIZE = 120;
     int treeHeight;
@@ -13,13 +14,9 @@ public class QuadTree {
 
     #endregion
 
-    public QuadTree(QuadNode rootNode, QTViewer viewer) {
+    public QuadTree(QuadNode rootNode) {
         // Assign Vars
         this.rootNode = rootNode;
-        this.viewer = viewer;
-
-        // Construct the Quad Tree
-        ConstructQuadTree(MIN_CHUNK_SIZE, rootNode.GetSideLength());
     }
 
     #region Getters & Setters
@@ -29,8 +26,9 @@ public class QuadTree {
 
     #region Helper Functions
     public List<QuadNode> Update() {
+        // Function updates the quad tree based on the view triangle
 
-        Bounds updatedTriBounds = viewer.GetTriBounds();
+        if (viewer == null) { throw new System.Exception("Viewer has not been set");}
 
         // BFS to detect culled nodes and split nodes
         Queue<QuadNode> queue = new();
@@ -43,19 +41,21 @@ public class QuadTree {
             QuadNode curr = queue.Dequeue();
             if (null == curr) continue;
 
-            if(!curr.IsLeafNode() && curr.IntersectsWithViewTri(updatedTriBounds)) {
+            Bounds triBounds = viewer.GetTriBounds();
+
+            if(!curr.IsLeafNode() && curr.IntersectsWithViewTri(triBounds)) {
                 EnqueueChildren(queue, curr);
                 continue;
             }
 
-            if(!curr.IsLeafNode() && !curr.IntersectsWithViewTri(updatedTriBounds)) {
+            if(!curr.IsLeafNode() && !curr.IntersectsWithViewTri(triBounds)) {
                 // turn this bad boy into a leaf node
                 culledNodes.AddRange(curr.GetAllLeafNodes());
                 curr.ClearChildren();
                 continue;
             }
 
-            if (curr.IsLeafNode() && curr.IntersectsWithViewTri(updatedTriBounds)) {
+            if (curr.IsLeafNode() && curr.IntersectsWithViewTri(triBounds)) {
                 if (curr.GetSideLength() > MIN_CHUNK_SIZE) {
                     SplitNode(curr);
                     EnqueueChildren(queue, curr);
@@ -63,7 +63,7 @@ public class QuadTree {
                 continue;
             }
 
-            if(curr.IsLeafNode() && !curr.IntersectsWithViewTri(updatedTriBounds)) {
+            if(curr.IsLeafNode() && !curr.IntersectsWithViewTri(triBounds)) {
                 continue;
             }
 
@@ -118,7 +118,11 @@ public class QuadTree {
     private void EnqueueChildren(Queue<QuadNode> queue, QuadNode curr) {
         foreach (QuadNode child in curr.GetChildren()) queue.Enqueue(child);
     }
+    public void SetViewer(QTViewer viewer) { this.viewer = viewer; }
 
+    public object GetViewer() {
+        return viewer;
+    }
     #endregion
 
 }
