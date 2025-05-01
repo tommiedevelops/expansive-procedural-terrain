@@ -42,7 +42,7 @@ namespace EditModeTests
             
             GameObject chunkToAddToPool = new GameObject();
 
-            chunkPool.EnqueueChunk(chunkToAddToPool);
+            chunkPool.AddChunkToPool(chunkToAddToPool);
 
             // Act
             GameObject receivedGameObject = chunkManagerUnderTest.RequestChunkFromChunkPool();
@@ -66,7 +66,7 @@ namespace EditModeTests
 
             // Act
             chunkManagerUnderTest.RecycleChunks();
-            var chunkRetrievedFromChunkPool = chunkPool.DequeueChunk();
+            var chunkRetrievedFromChunkPool = chunkPool.RequestChunk();
 
             // Assert
             Assert.That(chunkRetrievedFromChunkPool, Is.Not.Null);

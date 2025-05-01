@@ -9,10 +9,11 @@ namespace EditModeTests
     public class ChunkGeneratorTests
     {
         [Test]
-        public void InstantiatesGameObject()
-        {
+        public void InstantiatesGameObject(){
             GameObject actual = ChunkGenerator.RequestNewChunk();
             Assert.That(actual, Is.Not.Null);         
         }
+
+
     }
 }

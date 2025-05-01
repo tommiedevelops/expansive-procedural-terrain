@@ -25,7 +25,7 @@ namespace ChunkingSystem {
         }
 
         public GameObject RequestChunkFromChunkPool() {
-            return chunkPool.DequeueChunk();
+            return chunkPool.RequestChunk();
         }
 
         public void SetChunkPool(ChunkPool chunkPool) {
@@ -42,7 +42,7 @@ namespace ChunkingSystem {
 
         public void RecycleChunks() {
             foreach(GameObject chunk in chunksToBeRecycled) {
-                chunkPool.EnqueueChunk(chunk);
+                chunkPool.AddChunkToPool(chunk);
             }
             chunksToBeRecycled.Clear();
         }
