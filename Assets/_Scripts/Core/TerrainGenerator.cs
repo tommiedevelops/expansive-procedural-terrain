@@ -5,106 +5,49 @@ using static QuadTree;
 using static PlaneMeshGenerator;
 using System;
 using System.Linq;
+using _Scripts.ChunkingSystem;
+using UnityEngine.Serialization;
 
 namespace Core {
-    public class TerrainGenerator : MonoBehaviour {
+    public class TerrainGenerator : MonoBehaviour
+    {
+        public const int MIN_CHUNK_SIZE = 120;
 
-        public event Action<IEnumerable<QuadNode>> OnLeafNodesReady;
-        public event Action<IEnumerable<QuadNode>> OnCulledLeafNodesReady;
-
-        public const int MAX_NUM_VERTICES_PER_SIDE = 120;
-        public static readonly int[] FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE = { 1, 2, 3, 4, 6, 8, 10, 12 };
-
-        public void SetRootNodeLengthMultiplier(int rootNodeLengthMultiplier) {
-            this._rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
-        }
-
-        [SerializeField] private float renderDistance;
-        [SerializeField] private Camera camera;
-        [SerializeField] private int rootNodeLengthMultiplier = 1;
-
-        private QTViewer _viewer;
-        private QuadTree _quadTree; // Generalise this to a collection in the future
-        private readonly Dictionary<uint, GameObject> _quadTreeChunks = new();
-
-        private int _rootNodeLength;
-
-        void Awake() {
-            _rootNodeLength = MAX_NUM_VERTICES_PER_SIDE * rootNodeLengthMultiplier;
-            _viewer = new QTViewer(camera.transform, camera.fieldOfView, renderDistance);
-            
-            _quadTree = GenerateQuadTree(_viewer);
-        }
-        private void Update() {
-
-            // Update the Quad Tree based on the new view triangle
-            List<QuadNode> culledLeafNodes = _quadTree.Update();
-
-            // Fire events
-            OnCulledLeafNodesReady?.Invoke(culledLeafNodes);
-            OnLeafNodesReady?.Invoke(_quadTree.GetRootNode().GetAllLeafNodes());
-
-            //UpdateChunks();
-            var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
-            
-        }
+        [FormerlySerializedAs("worldLengthMultiplier")] [SerializeField] private int rootNodeLengthMultiplier = 1;
+        [SerializeField] private Camera viewerCamera;
         
-        private void UpdateChunks() {
-            List<QuadNode> leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
+        private QTViewer _viewer;
+        private QuadTree _quadTree;
+        private ChunkManager  _chunkManager;
+        private float _renderDistance;
 
-            foreach (QuadNode leafNode in leafNodes) {
-                uint hash = 0;
-
-                if (_quadTreeChunks.TryGetValue(hash, out GameObject value)) {
-                    // Chunk exists
-                } else {
-                    // Chunk does not exist
-
-                    // Generate new chunk
-                    int leafNodeLevel = leafNode.GetLevel();
-                    int chunkLODIndex = _quadTree.GetTreeHeight() - leafNodeLevel;
-                    //int chunkLODIndexOffset = 2;
-                    int chunkScaleFactor = FACTORS_OF_MAX_NUM_VERTICES_PER_SIDE[chunkLODIndex];
-
-                    float requiredMeshLength = leafNode.GetSideLength();
-
-                    int numVertsPerSide = MAX_NUM_VERTICES_PER_SIDE / chunkScaleFactor;
-
-                    MeshData newMeshData = new MeshData(numVertsPerSide, numVertsPerSide, requiredMeshLength);
-                    Mesh newMesh = GeneratePlaneMesh(newMeshData);
-
-                    GameObject chunkObject;
-                    string chunkName = $"BotLeftPoint:{leafNode.GetBotLeftPoint()},chunkLOD:{chunkLODIndex}, chunkScaleFactor:{chunkScaleFactor}, numVerticesPerSide:{numVertsPerSide} ";
-                    chunkObject = new GameObject(chunkName, typeof(MeshFilter), typeof(MeshRenderer));
-                    chunkObject.GetComponent<MeshFilter>().mesh = newMesh;
-                    chunkObject.GetComponent<MeshRenderer>().material = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.defaultMaterial;
-                    chunkObject.transform.position = new Vector3(leafNode.GetBotLeftPoint().x, 0f, leafNode.GetBotLeftPoint().y);
-
-                    // Add it to the dictionary
-                    _quadTreeChunks[hash] = chunkObject;
-                }
-            }
-        }
-        public QuadTree GetQuadTree() { return _quadTree; }
-
-        public QuadTree GenerateQuadTree(QTViewer viewer) {
-            // Create root node
-            QuadNode rootNode = new QuadNode(null, new Vector2(-0.5f * _rootNodeLength, -0.5f * _rootNodeLength), _rootNodeLength);
-            rootNode.SetLevel(0);
-
-            // Create quad tree
-            QuadTree tree = new QuadTree(rootNode);
-
-            // Add viewer to the quad tree
-            tree.SetViewer(viewer);
-
-            return tree;
-        }
-
-        public QTViewer GetQTViewer()
+        private void Awake()
         {
-            return _viewer;
+            _renderDistance = viewerCamera.farClipPlane;
+            _viewer = new QTViewer(viewerCamera.transform, viewerCamera.fieldOfView, _renderDistance);
+            _chunkManager = new ChunkManager();
+            _quadTree = GenerateQuadTree();
         }
 
+        private void Update()
+        {
+            _quadTree.Update();
+        }
+        private QuadTree GenerateQuadTree()
+        { // Factory method to prevent side effects
+            // rootNodeLengthMultiplier set in the Editor
+            float rootNodeSideLength = rootNodeLengthMultiplier * MIN_CHUNK_SIZE;
+            
+            // We want the root node to be centred on (0,0)
+            var rootNodeBottomLeftPoint = new Vector2(-rootNodeSideLength /2f, -rootNodeSideLength /2f);
+            
+            var rootNode = new QuadNode(null, rootNodeBottomLeftPoint, rootNodeSideLength);
+            var quadTree = new QuadTree(rootNode);
+            quadTree.SetViewer(_viewer);
+
+            return quadTree;
+        }
+        public QTViewer GetViewer() {return _viewer;}
+        public QuadTree GetQuadTree() {return _quadTree;}
     }
 }

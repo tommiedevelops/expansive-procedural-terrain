@@ -42,5 +42,15 @@ namespace EditModeTests
             var chunksToBeRecycled = chunkManagerUnderTest.GetChunksToBeRecycled();
             Assert.That(chunksToBeRecycled, Is.Not.Null);
         }
+
+        [Test]
+        public void Can_Create_A_New_Chunk()
+        {
+            var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 1));
+            var gameObject = ChunkManager.CreateChunk(mesh);
+            Assert.That(gameObject, Is.Not.Null);
+            Assert.That(gameObject.GetComponent(typeof(MeshFilter)), Is.Not.Null);
+        }
+        
     }
 }

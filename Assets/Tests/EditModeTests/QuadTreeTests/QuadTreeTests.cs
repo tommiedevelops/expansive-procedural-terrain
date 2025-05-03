@@ -21,13 +21,6 @@ namespace EditModeTests
             Assert.That(tree.GetRootNode().GetChildren(), Is.All.Null);
             Assert.That(tree.GetViewer() == null);
         }
-
-        [Test]
-        public void Can_Create_Small_QuadTree_With_Viewer() {
-            //arrange
-            
-            //act
-            //assert
-        }
+        
     }
 }

@@ -104,5 +104,35 @@ namespace EditModeTests {
 
         }
 
+        [Test]
+        public void Can_Recycle_And_Request_Chunks_Of_Various_Sizes()
+        {
+            var chunkPoolUnderTest = new ChunkPool();
+            
+            var chunk1 = new GameObject();
+            var chunk2 = new GameObject();
+            var chunk3 = new GameObject();
+
+            chunk1.AddComponent<MeshFilter>().sharedMesh =
+                PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 1));
+            
+            chunk2.AddComponent<MeshFilter>().sharedMesh =
+                PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 2));
+            
+            chunk3.AddComponent<MeshFilter>().sharedMesh =
+                PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 3));
+            
+            chunkPoolUnderTest.RecycleChunk(chunk1, 1);
+            chunkPoolUnderTest.RecycleChunk(chunk2, 2);
+            chunkPoolUnderTest.RecycleChunk(chunk3, 3);
+            
+            var receivedChunk1 = chunkPoolUnderTest.RequestChunk(1);
+            var receivedChunk2 = chunkPoolUnderTest.RequestChunk(2);
+            var receivedChunk3 = chunkPoolUnderTest.RequestChunk(3);
+            
+            Assert.That(receivedChunk1, Is.EqualTo(chunk1));
+            Assert.That(receivedChunk2, Is.EqualTo(chunk2));
+            Assert.That(receivedChunk3, Is.EqualTo(chunk3));
+        }
     }
 }

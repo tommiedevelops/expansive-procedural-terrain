@@ -1,31 +1,23 @@
 ﻿using System.Collections.Generic;
 using Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Core
 {
     public class QuadTreeDebugger : MonoBehaviour {
-        [SerializeField] private TerrainGenerator manager;
+        [SerializeField] private TerrainGenerator terrainGenerator;
         private QuadTree _quadTree;
         private QTViewer _viewer;
-
-        // For Debugging
-        private readonly List<Bounds> _culledBounds = new();
-
+        
         private void Start() {
-            _quadTree = manager.GetQuadTree();
-            _viewer = manager.GetQTViewer();
+            _quadTree = terrainGenerator.GetQuadTree();
+            _viewer = terrainGenerator.GetViewer();
         }
         private void OnDrawGizmos() {
             if (!Application.isPlaying) return;
             GizmosDrawViewTriangleAndTriBounds();
             GizmosDrawNodeSquares();
-        }
-        void GizmosDrawCulledNodes() {
-            Gizmos.color = Color.red;
-            foreach (Bounds bounds in _culledBounds) {
-                Gizmos.DrawWireCube(bounds.center, bounds.size);
-            }
         }
         private void GizmosDrawNodeSquares() {
             List<Bounds> boundsToDraw = new();
