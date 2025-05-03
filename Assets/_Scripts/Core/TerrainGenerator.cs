@@ -15,7 +15,6 @@ namespace Core {
     {
         public const int MIN_CHUNK_SIZE = 120;
         
-        
         [FormerlySerializedAs("worldLengthMultiplier")] [SerializeField] private int rootNodeLengthMultiplier = 1;
         [SerializeField] private Camera viewerCamera;
         

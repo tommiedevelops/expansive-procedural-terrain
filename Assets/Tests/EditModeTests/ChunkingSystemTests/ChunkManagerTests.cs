@@ -45,15 +45,6 @@ namespace EditModeTests
         }
 
         [Test]
-        public void Can_Create_A_New_Chunk()
-        {
-            var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 1));
-            var gameObject = ChunkManager.CreateChunk(mesh);
-            Assert.That(gameObject, Is.Not.Null);
-            Assert.That(gameObject.GetComponent(typeof(MeshFilter)), Is.Not.Null);
-        }
-
-        [Test]
         public void Testing_Rendering_One_Chunk()
         {
             // initialise a chunkManager managing a single chunk
@@ -125,7 +116,7 @@ namespace EditModeTests
             var chunksToRender = new List<ChunkManager.ChunkData> { chunkData };
             chunkManagerUnderTest.RequestChunksToBeRendered(chunksToRender);
             
-            // Check that its been added to the active chunks list (sanity check here)
+            // Check that it's been added to the active chunks list (sanity check here)
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData], Is.Not.Null);
             
             // then recycle the chunk
@@ -141,10 +132,29 @@ namespace EditModeTests
 
 
         }
-        
-        // Can add chunks to be recycled to the chunk pool
-            // maybe do some input validation here? That the mesh is of the correct size 
-        
+
+        [Test]
+        public void Can_Create_Chunk_Correctly_From_ChunkData()
+        {
+            // Prepare test chunkData
+            var chunkData = new ChunkManager.ChunkData()
+            {
+                BotLeftPoint = Vector2.zero,
+                SideLength = 1f
+            };
+            
+            // Create chunk from chunkData
+            var chunk = ChunkManager.CreateChunk(chunkData);
+            
+            // Check that it matches expectations
+            Assert.That(chunk, Is.Not.Null);
+            var meshFilter = (MeshFilter)chunk.GetComponent(typeof(MeshFilter));
+            Assert.That(meshFilter, Is.Not.Null);
+            Assert.That(meshFilter.sharedMesh, Is.Not.Null);
+            Assert.That(meshFilter.sharedMesh.vertices, Has.Length.EqualTo(4));
+            Assert.That(meshFilter.sharedMesh.triangles, Has.Length.EqualTo(6));
+            Assert.That((meshFilter.sharedMesh.vertices[1] - meshFilter.sharedMesh.vertices[0]).magnitude,  Is.EqualTo(1f));
+        }
         
     }
 }

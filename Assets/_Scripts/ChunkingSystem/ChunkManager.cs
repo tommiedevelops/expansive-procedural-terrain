@@ -30,26 +30,28 @@ namespace _Scripts.ChunkingSystem {
         private readonly Dictionary<ChunkData, GameObject> _chunksToBeRecycled = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
-        public static GameObject CreateChunk(Mesh mesh)
+        public static GameObject CreateChunk(ChunkData chunkData)
         {
             var gameObject = new GameObject
             {
                 transform =
                 {
-                    position = Vector3.zero,
+                    position = chunkData.BotLeftPoint,
                     rotation = Quaternion.identity,
                     localScale = new Vector3(1, 1, 1)
                 }
             };
 
-            gameObject.AddComponent<MeshFilter>().mesh = mesh;
+            var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator
+                .MeshData(2, 2, chunkData.SideLength));
+            
+            gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
             gameObject.AddComponent<MeshRenderer>().material = new Material(Shader.Find($"Diffuse"));
             return gameObject;
         }
         public static void SetChunkPosition(GameObject chunk, Vector3 position) { chunk.transform.position = position; }
         public Dictionary<ChunkData, GameObject> GetActiveChunks() { return _activeChunks; }
         public Dictionary<ChunkData, GameObject> GetChunksToBeRecycled() { return _chunksToBeRecycled; }
-
         public void RequestChunksToBeRendered(List<ChunkData> chunkDataList)
         {
 
@@ -73,6 +75,16 @@ namespace _Scripts.ChunkingSystem {
         public ChunkPool GetChunkPool()
         {
             return _chunkPool;
+        }
+
+        public void GiveRecycledChunksToChunkPool()
+        {
+            foreach (var chunkData in _chunksToBeRecycled.Keys)
+            {
+                var chunk = _chunksToBeRecycled[chunkData];
+                _chunkPool.RecycleChunk(chunk, chunkData.SideLength);
+            }
+            _chunksToBeRecycled.Clear();
         }
     }
 
