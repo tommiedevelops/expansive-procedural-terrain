@@ -9,10 +9,13 @@ using _Scripts.ChunkingSystem;
 using UnityEngine.Serialization;
 
 namespace Core {
+
+    
     public class TerrainGenerator : MonoBehaviour
     {
         public const int MIN_CHUNK_SIZE = 120;
-
+        
+        
         [FormerlySerializedAs("worldLengthMultiplier")] [SerializeField] private int rootNodeLengthMultiplier = 1;
         [SerializeField] private Camera viewerCamera;
         
@@ -31,8 +34,28 @@ namespace Core {
 
         private void Update()
         {
-            _quadTree.Update();
+            var quadNodesToCull = _quadTree.Update();
+            var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
+            
+            var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
+            var chunksToRecycle = ConvertQuadNodesToChunkData(quadNodesToCull);
+            
+            _chunkManager.RecycleChunks(chunksToRecycle);
+            _chunkManager.RequestChunksToBeRendered(chunksToRender);
         }
+
+        private static List<ChunkManager.ChunkData> ConvertQuadNodesToChunkData(List<QuadNode> quadNodes)
+        {
+            var chunks = quadNodes
+                .Select(node => new ChunkManager.ChunkData()
+                {
+                    SideLength = node.GetSideLength(),
+                    BotLeftPoint = node.GetBotLeftPoint()
+                })
+                .ToList();
+            return chunks;
+        }
+        
         private QuadTree GenerateQuadTree()
         { // Factory method to prevent side effects
             // rootNodeLengthMultiplier set in the Editor

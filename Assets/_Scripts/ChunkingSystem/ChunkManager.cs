@@ -5,10 +5,30 @@ using UnityEngine;
 
 namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
+        public struct ChunkData : IEquatable<ChunkData>
+        {
+            public float SideLength;
+            public Vector2 BotLeftPoint;
+
+            public bool Equals(ChunkData other)
+            {
+                return SideLength.Equals(other.SideLength) && BotLeftPoint.Equals(other.BotLeftPoint);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ChunkData other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(SideLength, BotLeftPoint);
+            }
+        }
         
-        private ChunkPool _chunkPool = new();
-        private readonly List<GameObject> _chunksToBeRecycled = new();
-        private readonly List<GameObject> _activeChunks = new();
+        private readonly ChunkPool _chunkPool = new();
+        private readonly Dictionary<ChunkData, GameObject> _chunksToBeRecycled = new();
+        private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
         public static GameObject CreateChunk(Mesh mesh)
         {
@@ -27,9 +47,33 @@ namespace _Scripts.ChunkingSystem {
             return gameObject;
         }
         public static void SetChunkPosition(GameObject chunk, Vector3 position) { chunk.transform.position = position; }
-        public List<GameObject> GetActiveChunks() { return _activeChunks; }
-        public List<GameObject> GetChunksToBeRecycled() { return _chunksToBeRecycled; } 
-        
+        public Dictionary<ChunkData, GameObject> GetActiveChunks() { return _activeChunks; }
+        public Dictionary<ChunkData, GameObject> GetChunksToBeRecycled() { return _chunksToBeRecycled; }
+
+        public void RequestChunksToBeRendered(List<ChunkData> chunkDataList)
+        {
+
+            foreach (ChunkData chunkData in chunkDataList)
+            {
+                _activeChunks[chunkData] = new GameObject();
+            }
+            
+        }
+
+        public void RecycleChunks(List<ChunkData> culledChunks)
+        {
+            foreach (var chunkData in culledChunks)
+            {
+                var chunkRemoved = _activeChunks[chunkData];
+                _activeChunks.Remove(chunkData);
+                _chunksToBeRecycled[chunkData] = chunkRemoved;
+            }
+        }
+
+        public ChunkPool GetChunkPool()
+        {
+            return _chunkPool;
+        }
     }
 
 }
