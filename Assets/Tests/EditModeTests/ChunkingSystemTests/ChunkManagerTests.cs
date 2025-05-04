@@ -5,6 +5,7 @@ using UnityEngine.TestTools;
 using ChunkingSystem;
 using System.Collections.Generic;
 using _Scripts.ChunkingSystem;
+using _Scripts.QuadTreeSystem;
 
 namespace EditModeTests
 {

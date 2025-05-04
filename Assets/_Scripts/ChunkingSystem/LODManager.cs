@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework.Constraints;
+using UnityEngine;
 
 // What is the purpose of this class?
 // * To manage the number of vertices in each chunk as a function of sidelength.
@@ -22,33 +23,52 @@ namespace _Scripts.ChunkingSystem
         private int[] _lods;
         private int _maxLODLevel;
 
-        public void SetMinChunkSize(int minChunkSize) { this._minChunkSize = minChunkSize; }
-        public int GetMinChunkSize() {return this._minChunkSize;}
-        public int[] ComputeLODsFromMinChunkSize()
+        public LODManager(int minChunkSize)
+        {
+            _minChunkSize = minChunkSize;
+            _lods = ComputeLODsFromMinChunkSize(minChunkSize);
+            _maxLODLevel = _lods.Length - 1;
+        }
+
+        public void SetMinChunkSize(int minChunkSize)
+        {
+            // Has side effects: recalculates _lods nad resets _maxLODLevel
+            
+            // Input validation
+            if(minChunkSize < 1) throw new ArgumentOutOfRangeException($"minChunkSize cannot be less than 1. Provided: {minChunkSize}");
+            if(minChunkSize % 2 != 0) throw new  ArgumentOutOfRangeException($"minChunkSize must be even. Provided: {minChunkSize}");
+            
+            _minChunkSize = minChunkSize;
+            _lods = ComputeLODsFromMinChunkSize(minChunkSize);
+            _maxLODLevel = _lods.Length - 1;
+
+        }
+        public int GetMinChunkSize() {return _minChunkSize;}
+        public static int[] ComputeLODsFromMinChunkSize(int minChunkSize)
         {
             var factorList = new List<int>();
-            var number = _minChunkSize;
-            if (number <= 0)
+            if (minChunkSize <= 0)
                 throw new ArgumentException("Number must be a positive integer.");
 
-            for (var i = 1; i <= Math.Sqrt(number); i++)
+            for (var i = 1; i <= Math.Sqrt(minChunkSize); i++)
             {
-                if (number % i != 0) continue;
+                if (minChunkSize % i != 0) continue;
                 factorList.Add(i);
 
-                if (i != number / i) // Avoid adding square roots twice
-                    factorList.Add(number / i);
+                if (i != minChunkSize / i) // Avoid adding square roots twice
+                    factorList.Add(minChunkSize / i);
             }
 
             factorList.Sort(); // Optional: return factors in ascending order
 
             var factorArray = factorList.ToArray();
-            this._lods = factorArray;
             return factorArray;
         }
 
         public void SetMaxLODLevel(int maxLODLevel)
         {
+            if(maxLODLevel < 0) throw new ArgumentException("maxLODLevel must be a non-negative integer.");
+            if(maxLODLevel > _lods.Length-1) throw new ArgumentException($"not enough LODs to set max LOD level of {maxLODLevel}");
             _maxLODLevel = maxLODLevel;
         }
 
@@ -63,5 +83,7 @@ namespace _Scripts.ChunkingSystem
             int lodIndex = Math.Min(_maxLODLevel, level);
             return _lods[totalNumberLODS-lodIndex-1];
         }
+
+        public int[] GetLODs() {return _lods;}
     }
 }

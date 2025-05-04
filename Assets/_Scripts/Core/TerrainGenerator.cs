@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using ChunkingSystem;
-using static QuadTree;
+using static _Scripts.QuadTreeSystem.QuadTree;
 using static PlaneMeshGenerator;
 using System;
 using System.Linq;
 using _Scripts.ChunkingSystem;
+using _Scripts.QuadTreeSystem;
 using UnityEngine.Serialization;
 
 namespace Core {
@@ -64,7 +65,7 @@ namespace Core {
             var rootNodeBottomLeftPoint = new Vector2(-rootNodeSideLength /2f, -rootNodeSideLength /2f);
             
             var rootNode = new QuadNode(null, rootNodeBottomLeftPoint, rootNodeSideLength);
-            var quadTree = new QuadTree(rootNode);
+            var quadTree = new QuadTree(rootNode, MIN_CHUNK_SIZE);
             quadTree.SetViewer(_viewer);
 
             return quadTree;
