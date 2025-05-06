@@ -63,6 +63,7 @@ namespace _Scripts.QuadTreeSystem
                 if (curr.IsLeafNode() && curr.IntersectsWithViewTri(triBounds)) {
                     if (curr.GetSideLength() > _minChunkSize) {
                         SplitNode(curr);
+                        culledNodes.Add(curr);
                         EnqueueChildren(queue, curr);
                     }
                     continue;
@@ -102,7 +103,20 @@ namespace _Scripts.QuadTreeSystem
             foreach (QuadNode child in curr.GetChildren()) queue.Enqueue(child);
         }
         public void SetViewer(QTViewer viewer) { this._viewer = viewer; }
-    
+
+        public void PrintTree()
+        {
+            Queue<QuadNode> queue = new();
+            queue.Enqueue(_rootNode);
+            while (queue.Count > 0)
+            {
+                var curr = queue.Dequeue();
+                if (curr is null) continue;
+                Debug.Log($"BL:{curr.GetBotLeftPoint()}, SL: {curr.GetSideLength()}");
+                EnqueueChildren(queue, curr);
+            }
+        }
+        
         public object GetViewer() {
             return _viewer;
         }

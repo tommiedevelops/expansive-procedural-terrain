@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using _Scripts.QuadTreeSystem;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.TestTools;
 using static _Scripts.QuadTreeSystem.QuadTree;
 
@@ -43,8 +47,50 @@ namespace EditModeTests
             Assert.That(quadTree.GetTreeHeight(), Is.EqualTo(3));
             
         }
+
+        [Test]
+        public void Testing_Update_Method_Returns_Correct_Culled_Nodes_Simple()
+        {
+            const int minChunkSize = 2;
+            var rootNode = new QuadNode(null, Vector2.zero, 8f);
+            var quadTreeUnderTest = new QuadTree(rootNode, minChunkSize);
+            var go = new GameObject();
+            go.transform.position = new Vector3(6f, 0f, 6f);
+            var viewer = new QTViewer(go.transform, 30, 1);
+            quadTreeUnderTest.SetViewer(viewer);
+            
+            Debug.Log("========================");
+            quadTreeUnderTest.Update();
+            quadTreeUnderTest.PrintTree();
+            var leafNodes = quadTreeUnderTest.GetRootNode().GetAllLeafNodes();
+            
+            var targetPoints = new List<Vector2>
+            {
+                new Vector2(4, 4),
+                new Vector2(4, 6),
+                new Vector2(6, 4),
+                new Vector2(6, 6)
+            };
+            
+            var expectedCulledNodes = leafNodes
+                .Where(node => targetPoints.Contains(node.GetBotLeftPoint()))
+                .ToList();
+            
+            Debug.Log($"Expected culled nodes: {expectedCulledNodes}");
+            
+            go.transform.position = new Vector3(2f, 0f, 2f);
+            Debug.Log("========================");
+            var culledNodes = quadTreeUnderTest.Update();
+            quadTreeUnderTest.PrintTree();
+            
+            
+            Assert.That(culledNodes, Is.EqualTo(expectedCulledNodes));
+            
+           
+        }
         
-        //public void Can_Compute_Correct_Tree_Heights_When_Viewer_At_Zero_And_RD_Is_One(float rootNodeSideLength, int minChunkSize, int expectedHeight)
-    
+        
     }
+    
+    
 }

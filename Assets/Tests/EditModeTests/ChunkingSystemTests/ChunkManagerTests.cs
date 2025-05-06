@@ -38,14 +38,6 @@ namespace EditModeTests
         }
 
         [Test]
-        public void Stores_Reference_To_All_Chunks_To_Be_Recycled()
-        {
-            var chunkManagerUnderTest = new ChunkManager();
-            var chunksToBeRecycled = chunkManagerUnderTest.GetChunksToBeRecycled();
-            Assert.That(chunksToBeRecycled, Is.Not.Null);
-        }
-
-        [Test]
         public void Testing_Rendering_One_Chunk()
         {
             // initialise a chunkManager managing a single chunk
@@ -65,7 +57,7 @@ namespace EditModeTests
             chunksToRender.Add(chunkData);
             
             // Request to render the chunk (aka add it to activeChunks)
-            chunkManagerUnderTest.RequestChunksToBeRendered(chunksToRender);
+            chunkManagerUnderTest.RequestNewChunksFromChunkData(chunksToRender);
             
             Assert.That(chunkManagerUnderTest.GetChunkPool(), Is.Not.Null); // there should be a chunkPool
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData], Is.Not.Null);
@@ -95,7 +87,7 @@ namespace EditModeTests
             chunksToRender.Add(chunkData1);
             chunksToRender.Add(chunkData2);
             
-            chunkManagerUnderTest.RequestChunksToBeRendered(chunksToRender);
+            chunkManagerUnderTest.RequestNewChunksFromChunkData(chunksToRender);
             
             Assert.That(chunkManagerUnderTest.GetChunkPool(), Is.Not.Null);
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData1], Is.Not.Null);
@@ -115,7 +107,7 @@ namespace EditModeTests
             
             // first render the chunk
             var chunksToRender = new List<ChunkManager.ChunkData> { chunkData };
-            chunkManagerUnderTest.RequestChunksToBeRendered(chunksToRender);
+            chunkManagerUnderTest.RequestNewChunksFromChunkData(chunksToRender);
             
             // Check that it's been added to the active chunks list (sanity check here)
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData], Is.Not.Null);
@@ -127,10 +119,6 @@ namespace EditModeTests
             
             // Check that it's been taken out of the active chunks list
             Assert.That(result, Is.Null);
-            
-            // Check that it's been added to the chunksToBeRecycled list
-            Assert.That(chunkManagerUnderTest.GetChunksToBeRecycled()[chunkData], Is.Not.Null);
-
 
         }
 
@@ -141,7 +129,8 @@ namespace EditModeTests
             var chunkData = new ChunkManager.ChunkData()
             {
                 BotLeftPoint = Vector2.zero,
-                SideLength = 1f
+                SideLength = 1f,
+                NumVertices = 2
             };
             
             // Create chunk from chunkData

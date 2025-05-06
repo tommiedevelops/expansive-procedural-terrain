@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 using UnityEngine;
+using Random = System.Random;
 
 namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
         public struct ChunkData : IEquatable<ChunkData>
         {
             public float SideLength;
+            public int NumVertices;
             public Vector2 BotLeftPoint;
 
             public bool Equals(ChunkData other)
@@ -24,67 +26,82 @@ namespace _Scripts.ChunkingSystem {
             {
                 return HashCode.Combine(SideLength, BotLeftPoint);
             }
+
+            public void Print()
+            {
+                Debug.Log($"SL:  {SideLength}, BL: {BotLeftPoint}");
+            }
         }
         
         private readonly ChunkPool _chunkPool = new();
-        private readonly Dictionary<ChunkData, GameObject> _chunksToBeRecycled = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
         public static GameObject CreateChunk(ChunkData chunkData)
         {
-            var gameObject = new GameObject
+            var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}")
             {
                 transform =
                 {
-                    position = chunkData.BotLeftPoint,
+                    position = new Vector3(chunkData.BotLeftPoint.x, 0f, chunkData.BotLeftPoint.y),
                     rotation = Quaternion.identity,
                     localScale = new Vector3(1, 1, 1)
                 }
             };
 
             var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator
-                .MeshData(2, 2, chunkData.SideLength));
+                .MeshData(chunkData.NumVertices, chunkData.NumVertices, chunkData.SideLength));
             
             gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
-            gameObject.AddComponent<MeshRenderer>().material = new Material(Shader.Find($"Diffuse"));
+            var material = gameObject.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            var color = (float)new Random((int)chunkData.SideLength).NextDouble();
+            material.color = new Color(color, color, color);
             return gameObject;
         }
         public static void SetChunkPosition(GameObject chunk, Vector3 position) { chunk.transform.position = position; }
         public Dictionary<ChunkData, GameObject> GetActiveChunks() { return _activeChunks; }
-        public Dictionary<ChunkData, GameObject> GetChunksToBeRecycled() { return _chunksToBeRecycled; }
-        public void RequestChunksToBeRendered(List<ChunkData> chunkDataList)
+        public void RequestNewChunksFromChunkData(List<ChunkData> chunkDataList)
         {
-
-            foreach (ChunkData chunkData in chunkDataList)
+            
+            foreach (var chunkData in chunkDataList)
             {
-                _activeChunks[chunkData] = new GameObject();
+                _activeChunks[chunkData] = CreateChunk(chunkData);
             }
             
         }
-
+        // ReSharper disable Unity.PerformanceAnalysis
         public void RecycleChunks(List<ChunkData> culledChunks)
         {
             foreach (var chunkData in culledChunks)
             {
-                var chunkRemoved = _activeChunks[chunkData];
+                if (!_activeChunks.TryGetValue(chunkData, out GameObject chunkRemoved))
+                {
+                    chunkData.Print();
+                    continue;
+                };
+                chunkRemoved.SetActive(false);
                 _activeChunks.Remove(chunkData);
-                _chunksToBeRecycled[chunkData] = chunkRemoved;
+                _chunkPool.RecycleChunk(chunkRemoved, chunkData.SideLength);
             }
         }
+        public ChunkPool GetChunkPool() { return _chunkPool; }
 
-        public ChunkPool GetChunkPool()
+        public void RequestChunks(List<ChunkData> chunksToAdd)
         {
-            return _chunkPool;
-        }
-
-        public void GiveRecycledChunksToChunkPool()
-        {
-            foreach (var chunkData in _chunksToBeRecycled.Keys)
+            foreach (var chunkData in chunksToAdd)
             {
-                var chunk = _chunksToBeRecycled[chunkData];
-                _chunkPool.RecycleChunk(chunk, chunkData.SideLength);
+                var chunk = _chunkPool.RequestChunk(chunkData.SideLength);
+
+                if (chunk is null)
+                {
+                    chunk = CreateChunk(chunkData);
+                    _activeChunks[chunkData] = chunk;
+                } else {
+                    chunk.transform.position = new Vector3(chunkData.BotLeftPoint.x, 0f, chunkData.BotLeftPoint.y);
+                    chunk.SetActive(true);
+                    _activeChunks[chunkData] = chunk;
+                }
+
             }
-            _chunksToBeRecycled.Clear();
         }
     }
 
