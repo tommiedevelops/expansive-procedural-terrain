@@ -15,7 +15,7 @@ namespace EditModeTests
             var lodManagerUnderTest = new LODManager(12);
             Assert.IsNotNull(lodManagerUnderTest);
             Assert.That(lodManagerUnderTest.GetMaxLODLevel(), Is.EqualTo(5));
-            Assert.That(lodManagerUnderTest.GetLODs(), Is.EqualTo(new int[] { 1, 2, 3, 4, 6, 12 }));
+            Assert.That(lodManagerUnderTest.GetLODs(), Is.EqualTo(new int[] { 12, 6, 4, 3, 2, 1 }));
         }
 
         [Test]
@@ -28,7 +28,8 @@ namespace EditModeTests
             
             Assert.That(receivedMinChunkSize, Is.EqualTo(minChunkSize));
             Assert.That(lodManagerUnderTest.GetMaxLODLevel(), Is.EqualTo(15));
-            Assert.That(lodManagerUnderTest.GetLODs(), Is.EqualTo(new int[] {1,2,3,4,5,6,8,10,12,15,20,24,30,40,60,120}));
+            Assert.That(lodManagerUnderTest.GetLODs(), Is.EqualTo(new int[] {120,60,40,30,24,20,15,12,10,8,6,5,4,3,2,1}));
+                                                                                                            
         }
 
         [Test]
@@ -44,39 +45,32 @@ namespace EditModeTests
         public void Can_Generate_Correct_LODs_From_Min_Chunk_Size()
         {
             const int testMinChunkSize = 12;
-            var expectedLods = new int[] { 1, 2, 3, 4, 6, 12 };
-            var lods = LODManager.ComputeLODsFromMinChunkSize(testMinChunkSize);
-            Assert.That(lods, Is.EquivalentTo(expectedLods));
+            var expectedLods = new int[] { 12, 6, 4, 3, 2, 1 };
+            var lods = LODManager.ComputeLODsFromMinChunkSizeDescending(testMinChunkSize);
+            Assert.That(lods, Is.EqualTo(expectedLods));
         }
         
-        [Test]
-        public void Can_Generate_Correct_LODs_From_Larger_Chunk_Size()
-        {
-            const int chunkSize = 240;
-            var expected = new int[] { 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 20, 24, 30, 40, 48, 60, 80, 120, 240 };
-            var  lods = LODManager.ComputeLODsFromMinChunkSize(chunkSize);
-            Assert.That(lods, Is.EquivalentTo(expected));
-        }
-
         [Test]
         public void Stores_A_Max_LOD_Level()
         {
             var lodManagerUnderTest = new LODManager(120);
             int maxLODLevel = 5;
-            lodManagerUnderTest.SetMaxLODLevel(maxLODLevel);
+            lodManagerUnderTest.SetNumLODLevels(maxLODLevel);
             int level = lodManagerUnderTest.GetMaxLODLevel();
             Assert.That(level, Is.EqualTo(maxLODLevel));
         }
 
-        [TestCase(0,5,12)]
-        [TestCase(5,5,1)]
-        [TestCase(5, 4, 2)]
-        public void Calculates_Correct_LOD(int level, int maxLODLevel, int expected)
+        [TestCase(0, 5,5,1)]
+        [TestCase(5,5,5,12)]
+        [TestCase(5, 5,4, 12)]
+        [TestCase(0, 3, 5, 3)]
+        [TestCase(1, 5,5, 2)]
+        public void Calculates_Correct_LOD(int nodeLevel, int treeHeight, int maxLODLevel, int expected)
         {
-            var lodManagerUnderTest = new LODManager(12);
-            lodManagerUnderTest.SetMaxLODLevel(maxLODLevel);
+            var lodManagerUnderTest = new LODManager(12); //{12,6,4,3,2,1} - 6 members
+            lodManagerUnderTest.SetNumLODLevels(maxLODLevel);
             
-            Assert.That(lodManagerUnderTest.ComputeLOD(level), Is.EqualTo(expected));
+            Assert.That(lodManagerUnderTest.ComputeLOD(nodeLevel, treeHeight), Is.EqualTo(expected));
             
         }
         
@@ -85,8 +79,9 @@ namespace EditModeTests
         {
             int maxLODLevel = 10;
             var lodManagerUnderTest = new LODManager(12);
-            Assert.Throws<ArgumentException>(() => lodManagerUnderTest.SetMaxLODLevel(maxLODLevel));
+            Assert.Throws<ArgumentException>(() => lodManagerUnderTest.SetNumLODLevels(maxLODLevel));
         }
+        
     }
     
 }

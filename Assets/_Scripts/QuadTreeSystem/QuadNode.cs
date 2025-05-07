@@ -43,6 +43,10 @@ public class QuadNode {
     #region Helper Functions
     // HELPERS
 
+    public override string ToString()
+    {
+        return $"BLP: {bottomLeftPoint.ToString()} SL: {sideLength.ToString()}";
+    }
     public bool IntersectsWithViewTri(Bounds triBounds) {
         // Test performed using Separating Axis Theorem
         // More info: https://dyn4j.org/2010/01/sat/

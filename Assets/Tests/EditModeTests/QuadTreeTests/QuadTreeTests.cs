@@ -66,6 +66,7 @@ namespace EditModeTests
             
             var targetPoints = new List<Vector2>
             {
+                new Vector2(0,0),
                 new Vector2(4, 4),
                 new Vector2(4, 6),
                 new Vector2(6, 4),
@@ -82,14 +83,40 @@ namespace EditModeTests
             Debug.Log("========================");
             var culledNodes = quadTreeUnderTest.Update();
             quadTreeUnderTest.PrintTree();
-            
+
+            Debug.Log("culled nodes");
+            foreach(var node in culledNodes) Debug.Log(node);
             
             Assert.That(culledNodes, Is.EqualTo(expectedCulledNodes));
             
            
         }
-        
-        
+
+        [Test]
+        public void Levels_Are_Correct()
+        {
+            var rootNode = new QuadNode(null, Vector2.zero, 8f);
+            var quadTreeUnderTest = new QuadTree(rootNode, 2);
+            var go = new GameObject();
+            go.transform.position = new Vector3(1f, 0f, 0f);
+            var viewer = new QTViewer(go.transform, 30, 1);
+            quadTreeUnderTest.SetViewer(viewer);
+            quadTreeUnderTest.Update();
+            
+            Assert.That(quadTreeUnderTest.GetRootNode().GetLevel(), Is.EqualTo(0));
+            var levelOneChildren = quadTreeUnderTest.GetRootNode().GetChildren();
+            foreach (var child in levelOneChildren)
+            {
+                if (child.HasChildren())
+                    foreach(var child2 in child.GetChildren())
+                        Assert.That(child2.GetLevel(), Is.EqualTo(2));
+                
+                Assert.That(child.GetLevel(), Is.EqualTo(1));
+            }
+            
+            Assert.That(quadTreeUnderTest.GetTreeHeight(), Is.EqualTo(3));
+            
+        }
     }
     
     

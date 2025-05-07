@@ -10,7 +10,8 @@ namespace _Scripts.Core {
     public class TerrainGenerator : MonoBehaviour
     {
         #region Fields
-        public const int MIN_CHUNK_SIZE = 120;
+
+        private const int MIN_CHUNK_SIZE = 240;
         
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
@@ -30,15 +31,14 @@ namespace _Scripts.Core {
             _chunkManager = new ChunkManager();
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
+            _lodManager.SetNumLODLevels(4);
         }
-
-        private List<QuadNode> initialLeafNodes;
+        
         private void Start()
         {
             _quadTree.Update();
             
             var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
-            initialLeafNodes = leafNodes;
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
             
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
@@ -81,7 +81,7 @@ namespace _Scripts.Core {
                 {
                     SideLength = node.GetSideLength(),
                     BotLeftPoint = node.GetBotLeftPoint(),
-                    NumVertices = _lodManager.ComputeLOD(node.GetLevel())
+                    NumVertices = _lodManager.ComputeLOD(node.GetLevel(), _quadTree.GetTreeHeight()-1)
                 })
                 .ToList();
             return chunks;

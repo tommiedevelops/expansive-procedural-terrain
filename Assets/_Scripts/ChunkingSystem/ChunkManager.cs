@@ -36,9 +36,10 @@ namespace _Scripts.ChunkingSystem {
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public static GameObject CreateChunk(ChunkData chunkData)
         {
-            var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}")
+            var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}, NV: {chunkData.NumVertices}")
             {
                 transform =
                 {
@@ -75,7 +76,7 @@ namespace _Scripts.ChunkingSystem {
             {
                 if (!_activeChunks.TryGetValue(chunkData, out GameObject chunkRemoved))
                 {
-                    chunkData.Print();
+                    // A chunk has not been generated for this node.
                     continue;
                 };
                 chunkRemoved.SetActive(false);

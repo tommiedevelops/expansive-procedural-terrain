@@ -52,6 +52,7 @@ namespace EditModeTests
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = sideLength,
+                NumVertices = 2
             };
 
             chunksToRender.Add(chunkData);
@@ -75,13 +76,15 @@ namespace EditModeTests
             var chunkData1 = new ChunkManager.ChunkData
             {
                 BotLeftPoint = Vector2.zero,
-                SideLength = 1f
+                SideLength = 1f,
+                NumVertices = 2
             };
             
             var chunkData2 = new ChunkManager.ChunkData
             {
                 BotLeftPoint = Vector2.zero,
-                SideLength = 2f
+                SideLength = 2f,
+                NumVertices = 2
             };
 
             chunksToRender.Add(chunkData1);
@@ -102,7 +105,9 @@ namespace EditModeTests
             var chunkData = new ChunkManager.ChunkData
             {
                 BotLeftPoint = Vector2.zero,
-                SideLength = 1f
+                SideLength = 1f,
+                NumVertices = 2
+                
             };
             
             // first render the chunk
@@ -145,6 +150,27 @@ namespace EditModeTests
             Assert.That(meshFilter.sharedMesh.triangles, Has.Length.EqualTo(6));
             Assert.That((meshFilter.sharedMesh.vertices[1] - meshFilter.sharedMesh.vertices[0]).magnitude,  Is.EqualTo(1f));
         }
-        
+
+        [Test]
+        public void Can_Create_Chunk_From_ChunkData()
+        {
+            var chunkData = new ChunkManager.ChunkData()
+            {
+                BotLeftPoint = Vector2.zero,
+                SideLength = 187.5f,
+                NumVertices = 240
+            };
+            
+            var chunk = ChunkManager.CreateChunk(chunkData);
+            var meshFilter = chunk.GetComponent(typeof(MeshFilter)) as MeshFilter;
+            var mesh = meshFilter?.sharedMesh;
+            
+            
+            Assert.That(chunk, Is.Not.Null);
+            Assert.That(meshFilter, Is.Not.Null);
+            Assert.That(mesh, Is.Not.Null);
+            Assert.That(mesh.vertices, Has.Length.EqualTo(240*240));
+            
+        }
     }
 }

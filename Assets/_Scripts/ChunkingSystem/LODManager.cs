@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework.Constraints;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace _Scripts.ChunkingSystem
         public LODManager(int minChunkSize)
         {
             _minChunkSize = minChunkSize;
-            _lods = ComputeLODsFromMinChunkSize(minChunkSize);
+            _lods = ComputeLODsFromMinChunkSizeDescending(minChunkSize);
             _maxLODLevel = _lods.Length - 1;
         }
 
@@ -39,12 +40,12 @@ namespace _Scripts.ChunkingSystem
             if(minChunkSize % 2 != 0) throw new  ArgumentOutOfRangeException($"minChunkSize must be even. Provided: {minChunkSize}");
             
             _minChunkSize = minChunkSize;
-            _lods = ComputeLODsFromMinChunkSize(minChunkSize);
+            _lods = ComputeLODsFromMinChunkSizeDescending(minChunkSize);
             _maxLODLevel = _lods.Length - 1;
 
         }
         public int GetMinChunkSize() {return _minChunkSize;}
-        public static int[] ComputeLODsFromMinChunkSize(int minChunkSize)
+        public static int[] ComputeLODsFromMinChunkSizeDescending(int minChunkSize)
         {
             var factorList = new List<int>();
             if (minChunkSize <= 0)
@@ -61,11 +62,11 @@ namespace _Scripts.ChunkingSystem
 
             factorList.Sort(); // Optional: return factors in ascending order
 
-            var factorArray = factorList.ToArray();
+            var factorArray = factorList.OrderByDescending(x => x).ToArray();
             return factorArray;
         }
 
-        public void SetMaxLODLevel(int maxLODLevel)
+        public void SetNumLODLevels(int maxLODLevel)
         {
             if(maxLODLevel < 0) throw new ArgumentException("maxLODLevel must be a non-negative integer.");
             if(maxLODLevel > _lods.Length-1) throw new ArgumentException($"not enough LODs to set max LOD level of {maxLODLevel}");
@@ -77,11 +78,16 @@ namespace _Scripts.ChunkingSystem
             return _maxLODLevel;
         }
 
-        public int ComputeLOD(int level)
+        public int ComputeLOD(int nodeLevel, int treeHeight)
         {
-            int totalNumberLODS = _lods.Length;
-            int lodIndex = Math.Min(_maxLODLevel, level);
-            return _lods[totalNumberLODS-lodIndex-1];
+            
+            // if level = maxLevel => leaf node => highest resolution
+            // lower level => lower resolution
+            int maxLODLevel = Math.Min(_maxLODLevel, treeHeight);
+
+            int lodIndex = Math.Max(0, maxLODLevel - nodeLevel);
+            
+            return _lods[lodIndex];
         }
 
         public int[] GetLODs() {return _lods;}
