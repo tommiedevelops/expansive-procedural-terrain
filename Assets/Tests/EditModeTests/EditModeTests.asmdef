@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "ChunkingSystem",
         "Core",
-        "QuadTreeSystem"
+        "QuadTreeSystem",
+        "NoiseSystem"
     ],
     "includePlatforms": [
         "Editor"

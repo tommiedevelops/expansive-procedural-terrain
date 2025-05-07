@@ -4,6 +4,7 @@ using System.Linq;
 using _Scripts.ChunkingSystem;
 using _Scripts.QuadTreeSystem;
 using UnityEngine;
+using static PerlinNoise;
 
 namespace _Scripts.Core {
     
