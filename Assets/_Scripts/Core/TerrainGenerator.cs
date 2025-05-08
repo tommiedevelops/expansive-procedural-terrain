@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using _Scripts.ChunkingSystem;
 using _Scripts.QuadTreeSystem;
+using _Scripts.NoiseSystem;
 using UnityEngine;
-using static PerlinNoise;
 
 namespace _Scripts.Core {
-    
+
+    public class SimplePerlinNoise : NoiseLayer
+    {
+        public override float Evaluate(float x, float y)
+        {
+            return Mathf.PerlinNoise(x, y);
+        }
+    }
     public class TerrainGenerator : MonoBehaviour
     {
         #region Fields
@@ -21,6 +28,7 @@ namespace _Scripts.Core {
         private QuadTree _quadTree;
         private ChunkManager  _chunkManager;
         private LODManager _lodManager;
+        private NoiseGenerator _noiseGenerator;
         private float _renderDistance;
         #endregion
         
@@ -33,10 +41,14 @@ namespace _Scripts.Core {
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
+            _noiseGenerator = new NoiseGenerator();
         }
         
         private void Start()
         {
+            _noiseGenerator.AddLayer(new SimplePerlinNoise());
+            _chunkManager.SetNoiseGenerator(_noiseGenerator);
+            
             _quadTree.Update();
             
             var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();

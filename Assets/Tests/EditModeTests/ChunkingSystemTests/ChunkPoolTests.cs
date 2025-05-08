@@ -51,7 +51,7 @@ namespace EditModeTests {
             var chunkAdded = new GameObject();
             const float sideLength = 1f;
             const int numVertices = 2;
-            var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(numVertices, numVertices, sideLength));
+            var mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(numVertices, numVertices, sideLength));
             var meshFilter = chunkAdded.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
 
@@ -93,7 +93,7 @@ namespace EditModeTests {
             const int numVertices = 2;
             var chunk = new GameObject();
             var meshFilter = chunk.AddComponent<MeshFilter>();
-            var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(numVertices, numVertices, sideLength));
+            var mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(numVertices, numVertices, sideLength));
             meshFilter.sharedMesh = mesh;
             
             chunkPoolUnderTest.RecycleChunk(chunk, sideLength);
@@ -114,13 +114,13 @@ namespace EditModeTests {
             var chunk3 = new GameObject();
 
             chunk1.AddComponent<MeshFilter>().sharedMesh =
-                PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 1));
+                PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 1));
             
             chunk2.AddComponent<MeshFilter>().sharedMesh =
-                PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 2));
+                PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 2));
             
             chunk3.AddComponent<MeshFilter>().sharedMesh =
-                PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 3));
+                PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 3));
             
             chunkPoolUnderTest.RecycleChunk(chunk1, 1);
             chunkPoolUnderTest.RecycleChunk(chunk2, 2);

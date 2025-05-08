@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 using UnityEngine;
 using Random = System.Random;
+using _Scripts.NoiseSystem;
 
 namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
+        
+        
+        
         public struct ChunkData : IEquatable<ChunkData>
         {
             public float SideLength;
@@ -35,6 +39,7 @@ namespace _Scripts.ChunkingSystem {
         
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
+        private static NoiseGenerator _noiseGenerator;
 
         // ReSharper disable Unity.PerformanceAnalysis
         public static GameObject CreateChunk(ChunkData chunkData)
@@ -48,10 +53,17 @@ namespace _Scripts.ChunkingSystem {
                     localScale = new Vector3(1, 1, 1)
                 }
             };
-
-            var mesh = PlaneMeshGenerator.GeneratePlaneMesh(new PlaneMeshGenerator
-                .MeshData(chunkData.NumVertices, chunkData.NumVertices, chunkData.SideLength));
             
+            // Generate Mesh
+            _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
+            var mesh = PlaneMeshGenerator.GeneratePlaneMeshWithNoise(
+                new PlaneMeshGenerator.MeshData(chunkData.NumVertices, chunkData.NumVertices, chunkData.SideLength),
+                _noiseGenerator,
+                chunkData.BotLeftPoint,
+                100
+                );
+            
+            // Assign mesh to gameObject
             gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
             var material = gameObject.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             var color = (float)new Random((int)chunkData.SideLength).NextDouble();
@@ -103,6 +115,11 @@ namespace _Scripts.ChunkingSystem {
                 }
 
             }
+        }
+
+        public void SetNoiseGenerator(NoiseGenerator noiseGenerator)
+        {
+            _noiseGenerator = noiseGenerator;
         }
     }
 

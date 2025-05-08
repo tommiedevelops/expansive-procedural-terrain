@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using _Scripts.ChunkingSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -89,7 +90,7 @@ namespace EditModeTests {
         [Test]
         public void TestTwoByTwoMeshGeneration() {
             PlaneMeshGenerator.MeshData meshData = new(2, 2, 1);
-            Mesh mesh = PlaneMeshGenerator.GeneratePlaneMesh(meshData);
+            Mesh mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(meshData);
 
             var point_1 = new Vector3(0f, 0f, 0f);
             var point_2 = new Vector3(1f, 0f, 0f);

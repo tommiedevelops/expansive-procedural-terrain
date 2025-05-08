@@ -1,3 +1,16 @@
 {
-	"name": "ChunkingSystem"
+    "name": "ChunkingSystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b2e2b5931198cff4499a7667749bafb3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
