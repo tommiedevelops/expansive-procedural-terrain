@@ -6,21 +6,9 @@ using _Scripts.QuadTreeSystem;
 using _Scripts.NoiseSystem;
 using _Scripts.NoiseSystem.ScriptableObjects;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Core {
-
-    public class SimplePerlinNoise : NoiseLayerSO
-    {
-        public override void ValidateValues()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override float Evaluate(Vector2 point)
-        {
-            return Mathf.PerlinNoise(point.x, point.y);
-        }
-    }
     public class TerrainGenerator : MonoBehaviour
     {
         #region Fields
@@ -29,6 +17,7 @@ namespace _Scripts.Core {
         
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
+        [SerializeField] private List<NoiseLayerSO> noiseLayers;
         
         private QTViewer _viewer;
         private QuadTree _quadTree;
@@ -36,8 +25,9 @@ namespace _Scripts.Core {
         private LODManager _lodManager;
         private NoiseGenerator _noiseGenerator;
         private float _renderDistance;
-        #endregion
         
+        
+        #endregion
         #region Unity Functions
         private void Awake()
         {
@@ -52,7 +42,7 @@ namespace _Scripts.Core {
         
         private void Start()
         {
-            _noiseGenerator.AddLayer(new SimplePerlinNoise());
+            foreach(var layer in noiseLayers) _noiseGenerator.AddLayer(layer);
             _chunkManager.SetNoiseGenerator(_noiseGenerator);
             
             _quadTree.Update();

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: FBmNoise
   m_EditorClassIdentifier: 
   octaves: 4
-  frequency: 1
-  persistence: 0.5
-  lacunarity: 2
-  offset: {x: 0, y: 0}
-  baseNoise: {fileID: 0}
+  frequency: 2.5
+  persistence: 0.439
+  lacunarity: 3.2
+  offset: {x: 8.24, y: -8.79}
+  baseNoise: {fileID: 11400000, guid: 178bf47ac74af1443b9f8f1edfd2cfa6, type: 2}

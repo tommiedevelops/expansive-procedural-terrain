@@ -7,11 +7,11 @@ namespace _Scripts.Editor
 {
     public class NoiseLayerPreviewWindow : EditorWindow
     {
-        [MenuItem("Tools/Noise Preview")]
+        [MenuItem("Tools/Noise Layer Preview")]
         public static void ShowWindow()
         {
             var window = GetWindow<NoiseLayerPreviewWindow>();
-            window.titleContent = new GUIContent("Noise Preview");
+            window.titleContent = new GUIContent("Noise Layer Preview");
             window.Show();
         }
 
@@ -22,7 +22,7 @@ namespace _Scripts.Editor
 
         private void OnGUI()
         {
-            _noiseLayerSo = (NoiseLayerSO)EditorGUILayout.ObjectField("Noise Settings", _noiseLayerSo, typeof(NoiseLayerSO), false);
+            _noiseLayerSo = (NoiseLayerSO)EditorGUILayout.ObjectField("Noise Layer", _noiseLayerSo, typeof(NoiseLayerSO), false);
 
             if (!_noiseLayerSo) return;
 

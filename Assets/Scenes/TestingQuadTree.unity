@@ -337,8 +337,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75079b266c7edd8439a42deace39634a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootNodeLengthMultiplier: 1000
+  rootNodeLengthMultiplier: 50
   viewerCamera: {fileID: 786935566}
+  _noiseLayers: []
 --- !u!1001 &428172463
 PrefabInstance:
   m_ObjectHideFlags: 0

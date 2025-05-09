@@ -55,10 +55,13 @@ namespace _Scripts.ChunkingSystem {
             };
             
             // Generate Mesh
-            //_noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
             var mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(
                 new PlaneMeshGenerator.MeshData(chunkData.NumVertices, chunkData.NumVertices, chunkData.SideLength)
                 );
+            
+            // Apply noise
+            _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
+            _noiseGenerator.ApplyNoise(mesh, chunkData.BotLeftPoint, 100);
             
             // Assign mesh to gameObject
             gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
