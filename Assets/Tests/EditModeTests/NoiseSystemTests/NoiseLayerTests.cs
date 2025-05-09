@@ -4,17 +4,24 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using _Scripts.NoiseSystem;
+using _Scripts.NoiseSystem.ScriptableObjects;
 
 namespace EditModeTests
 {
-    public class SomeNoise : NoiseLayer
+    public class SomeNoise : NoiseLayerSO
     {
-        public override float Evaluate(float x, float y)
+
+        public override void ValidateValues()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override float Evaluate(Vector2 point)
         {
             return 0f;
         }
     }
-    public class NoiseLayerTests
+    public class NoiseLayerSoTests
     {
         [Test]
         public void Can_Instantiate_A_NoiseLayer()

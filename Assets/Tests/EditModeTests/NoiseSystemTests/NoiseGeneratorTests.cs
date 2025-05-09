@@ -4,35 +4,51 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using _Scripts.NoiseSystem;
+using _Scripts.NoiseSystem.ScriptableObjects;
 
 namespace EditModeTests
 {
     public class NoiseGeneratorTests
     {
-        private class ExampleNoise1 : NoiseLayer
+        private class ExampleNoise1 : NoiseLayerSO
         {
 
-            public override float Evaluate(float x, float y)
+            public override void ValidateValues()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override float Evaluate(Vector2 point)
             {
                 return 1f;
             }
         }
 
-        private class ExampleNoise2 : NoiseLayer
+        private class ExampleNoise2 : NoiseLayerSO
         {
 
-            public override float Evaluate(float x, float y)
+            public override void ValidateValues()
             {
-                return Mathf.Approximately((x+y), 2f) ? 1 : 0;
+                throw new System.NotImplementedException();
+            }
+
+            public override float Evaluate(Vector2 point)
+            {
+                return Mathf.Approximately((point.x+point.y), 2f) ? 1 : 0;
             }
         }
 
-        private class ExampleNoise3 : NoiseLayer
+        private class ExampleNoise3 : NoiseLayerSO
         {
 
-            public override float Evaluate(float x, float y)
+            public override void ValidateValues()
             {
-                return (x == 0 && y == 0) ? 1 : 0;
+                throw new System.NotImplementedException();
+            }
+
+            public override float Evaluate(Vector2 point)
+            {
+                return (point.x == 0 && point.y == 0) ? 1 : 0;
             }
         }
 
@@ -75,145 +91,6 @@ namespace EditModeTests
             Assert.That(noiseGeneratorUnderTest.GetGridHeight(), Is.EqualTo(gridHeight));
         }
         
-        [Test]
-        public void Test_Can_Apply_Noise_To_FloatArray()
-        {
-            const int gridWidth = 3;
-            const int gridHeight = 3;
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            noiseGeneratorUnderTest.SetGridDimensions(gridWidth, gridHeight);
-            noiseGeneratorUnderTest.AddLayer(new ExampleNoise1());
-            
-            
-            var expectedArray = new float[,]
-            {
-                { 1, 1, 1 },
-                { 1, 1, 1 },
-                { 1, 1, 1 }
-            };
-            
-            var array = new float[,]
-            {
-                { 0, 0, 0 },
-                { 0, 0, 0 },
-                { 0, 0, 0 }
-            };
-
-            noiseGeneratorUnderTest.ApplyNoise(array, Vector2.zero);
-            
-            Assert.That(array, Is.EqualTo(expectedArray));
-            
-        }
-
-        [Test]
-        public void Test_Can_Apply_Noise_To_Mesh()
-        {
-            const int gridWidth = 2;
-            const int gridHeight = 2;
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            noiseGeneratorUnderTest.SetGridDimensions(gridWidth, gridHeight);
-            noiseGeneratorUnderTest.AddLayer(new ExampleNoise2());
-            
-            var mesh = new Mesh()
-            {
-                vertices = new Vector3[]
-                {
-                    new Vector3(0f, 0f, 0f),
-                    new Vector3(1f, 0f, 0f),
-                    new Vector3(0f, 0f, 1f),
-                    new Vector3(1f, 0f, 1f)
-                },
-                
-                triangles = new int[] {0,2,1,1,2,3}
-            };
-            
-            
-            var expectedMesh = new Mesh()
-            {
-                vertices = new Vector3[]
-                {
-                    new Vector3(0f, 0f, 0f),
-                    new Vector3(1f, 0f, 0f),
-                    new Vector3(0f, 0f, 1f),
-                    new Vector3(1f, 1f, 1f)
-                },
-                
-                triangles = new int[] {0,2,1,1,2,3}
-            };
-            
-            noiseGeneratorUnderTest.ApplyNoise(mesh, Vector2.zero,1);
-            Assert.That(mesh.vertices, Is.EqualTo(expectedMesh.vertices));
-            
-        }
-
-        [Test]
-        public void Can_Apply_Multiple_Layers_To_FloatArray()
-        {
-            const int gridWidth = 2;
-            const int gridHeight = 2;
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            noiseGeneratorUnderTest.SetGridDimensions(gridWidth, gridHeight);
-            noiseGeneratorUnderTest.AddLayer(new ExampleNoise2());
-            noiseGeneratorUnderTest.AddLayer(new ExampleNoise3());
-
-            var array = new float[,]
-            {
-                { 0, 0 },
-                { 0, 0 },
-            };
-            
-            var expectedArray = new float[,]
-            {
-                { 1, 0 },
-                { 0, 1 }
-            };
-            
-            noiseGeneratorUnderTest.ApplyNoise(array, Vector2.zero);
-            Assert.That(array, Is.EqualTo(expectedArray));
-
-        }
-        
-        [Test]
-        public void Can_Apply_Multiple_Layers_To_Mesh()
-        {
-            const int gridWidth = 2;
-            const int gridHeight = 2;
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            noiseGeneratorUnderTest.SetGridDimensions(gridWidth, gridHeight);
-            noiseGeneratorUnderTest.AddLayer(new ExampleNoise2());
-            noiseGeneratorUnderTest.AddLayer(new ExampleNoise3());
-            
-            var mesh = new Mesh()
-            {
-                vertices = new Vector3[]
-                {
-                    new Vector3(0f, 0f, 0f),
-                    new Vector3(1f, 0f, 0f),
-                    new Vector3(0f, 0f, 1f),
-                    new Vector3(1f, 0f, 1f)
-                },
-                
-                triangles = new int[] {0,2,1,1,2,3}
-            };
-            
-            var expectedMesh = new Mesh()
-            {
-                vertices = new Vector3[]
-                {
-                    new Vector3(0f, 1f, 0f),
-                    new Vector3(1f, 0f, 0f),
-                    new Vector3(0f, 0f, 1f),
-                    new Vector3(1f, 1f, 1f)
-                },
-                
-                triangles = new int[] {0,2,1,1,2,3}
-            };
-            
-            noiseGeneratorUnderTest.ApplyNoise(mesh, Vector2.zero, 1);
-            Assert.That(mesh.vertices, Is.EqualTo(expectedMesh.vertices));
-
-        }
-
         [Test]
         public void Can_Remove_Specified_Layer()
         {

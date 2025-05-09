@@ -101,52 +101,5 @@ namespace _Scripts.ChunkingSystem
             return triangles;
         }
 
-        public static Vector3[] GenerateVertexGridWithNoise(float worldSpaceXLength, float worldSpaceZLength, int numXVerts,
-            int numZVerts, NoiseGenerator noiseGenerator, Vector2 offset, float multiplier)
-        {
-            float distBetweenXPoints = worldSpaceXLength / (numXVerts - 1);
-            float distBetweenZPoints = worldSpaceZLength / (numZVerts - 1);
-
-            int totalVertices = numXVerts * numZVerts;
-            Vector3[] vertices = new Vector3[totalVertices];
-
-            int vertexIndex = 0;
-
-            for (int z = 0; z < numZVerts; z++)
-            {
-                for (int x = 0; x < numXVerts; x++)
-                {
-                    vertices[vertexIndex] = new Vector3(x * distBetweenXPoints, multiplier * (2*noiseGenerator.SampleNoise(x + offset.x,z + offset.y)-1), z * distBetweenZPoints);
-                    vertexIndex++;
-                }
-            }
-
-            return vertices;
-        }
-        public static Mesh GeneratePlaneMeshWithNoise(MeshData meshData, NoiseGenerator noiseGenerator, Vector2 offset, float multiplier)
-        {
-            // You need to create instantiate a meshData struct first and then pass it into
-            // this function.
-
-            int width = meshData.numVerticesX;
-            int length = meshData.numVerticesZ;
-            float scale = meshData.meshLength;
-
-            var vertices = GenerateVertexGridWithNoise(scale, scale, width, length, noiseGenerator, offset, multiplier);
-
-            // Generate triangles
-            var triangles = GenerateTriangleArray(vertices, width, length);
-
-            // Assign mesh properties
-            Mesh mesh = new()
-            {
-                //name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
-                vertices = vertices,
-                triangles = triangles,
-            };
-
-            return mesh;
-        }
-
     }
 }

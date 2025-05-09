@@ -4,15 +4,21 @@ using System.Linq;
 using _Scripts.ChunkingSystem;
 using _Scripts.QuadTreeSystem;
 using _Scripts.NoiseSystem;
+using _Scripts.NoiseSystem.ScriptableObjects;
 using UnityEngine;
 
 namespace _Scripts.Core {
 
-    public class SimplePerlinNoise : NoiseLayer
+    public class SimplePerlinNoise : NoiseLayerSO
     {
-        public override float Evaluate(float x, float y)
+        public override void ValidateValues()
         {
-            return Mathf.PerlinNoise(x, y);
+            throw new NotImplementedException();
+        }
+
+        public override float Evaluate(Vector2 point)
+        {
+            return Mathf.PerlinNoise(point.x, point.y);
         }
     }
     public class TerrainGenerator : MonoBehaviour
