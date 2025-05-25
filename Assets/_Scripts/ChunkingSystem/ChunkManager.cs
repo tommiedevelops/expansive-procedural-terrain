@@ -7,9 +7,6 @@ using _Scripts.NoiseSystem;
 
 namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
-        
-        
-        
         public struct ChunkData : IEquatable<ChunkData>
         {
             public float SideLength;
@@ -40,10 +37,15 @@ namespace _Scripts.ChunkingSystem {
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
         private static NoiseGenerator _noiseGenerator;
-
+        
         // ReSharper disable Unity.PerformanceAnalysis
         public static GameObject CreateChunk(ChunkData chunkData)
         {
+            if (_noiseGenerator == null)
+            {
+                throw new ArgumentException("No Noise Generator has been created");
+            }
+            
             var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}, NV: {chunkData.NumVertices}")
             {
                 transform =
@@ -117,7 +119,7 @@ namespace _Scripts.ChunkingSystem {
             }
         }
 
-        public void SetNoiseGenerator(NoiseGenerator noiseGenerator)
+        public static void SetNoiseGenerator(NoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
         }

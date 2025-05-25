@@ -5,6 +5,7 @@ using UnityEngine.TestTools;
 using ChunkingSystem;
 using System.Collections.Generic;
 using _Scripts.ChunkingSystem;
+using _Scripts.NoiseSystem;
 using _Scripts.QuadTreeSystem;
 
 namespace EditModeTests
@@ -139,6 +140,7 @@ namespace EditModeTests
             };
             
             // Create chunk from chunkData
+            ChunkManager.SetNoiseGenerator(new NoiseGenerator());
             var chunk = ChunkManager.CreateChunk(chunkData);
             
             // Check that it matches expectations

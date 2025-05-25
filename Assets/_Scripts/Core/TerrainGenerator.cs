@@ -26,7 +26,6 @@ namespace _Scripts.Core {
         private NoiseGenerator _noiseGenerator;
         private float _renderDistance;
         
-        
         #endregion
         #region Unity Functions
         private void Awake()
@@ -43,7 +42,7 @@ namespace _Scripts.Core {
         private void Start()
         {
             foreach(var layer in noiseLayers) _noiseGenerator.AddLayer(layer);
-            _chunkManager.SetNoiseGenerator(_noiseGenerator);
+            ChunkManager.SetNoiseGenerator(_noiseGenerator);
             
             _quadTree.Update();
             
@@ -81,7 +80,6 @@ namespace _Scripts.Core {
         }
 
         #endregion
-        
         #region Helpers
         private List<ChunkManager.ChunkData> ConvertQuadNodesToChunkData(List<QuadNode> quadNodes)
         {
@@ -112,7 +110,6 @@ namespace _Scripts.Core {
         }
         
         #endregion
-        
         #region Getters & Setters
         public QTViewer GetViewer() { return _viewer; }
         public QuadTree GetQuadTree() { return _quadTree; }

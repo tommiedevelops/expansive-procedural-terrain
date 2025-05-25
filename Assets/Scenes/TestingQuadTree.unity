@@ -339,7 +339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rootNodeLengthMultiplier: 50
   viewerCamera: {fileID: 786935566}
-  _noiseLayers: []
+  noiseLayers: []
 --- !u!1001 &428172463
 PrefabInstance:
   m_ObjectHideFlags: 0
