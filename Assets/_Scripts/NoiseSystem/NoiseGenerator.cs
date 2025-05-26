@@ -9,6 +9,32 @@ namespace _Scripts.NoiseSystem
 {
     // responsible for adding noise layers together and producing 
     // a final height map
+
+    public struct HeightMap
+    {
+        private int _gridLength;
+        private int _gridWidth;
+        private float[,] _heightMap;
+        public HeightMap(int gridLength, int gridWidth)
+        {
+            _gridLength = gridLength;
+            _gridWidth = gridWidth;
+            _heightMap = new float[gridLength, gridWidth];
+        }
+
+        public void SetPoint(int x, int y, float value)
+        {
+            _heightMap[x, y] = value;
+        }
+
+        public float GetPoint(int x, int y)
+        {
+            return _heightMap[x, y];
+        }
+        
+        public int GetGridWidth() => _gridWidth;
+        public int GetGridLength() => _gridLength;
+    }
     public class NoiseGenerator
     {
         private readonly List<NoiseLayerSO> _noiseLayers = new();
@@ -30,6 +56,17 @@ namespace _Scripts.NoiseSystem
             mesh.vertices = newVertices;
             mesh.RecalculateNormals();
               
+        }
+        
+        public HeightMap GenerateHeightMap(Vector2 offset, float multiplier, float distanceBetweenPoints)
+        {
+            var heightMap = new HeightMap(_gridHeight, _gridWidth);
+            
+            for(var y = 0; y < _gridWidth; y++)
+            for (var x = 0; x < _gridHeight; x++)
+                heightMap.SetPoint(x, y, multiplier * SampleNoise(offset.x + x * distanceBetweenPoints, offset.y + y * distanceBetweenPoints));
+            
+            return heightMap;
         }
         private float SampleNoise(float x, float y)
         {
@@ -60,12 +97,10 @@ namespace _Scripts.NoiseSystem
             }
 
         }
-
         public void AddLayer(NoiseLayerSO layer)
         {
             _noiseLayers.Add(layer);
         }
-
         public void RemoveLayer<TLayerType>() where TLayerType : NoiseLayerSO
         {
             _noiseLayers.RemoveAll(layer => layer is TLayerType);

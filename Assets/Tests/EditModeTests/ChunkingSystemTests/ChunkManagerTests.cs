@@ -59,7 +59,7 @@ namespace EditModeTests
             chunksToRender.Add(chunkData);
             
             // Request to render the chunk (aka add it to activeChunks)
-            chunkManagerUnderTest.RequestNewChunksFromChunkData(chunksToRender);
+            chunkManagerUnderTest.CreateNewChunksFromChunkData(chunksToRender);
             
             Assert.That(chunkManagerUnderTest.GetChunkPool(), Is.Not.Null); // there should be a chunkPool
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData], Is.Not.Null);
@@ -91,7 +91,7 @@ namespace EditModeTests
             chunksToRender.Add(chunkData1);
             chunksToRender.Add(chunkData2);
             
-            chunkManagerUnderTest.RequestNewChunksFromChunkData(chunksToRender);
+            chunkManagerUnderTest.CreateNewChunksFromChunkData(chunksToRender);
             
             Assert.That(chunkManagerUnderTest.GetChunkPool(), Is.Not.Null);
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData1], Is.Not.Null);
@@ -113,7 +113,7 @@ namespace EditModeTests
             
             // first render the chunk
             var chunksToRender = new List<ChunkManager.ChunkData> { chunkData };
-            chunkManagerUnderTest.RequestNewChunksFromChunkData(chunksToRender);
+            chunkManagerUnderTest.CreateNewChunksFromChunkData(chunksToRender);
             
             // Check that it's been added to the active chunks list (sanity check here)
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData], Is.Not.Null);

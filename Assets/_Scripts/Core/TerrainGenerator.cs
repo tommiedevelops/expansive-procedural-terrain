@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using _Scripts.ChunkingSystem;
@@ -27,6 +28,7 @@ namespace _Scripts.Core {
         private float _renderDistance;
         
         #endregion
+        
         #region Unity Functions
         private void Awake()
         {
@@ -49,8 +51,7 @@ namespace _Scripts.Core {
             var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
             
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            _chunkManager.RequestNewChunksFromChunkData(chunksToRender); 
+            _chunkManager.CreateNewChunksFromChunkData(chunksToRender); 
         }
 
         private void Update()

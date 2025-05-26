@@ -4,6 +4,7 @@ using NUnit.Framework.Constraints;
 using UnityEngine;
 using Random = System.Random;
 using _Scripts.NoiseSystem;
+// ReSharper disable All
 
 namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
@@ -38,13 +39,11 @@ namespace _Scripts.ChunkingSystem {
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
         private static NoiseGenerator _noiseGenerator;
         
-        // ReSharper disable Unity.PerformanceAnalysis
         public static GameObject CreateChunk(ChunkData chunkData)
         {
             if (_noiseGenerator == null)
-            {
                 throw new ArgumentException("No Noise Generator has been created");
-            }
+            
             
             var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}, NV: {chunkData.NumVertices}")
             {
@@ -56,14 +55,16 @@ namespace _Scripts.ChunkingSystem {
                 }
             };
             
+            _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
+            float distanceBetweenPoints = chunkData.SideLength / (chunkData.NumVertices - 1);
+            float heightMultiplier = 20f;
+            var heightMap = _noiseGenerator.GenerateHeightMap(chunkData.BotLeftPoint, heightMultiplier, distanceBetweenPoints);
+            
             // Generate Mesh
-            var mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(
+            var mesh = PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                heightMap,
                 new PlaneMeshGenerator.MeshData(chunkData.NumVertices, chunkData.NumVertices, chunkData.SideLength)
                 );
-            
-            // Apply noise
-            _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
-            _noiseGenerator.ApplyNoise(mesh, chunkData.BotLeftPoint, 100);
             
             // Assign mesh to gameObject
             gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
@@ -74,16 +75,12 @@ namespace _Scripts.ChunkingSystem {
         }
         public static void SetChunkPosition(GameObject chunk, Vector3 position) { chunk.transform.position = position; }
         public Dictionary<ChunkData, GameObject> GetActiveChunks() { return _activeChunks; }
-        public void RequestNewChunksFromChunkData(List<ChunkData> chunkDataList)
+        public void CreateNewChunksFromChunkData(List<ChunkData> chunkDataList)
         {
-            
             foreach (var chunkData in chunkDataList)
-            {
                 _activeChunks[chunkData] = CreateChunk(chunkData);
-            }
-            
         }
-        // ReSharper disable Unity.PerformanceAnalysis
+        
         public void RecycleChunks(List<ChunkData> culledChunks)
         {
             foreach (var chunkData in culledChunks)
