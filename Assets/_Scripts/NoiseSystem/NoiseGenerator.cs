@@ -34,6 +34,10 @@ namespace _Scripts.NoiseSystem
         
         public int GetGridWidth() => _gridWidth;
         public int GetGridLength() => _gridLength;
+
+        public float[,] GetFloatArray() => _heightMap;
+        
+        
     }
     public class NoiseGenerator
     {
@@ -41,30 +45,19 @@ namespace _Scripts.NoiseSystem
         private int _gridWidth = 0;
         private int _gridHeight = 0;
         private Vector3 _worldSpaceOrigin = new(0, 0, 0);
-        public void ApplyNoise(Mesh mesh, Vector2 offset, float multiplier)
-        {
-            var newVertices = new Vector3[mesh.vertexCount];
-            var i = 0;
-            for(var y = 0; y < _gridWidth; y++)
-            for (var x = 0; x < _gridHeight; x++)
-            {
-                var yValAdjustment = new Vector3(0f, SampleNoise(offset.x + x, offset.y + y), 0f);
-                newVertices[i] = mesh.vertices[i] + multiplier * yValAdjustment;
-                i++;
-            }
-            RenormalizeMeshVertices(newVertices);  
-            mesh.vertices = newVertices;
-            mesh.RecalculateNormals();
-              
-        }
-        
         public HeightMap GenerateHeightMap(Vector2 offset, float multiplier, float distanceBetweenPoints)
         {
             var heightMap = new HeightMap(_gridHeight, _gridWidth);
             
             for(var y = 0; y < _gridWidth; y++)
             for (var x = 0; x < _gridHeight; x++)
-                heightMap.SetPoint(x, y, multiplier * SampleNoise(offset.x + x * distanceBetweenPoints, offset.y + y * distanceBetweenPoints));
+                heightMap.SetPoint(x, y, SampleNoise(offset.x + x * distanceBetweenPoints, offset.y + y * distanceBetweenPoints));
+            
+            RenormalizeHeightMap(heightMap.GetFloatArray());
+            
+            for(var y = 0; y < _gridWidth; y++)
+            for (var x = 0; x < _gridHeight; x++)
+                heightMap.SetPoint(x, y, multiplier*heightMap.GetPoint(x,y));
             
             return heightMap;
         }
@@ -73,27 +66,28 @@ namespace _Scripts.NoiseSystem
             var unnormalizedSum = _noiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
             return unnormalizedSum;
         }
-        private static void RenormalizeMeshVertices(Vector3[] meshVertices)
+        private static void RenormalizeHeightMap(float[,] heightMap)
         {
 
             // 1. Find min and max Y
-            float minY = float.MaxValue;
-            float maxY = float.MinValue;
+            var minY = float.MaxValue;
+            var maxY = float.MinValue;
 
-            foreach (var v in meshVertices)
+            foreach (var height in heightMap)
             {
-                if (v.y < minY) minY = v.y;
-                if (v.y > maxY) maxY = v.y;
+                if (height < minY) minY = height;
+                if (height > maxY) maxY = height;
             }
 
             float range = maxY - minY;
             if (range == 0f) return; // flat mesh, nothing to normalize
 
             // 2. Normalize Y values to [-1 1]
-            for (int i = 0; i < meshVertices.Length; i++)
+            for (int i = 0; i < heightMap.GetLength(0); i++)
+                for(int j = 0; j < heightMap.GetLength(1); j++)
             {
-                float normalizedY = 2f * (meshVertices[i].y - minY) / range - 1f;
-                meshVertices[i].y = normalizedY;
+                var normalizedY = 2f * (heightMap[i,j] - minY) / range - 1f;
+                heightMap[i,j] = normalizedY;
             }
 
         }

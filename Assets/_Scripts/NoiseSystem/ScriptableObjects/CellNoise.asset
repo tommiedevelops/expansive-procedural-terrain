@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96f0403a5fe56cd4db55e2ad25a03cf8, type: 3}
   m_Name: CellNoise
   m_EditorClassIdentifier: 
-  cellSize: 33
+  cellSize: 42
   seed: 6
