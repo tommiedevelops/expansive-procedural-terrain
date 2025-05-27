@@ -45,7 +45,7 @@ namespace _Scripts.NoiseSystem
         private int _gridWidth = 0;
         private int _gridHeight = 0;
         private Vector3 _worldSpaceOrigin = new(0, 0, 0);
-        public HeightMap GenerateHeightMap(Vector2 offset, float multiplier, float distanceBetweenPoints)
+        public HeightMap GenerateHeightMap(Vector2 offset, float distanceBetweenPoints, float globalHeightMultiplier)
         {
             var heightMap = new HeightMap(_gridHeight, _gridWidth);
             
@@ -57,7 +57,7 @@ namespace _Scripts.NoiseSystem
             
             for(var y = 0; y < _gridWidth; y++)
             for (var x = 0; x < _gridHeight; x++)
-                heightMap.SetPoint(x, y, multiplier*heightMap.GetPoint(x,y));
+                heightMap.SetPoint(x, y, globalHeightMultiplier*heightMap.GetPoint(x,y));
             
             return heightMap;
         }

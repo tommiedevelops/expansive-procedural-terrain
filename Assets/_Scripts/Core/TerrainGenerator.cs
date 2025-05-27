@@ -19,6 +19,7 @@ namespace _Scripts.Core {
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
+        [SerializeField] private float globalHeightMultiplier = 1f;
         
         private QTViewer _viewer;
         private QuadTree _quadTree;
@@ -43,8 +44,10 @@ namespace _Scripts.Core {
         
         private void Start()
         {
+            // add noise from user input
             foreach(var layer in noiseLayers) _noiseGenerator.AddLayer(layer);
             ChunkManager.SetNoiseGenerator(_noiseGenerator);
+            ChunkManager.SetGlobalHeightMultiplier(globalHeightMultiplier);
             
             _quadTree.Update();
             
@@ -56,6 +59,7 @@ namespace _Scripts.Core {
 
         private void Update()
         {
+            
             var culledNodes = _quadTree.Update();
             var culledNodesConverted = ConvertQuadNodesToChunkData(culledNodes);
 
@@ -68,9 +72,11 @@ namespace _Scripts.Core {
             
             _chunkManager.RequestChunks(chunksNeeded);
             
-            
         }
-
+        
+        #endregion
+        
+        #region Helpers
         public static List<ChunkManager.ChunkData> IdentifyLeafNodesNotActive(List<ChunkManager.ChunkData> newActiveChunks, Dictionary<ChunkManager.ChunkData, GameObject>.KeyCollection currentActiveChunks)
         {
             var chunksToAdd = newActiveChunks
@@ -79,9 +85,6 @@ namespace _Scripts.Core {
 
             return chunksToAdd;
         }
-
-        #endregion
-        #region Helpers
         private List<ChunkManager.ChunkData> ConvertQuadNodesToChunkData(List<QuadNode> quadNodes)
         {
             var chunks = quadNodes
@@ -111,6 +114,7 @@ namespace _Scripts.Core {
         }
         
         #endregion
+        
         #region Getters & Setters
         public QTViewer GetViewer() { return _viewer; }
         public QuadTree GetQuadTree() { return _quadTree; }

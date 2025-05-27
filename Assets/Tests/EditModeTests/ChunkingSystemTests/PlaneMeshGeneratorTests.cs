@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using _Scripts.ChunkingSystem;
+using _Scripts.NoiseSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -16,13 +17,11 @@ namespace EditModeTests {
         public void CreateEmptyVertexGrid() {
             /* EDGE CASE: Testing creating an empty vertex list 
              */
-            float worldXLength = 0f;
-            float worldYLength = 0f;
-            int numXVerts = 0;
-            int numYVerts = 0;
 
-
-            Vector3[] actualGrid = PlaneMeshGenerator.GenerateVertexGrid(worldXLength,worldYLength,numXVerts,numYVerts);
+            Vector3[] actualGrid = PlaneMeshGenerator.GenerateVertexGridFromHeightMap(
+                new HeightMap(0,0),
+                new PlaneMeshGenerator.SquareMeshData(0,0)
+                );
 
             Assert.That(actualGrid, Is.Not.Null); // It should return something
             Assert.That(actualGrid.Length, Is.EqualTo(0)); // It should return an empty list
@@ -48,7 +47,10 @@ namespace EditModeTests {
 
             // Act
             Vector3[] expectedGrid = { point_1, point_2, point_3, point_4 };
-            var actualGrid = PlaneMeshGenerator.GenerateVertexGrid(worldXLength, worldYLength, numXVerts, numYVerts);
+            var actualGrid = PlaneMeshGenerator.GenerateVertexGridFromHeightMap(
+                new HeightMap(numXVerts, numYVerts),
+                new PlaneMeshGenerator.SquareMeshData(numXVerts, numYVerts)
+                );
 
             // Assert
 
@@ -75,7 +77,7 @@ namespace EditModeTests {
             // Act
             Vector3[] vertexArray = { point_1, point_2, point_3, point_4 };
             int[] expectedTriangleArray = { 0, 2, 3, 0, 3, 1 }; // Triangles defined clockwise
-            int[] actualTriangleArray = PlaneMeshGenerator.GenerateTriangleArray(vertexArray, 2, 2);
+            int[] actualTriangleArray = PlaneMeshGenerator.GenerateTriangleArray(2);
 
             // Assert
             Assert.That(actualTriangleArray.Length, Is.EqualTo(expectedTriangleArray.Length));
@@ -89,8 +91,11 @@ namespace EditModeTests {
         #region Mesh Generation Tests
         [Test]
         public void TestTwoByTwoMeshGeneration() {
-            PlaneMeshGenerator.MeshData meshData = new(2, 2, 1);
-            Mesh mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(meshData);
+            var squareMeshData = new  PlaneMeshGenerator.SquareMeshData(2,2);
+            var mesh = PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                new HeightMap(0,0),
+                new PlaneMeshGenerator.SquareMeshData(0, 0)
+                );
 
             var point_1 = new Vector3(0f, 0f, 0f);
             var point_2 = new Vector3(1f, 0f, 0f);

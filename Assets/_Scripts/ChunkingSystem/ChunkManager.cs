@@ -4,6 +4,7 @@ using NUnit.Framework.Constraints;
 using UnityEngine;
 using Random = System.Random;
 using _Scripts.NoiseSystem;
+using static _Scripts.ChunkingSystem.PlaneMeshGenerator;
 // ReSharper disable All
 
 namespace _Scripts.ChunkingSystem {
@@ -38,12 +39,12 @@ namespace _Scripts.ChunkingSystem {
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
         private static NoiseGenerator _noiseGenerator;
+        private static float _globalHeightMultiplier = 1f;
         
         public static GameObject CreateChunk(ChunkData chunkData)
         {
             if (_noiseGenerator == null)
-                throw new ArgumentException("No Noise Generator has been created");
-            
+                throw new Exception("No Noise Generator has been created");
             
             var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}, NV: {chunkData.NumVertices}")
             {
@@ -55,16 +56,14 @@ namespace _Scripts.ChunkingSystem {
                 }
             };
             
+            // Prepare a heightMap for the chunk
             _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
-            float distanceBetweenPoints = chunkData.SideLength / (chunkData.NumVertices - 1);
-            float heightMultiplier = 20f;
-            var heightMap = _noiseGenerator.GenerateHeightMap(chunkData.BotLeftPoint, heightMultiplier, distanceBetweenPoints);
+            float distanceBetweenPoints = (float)chunkData.SideLength / (float)(chunkData.NumVertices - 1);
+            var heightMap = _noiseGenerator.GenerateHeightMap(chunkData.BotLeftPoint, distanceBetweenPoints, _globalHeightMultiplier);
+            var meshData = new SquareMeshData(chunkData.NumVertices, chunkData.SideLength);
             
-            // Generate Mesh
-            var mesh = PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
-                heightMap,
-                new PlaneMeshGenerator.MeshData(chunkData.NumVertices, chunkData.NumVertices, chunkData.SideLength)
-                );
+            // Generate Mesh from height map 
+            var mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
             
             // Assign mesh to gameObject
             gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
@@ -80,7 +79,6 @@ namespace _Scripts.ChunkingSystem {
             foreach (var chunkData in chunkDataList)
                 _activeChunks[chunkData] = CreateChunk(chunkData);
         }
-        
         public void RecycleChunks(List<ChunkData> culledChunks)
         {
             foreach (var chunkData in culledChunks)
@@ -96,7 +94,6 @@ namespace _Scripts.ChunkingSystem {
             }
         }
         public ChunkPool GetChunkPool() { return _chunkPool; }
-
         public void RequestChunks(List<ChunkData> chunksToAdd)
         {
             foreach (var chunkData in chunksToAdd)
@@ -115,10 +112,13 @@ namespace _Scripts.ChunkingSystem {
 
             }
         }
-
         public static void SetNoiseGenerator(NoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
+        }
+        public static void SetGlobalHeightMultiplier(float globalHeightMultiplier)
+        {
+            _globalHeightMultiplier =  globalHeightMultiplier;
         }
     }
 

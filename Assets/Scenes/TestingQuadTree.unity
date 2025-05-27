@@ -340,9 +340,8 @@ MonoBehaviour:
   rootNodeLengthMultiplier: 50
   viewerCamera: {fileID: 786935566}
   noiseLayers:
-  - {fileID: 11400000, guid: 13078924def356841b36a4a66976c88d, type: 2}
-  - {fileID: 11400000, guid: 178bf47ac74af1443b9f8f1edfd2cfa6, type: 2}
-  - {fileID: 11400000, guid: 2f259b72adda18f45a008de3b014e328, type: 2}
+  - {fileID: 11400000, guid: 38a88b8a1630a224cb220ce840b248e2, type: 2}
+  globalHeightMultiplier: 2
 --- !u!1001 &428172463
 PrefabInstance:
   m_ObjectHideFlags: 0

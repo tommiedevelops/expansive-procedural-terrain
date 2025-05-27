@@ -7,6 +7,7 @@ using UnityEditor.Animations;
 using Unity.Hierarchy;
 using System.Net.Mail;
 using _Scripts.ChunkingSystem;
+using _Scripts.NoiseSystem;
 
 namespace EditModeTests {
     public class ChunkPoolTests {
@@ -51,7 +52,10 @@ namespace EditModeTests {
             var chunkAdded = new GameObject();
             const float sideLength = 1f;
             const int numVertices = 2;
-            var mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(numVertices, numVertices, sideLength));
+            var mesh = PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                new HeightMap(0,0),
+                new PlaneMeshGenerator.SquareMeshData(numVertices, numVertices)
+                );
             var meshFilter = chunkAdded.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
 
@@ -93,7 +97,10 @@ namespace EditModeTests {
             const int numVertices = 2;
             var chunk = new GameObject();
             var meshFilter = chunk.AddComponent<MeshFilter>();
-            var mesh = PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(numVertices, numVertices, sideLength));
+            var mesh = PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                new HeightMap(0,0),
+                new PlaneMeshGenerator.SquareMeshData(numVertices, numVertices)
+            );
             meshFilter.sharedMesh = mesh;
             
             chunkPoolUnderTest.RecycleChunk(chunk, sideLength);
@@ -114,13 +121,22 @@ namespace EditModeTests {
             var chunk3 = new GameObject();
 
             chunk1.AddComponent<MeshFilter>().sharedMesh =
-                PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 1));
-            
+                PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                    new HeightMap(0, 0),
+                    new PlaneMeshGenerator.SquareMeshData(2, 1)
+                    );
+
             chunk2.AddComponent<MeshFilter>().sharedMesh =
-                PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 2));
-            
+                PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                    new HeightMap(0, 0),
+                    new PlaneMeshGenerator.SquareMeshData(2, 1)
+                );
+
             chunk3.AddComponent<MeshFilter>().sharedMesh =
-                PlaneMeshGenerator.GenerateFlatPlaneMesh(new PlaneMeshGenerator.MeshData(2, 2, 3));
+                PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(
+                    new HeightMap(0, 0),
+                    new PlaneMeshGenerator.SquareMeshData(2, 1)
+                );
             
             chunkPoolUnderTest.RecycleChunk(chunk1, 1);
             chunkPoolUnderTest.RecycleChunk(chunk2, 2);
