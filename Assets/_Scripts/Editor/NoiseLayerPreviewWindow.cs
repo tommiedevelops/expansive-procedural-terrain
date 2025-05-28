@@ -14,16 +14,17 @@ namespace _Scripts.Editor
             window.titleContent = new GUIContent("Noise Layer Preview");
             window.Show();
         }
-
+        
         private NoiseLayerSO _noiseLayerSo;
         private Texture2D _previewTexture;
         private SerializedObject _serializedSettings;
         private Vector2Int _previewResolution = new Vector2Int(256, 256);
-
+        
         private void OnGUI()
         {
             _noiseLayerSo = (NoiseLayerSO)EditorGUILayout.ObjectField("Noise Layer", _noiseLayerSo, typeof(NoiseLayerSO), false);
-
+            
+            
             if (!_noiseLayerSo) return;
 
             // Create or update the serialized object
@@ -58,7 +59,6 @@ namespace _Scripts.Editor
                 GUILayout.Label(_previewTexture, GUILayout.Width(_previewResolution.x), GUILayout.Height(_previewResolution.y));
             }
         }
-
         private Texture2D GenerateNoisePreview(NoiseLayerSO layerSo, int width, int height)
         {
             var tex = new Texture2D(width, height);
