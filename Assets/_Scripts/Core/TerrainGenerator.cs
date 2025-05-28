@@ -20,8 +20,7 @@ namespace _Scripts.Core {
         [SerializeField] private Camera viewerCamera;
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
         [SerializeField] private float globalHeightMultiplier = 1f;
-        [SerializeField] private float maxWorldHeight = 10f;
-        [SerializeField] private float minWorldHeight = -10f;
+        [SerializeField] private float nodeMultiplier = 3f;
         
         private QTViewer _viewer;
         private QuadTree _quadTree;
@@ -50,7 +49,6 @@ namespace _Scripts.Core {
             foreach(var layer in noiseLayers) _noiseGenerator.AddLayer(layer);
             ChunkManager.SetNoiseGenerator(_noiseGenerator);
             ChunkManager.SetGlobalHeightMultiplier(globalHeightMultiplier);
-            _noiseGenerator.SetWorldHeightBounds(minWorldHeight, maxWorldHeight);
             
             _quadTree.Update();
             
@@ -110,7 +108,7 @@ namespace _Scripts.Core {
             var rootNodeBottomLeftPoint = new Vector2(-rootNodeSideLength /2f, -rootNodeSideLength /2f);
             var rootNode = new QuadNode(null, rootNodeBottomLeftPoint, rootNodeSideLength);
             
-            var quadTree = new QuadTree(rootNode, MIN_CHUNK_SIZE);
+            var quadTree = new QuadTree(rootNode, MIN_CHUNK_SIZE, nodeMultiplier);
             quadTree.SetViewer(_viewer);
 
             return quadTree;

@@ -18,9 +18,10 @@ namespace EditModeTests
         public void Can_Create_Empty_QuadTree() {
             const float rootNodeSideLength = 1024;
             const int minChunkSize = 120;
+            const float nodeMultiplier = 1f;
             var botLeftPoint = new Vector2(-rootNodeSideLength / 2f, -rootNodeSideLength / 2f);
             var rootNode = new QuadNode(null, botLeftPoint, rootNodeSideLength);
-            var tree = new QuadTree(rootNode, minChunkSize);
+            var tree = new QuadTree(rootNode, minChunkSize, nodeMultiplier);
 
             Assert.That(tree != null);
             Assert.That(tree.GetRootNode(), Is.EqualTo(rootNode));
@@ -33,9 +34,10 @@ namespace EditModeTests
         {
             const float sideLength = 8f;
             const int minChunkSize = 2;
+            const float nodeMultiplier = 1f;
             var botLeftPoint = new Vector2(-sideLength / 2f, -sideLength / 2f);
             var rootNode = new QuadNode(null, botLeftPoint, 8f);
-            var quadTree = new QuadTree(rootNode, minChunkSize);
+            var quadTree = new QuadTree(rootNode, minChunkSize, nodeMultiplier);
             var cameraTransform = new GameObject().transform;
             var viewer = new QTViewer(cameraTransform, 30f, 1f);
             
@@ -52,8 +54,9 @@ namespace EditModeTests
         public void Testing_Update_Method_Returns_Correct_Culled_Nodes_Simple()
         {
             const int minChunkSize = 2;
+            const float nodeMutliplier = 1f;
             var rootNode = new QuadNode(null, Vector2.zero, 8f);
-            var quadTreeUnderTest = new QuadTree(rootNode, minChunkSize);
+            var quadTreeUnderTest = new QuadTree(rootNode, minChunkSize, nodeMutliplier);
             var go = new GameObject();
             go.transform.position = new Vector3(6f, 0f, 6f);
             var viewer = new QTViewer(go.transform, 30, 1);
@@ -96,7 +99,8 @@ namespace EditModeTests
         public void Levels_Are_Correct()
         {
             var rootNode = new QuadNode(null, Vector2.zero, 8f);
-            var quadTreeUnderTest = new QuadTree(rootNode, 2);
+            const float nodeMultiplier = 1f;
+            var quadTreeUnderTest = new QuadTree(rootNode, 2, nodeMultiplier);
             var go = new GameObject();
             go.transform.position = new Vector3(1f, 0f, 0f);
             var viewer = new QTViewer(go.transform, 30, 1);

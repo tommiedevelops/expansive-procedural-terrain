@@ -13,13 +13,15 @@ namespace _Scripts.QuadTreeSystem
 
         private int _minChunkSize;
         private int _treeHeight;
+        private float _nodeMultiplier;
 
         #endregion
 
-        public QuadTree(QuadNode rootNode, int minChunkSize) {
+        public QuadTree(QuadNode rootNode, int minChunkSize, float nodeMultiplier) {
             // Assign Vars
             _rootNode = rootNode;
             _minChunkSize =  minChunkSize;
+            _nodeMultiplier = nodeMultiplier;
         }
 
         #region Getters & Setters
@@ -45,22 +47,22 @@ namespace _Scripts.QuadTreeSystem
                 QuadNode curr = queue.Dequeue();
                 if (null == curr) continue;
                 if(curr.GetLevel() > maxLevel) maxLevel = curr.GetLevel();
-                
-                Bounds triBounds = _viewer.GetTriBounds();
 
-                if(!curr.IsLeafNode() && curr.IntersectsWithViewTri(triBounds)) {
+                var viewerPosition = _viewer.GetPosition();
+
+                if(!curr.IsLeafNode() && curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
                     EnqueueChildren(queue, curr);
                     continue;
                 }
 
-                if(!curr.IsLeafNode() && !curr.IntersectsWithViewTri(triBounds)) {
+                if(!curr.IsLeafNode() && !curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
                     // turn this bad boy into a leaf node
                     culledNodes.AddRange(curr.GetAllLeafNodes());
                     curr.ClearChildren();
                     continue;
                 }
 
-                if (curr.IsLeafNode() && curr.IntersectsWithViewTri(triBounds)) {
+                if (curr.IsLeafNode() && curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
                     if (curr.GetSideLength() > _minChunkSize) {
                         SplitNode(curr);
                         culledNodes.Add(curr);
@@ -69,7 +71,7 @@ namespace _Scripts.QuadTreeSystem
                     continue;
                 }
 
-                if(curr.IsLeafNode() && !curr.IntersectsWithViewTri(triBounds)) {
+                if(curr.IsLeafNode() && !curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
                     continue;
                 }
 

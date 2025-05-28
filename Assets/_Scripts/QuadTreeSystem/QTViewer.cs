@@ -101,4 +101,6 @@ public class QTViewer {
 
     #endregion
 
+    public Vector2 GetPosition() => new Vector2(_cameraTransform.position.x, _cameraTransform.position.z);
+
 }
