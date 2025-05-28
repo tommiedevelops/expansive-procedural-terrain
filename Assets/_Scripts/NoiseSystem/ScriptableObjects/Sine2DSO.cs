@@ -11,6 +11,6 @@ public class Sine2DSO : NoiseLayerSO
 
     public override float Evaluate(Vector2 point)
     {
-        return Mathf.Sin(0.2f*point.x + point.y);
+        return Mathf.Exp(-(point.x + point.y));
     }
 }

@@ -45,15 +45,18 @@ namespace _Scripts.NoiseSystem
         private int _gridWidth = 0;
         private int _gridHeight = 0;
         private Vector3 _worldSpaceOrigin = new(0, 0, 0);
-        public HeightMap GenerateHeightMap(Vector2 offset, float distanceBetweenPoints, float globalHeightMultiplier)
+        private float _maxWorldHeight = 10f;
+        private float _minWorldHeight = -10f;
+        
+        public HeightMap GenerateHeightMap(Vector2 botLeftPointInGlobalCoords, float distanceBetweenPoints, float globalHeightMultiplier)
         {
             var heightMap = new HeightMap(_gridHeight, _gridWidth);
             
             for(var y = 0; y < _gridWidth; y++)
             for (var x = 0; x < _gridHeight; x++)
-                heightMap.SetPoint(x, y, SampleNoise(offset.x + x * distanceBetweenPoints, offset.y + y * distanceBetweenPoints));
+                heightMap.SetPoint(x, y, SampleNoise(botLeftPointInGlobalCoords.x + x * distanceBetweenPoints, botLeftPointInGlobalCoords.y + y * distanceBetweenPoints));
             
-            RenormalizeHeightMap(heightMap.GetFloatArray());
+            //RenormalizeHeightMap(heightMap.GetFloatArray());
             
             for(var y = 0; y < _gridWidth; y++)
             for (var x = 0; x < _gridHeight; x++)
@@ -66,27 +69,23 @@ namespace _Scripts.NoiseSystem
             var unnormalizedSum = _noiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
             return unnormalizedSum;
         }
-        private static void RenormalizeHeightMap(float[,] heightMap)
+        private void RenormalizeHeightMap(float[,] heightMap)
         {
-
-            // 1. Find min and max Y
-            var minY = float.MaxValue;
-            var maxY = float.MinValue;
-
+            
             foreach (var height in heightMap)
             {
-                if (height < minY) minY = height;
-                if (height > maxY) maxY = height;
+                if (height < _minWorldHeight) _minWorldHeight = height;
+                if (height > _maxWorldHeight) _maxWorldHeight = height;
             }
 
-            float range = maxY - minY;
+            float range = _maxWorldHeight - _minWorldHeight;
             if (range == 0f) return; // flat mesh, nothing to normalize
 
             // 2. Normalize Y values to [-1 1]
             for (int i = 0; i < heightMap.GetLength(0); i++)
                 for(int j = 0; j < heightMap.GetLength(1); j++)
             {
-                var normalizedY = 2f * (heightMap[i,j] - minY) / range - 1f;
+                var normalizedY = 2f * (heightMap[i,j] - _minWorldHeight) / range - 1f;
                 heightMap[i,j] = normalizedY;
             }
 
@@ -135,5 +134,11 @@ namespace _Scripts.NoiseSystem
 
         
         #endregion
+
+        public void SetWorldHeightBounds(float minWorldHeight, float maxWorldHeight)
+        {
+            _minWorldHeight = minWorldHeight;
+            _maxWorldHeight = maxWorldHeight;
+        }
     }
 }

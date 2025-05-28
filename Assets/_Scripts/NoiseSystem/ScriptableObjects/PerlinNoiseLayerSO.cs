@@ -40,6 +40,6 @@ public class PerlinNoiseLayerSo : NoiseLayerSO
             frequency *= lacunarity;
         }
 
-        return Mathf.Clamp01(noiseHeight);
+        return noiseHeight;
     }
 }

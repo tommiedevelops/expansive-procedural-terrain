@@ -58,9 +58,8 @@ namespace _Scripts.ChunkingSystem {
             
             // Prepare a heightMap for the chunk
             _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
-            float distanceBetweenPoints = (float)chunkData.SideLength / (float)(chunkData.NumVertices - 1);
-            var heightMap = _noiseGenerator.GenerateHeightMap(chunkData.BotLeftPoint, distanceBetweenPoints, _globalHeightMultiplier);
             var meshData = new SquareMeshData(chunkData.NumVertices, chunkData.SideLength);
+            var heightMap = _noiseGenerator.GenerateHeightMap(chunkData.BotLeftPoint, meshData.DistanceBetweenPoints, _globalHeightMultiplier);
             
             // Generate Mesh from height map 
             var mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
@@ -87,10 +86,10 @@ namespace _Scripts.ChunkingSystem {
                 {
                     // A chunk has not been generated for this node.
                     continue;
-                };
+                }
                 chunkRemoved.SetActive(false);
                 _activeChunks.Remove(chunkData);
-                _chunkPool.RecycleChunk(chunkRemoved, chunkData.SideLength);
+                _chunkPool.RecycleChunk(chunkRemoved, chunkData.SideLength, chunkData.BotLeftPoint);
             }
         }
         public ChunkPool GetChunkPool() { return _chunkPool; }
@@ -98,7 +97,7 @@ namespace _Scripts.ChunkingSystem {
         {
             foreach (var chunkData in chunksToAdd)
             {
-                var chunk = _chunkPool.RequestChunk(chunkData.SideLength);
+                var chunk = _chunkPool.RequestChunk(chunkData.SideLength, chunkData.BotLeftPoint);
 
                 if (chunk is null)
                 {
