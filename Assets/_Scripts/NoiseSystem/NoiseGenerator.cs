@@ -10,11 +10,13 @@ namespace _Scripts.NoiseSystem
     // responsible for adding noise layers together and producing 
     // a final height map
 
-    public struct HeightMap
+    
+    
+    public readonly struct HeightMap
     {
-        private int _gridLength;
-        private int _gridWidth;
-        private float[,] _heightMap;
+        private readonly int _gridLength;
+        private readonly int _gridWidth;
+        private readonly float[,] _heightMap;
         public HeightMap(int gridLength, int gridWidth)
         {
             _gridLength = gridLength;
@@ -39,8 +41,12 @@ namespace _Scripts.NoiseSystem
         
         
     }
-    public class NoiseGenerator
+    public class NoiseGenerator : MonoBehaviour
     {
+        [SerializeField] private List<NoiseLayerSO> additiveNoiseLayers;
+        [SerializeField] private List<NoiseLayerSO> multiplicativeNoiseLayers;
+        [SerializeField] private List<NoiseLayerSO> compositionalNoiseLayers;
+        
         private readonly List<NoiseLayerSO> _noiseLayers = new();
         private int _gridWidth = 0;
         private int _gridHeight = 0;
@@ -56,7 +62,7 @@ namespace _Scripts.NoiseSystem
             for (var x = 0; x < _gridHeight; x++)
                 heightMap.SetPoint(x, y, SampleNoise(botLeftPointInGlobalCoords.x + x * distanceBetweenPoints, botLeftPointInGlobalCoords.y + y * distanceBetweenPoints));
             
-            //RenormalizeHeightMap(heightMap.GetFloatArray());
+            RenormalizeHeightMap(heightMap.GetFloatArray());
             
             for(var y = 0; y < _gridWidth; y++)
             for (var x = 0; x < _gridHeight; x++)
@@ -66,8 +72,14 @@ namespace _Scripts.NoiseSystem
         }
         private float SampleNoise(float x, float y)
         {
-            var unnormalizedSum = _noiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
-            return unnormalizedSum;
+            var result = additiveNoiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
+
+            foreach (var layer in compositionalNoiseLayers)
+            {
+                result = layer.Compose(result, new Vector2(x, y));
+            }
+
+            return result;
         }
         private void RenormalizeHeightMap(float[,] heightMap)
         {

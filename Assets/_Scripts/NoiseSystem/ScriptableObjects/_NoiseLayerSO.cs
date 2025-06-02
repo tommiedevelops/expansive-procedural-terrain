@@ -11,5 +11,7 @@ namespace _Scripts.NoiseSystem.ScriptableObjects
         {
             ValidateValues();
         }
+
+        public abstract float Compose(float currentValue, Vector2 point);
     }
 }

@@ -47,6 +47,11 @@ namespace _Scripts.NoiseSystem.ScriptableObjects
             return 1f - Mathf.Clamp01(minDist / maxDist);
         }
 
+        public override float Compose(float currentValue, Vector2 point)
+        {
+            throw new System.NotImplementedException();
+        }
+
         private Vector2 GetRandomOffset(int x, int y)
         {
             int hash = x * 73856093 ^ y * 19349663 ^ seed * 83492791;

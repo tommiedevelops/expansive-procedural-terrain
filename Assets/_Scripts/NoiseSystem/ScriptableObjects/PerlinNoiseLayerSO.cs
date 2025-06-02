@@ -42,4 +42,9 @@ public class PerlinNoiseLayerSo : NoiseLayerSO
 
         return noiseHeight;
     }
+
+    public override float Compose(float currentValue, Vector2 point)
+    {
+        throw new System.NotImplementedException();
+    }
 }

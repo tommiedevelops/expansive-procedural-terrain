@@ -22,6 +22,11 @@ namespace EditModeTests
             {
                 return 1f;
             }
+
+            public override float Compose(float currentValue, Vector2 point)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
         private class ExampleNoise2 : NoiseLayerSO
@@ -36,6 +41,11 @@ namespace EditModeTests
             {
                 return Mathf.Approximately((point.x+point.y), 2f) ? 1 : 0;
             }
+
+            public override float Compose(float currentValue, Vector2 point)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
         private class ExampleNoise3 : NoiseLayerSO
@@ -49,6 +59,11 @@ namespace EditModeTests
             public override float Evaluate(Vector2 point)
             {
                 return (point.x == 0 && point.y == 0) ? 1 : 0;
+            }
+
+            public override float Compose(float currentValue, Vector2 point)
+            {
+                throw new System.NotImplementedException();
             }
         }
 

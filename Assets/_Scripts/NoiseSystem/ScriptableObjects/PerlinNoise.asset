@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61b740ece3d5c2e44a41835c3f43212a, type: 3}
   m_Name: PerlinNoise
   m_EditorClassIdentifier: 
-  scale: 31.08
-  octaves: 3
-  persistence: 0.4
-  lacunarity: 1.82
-  offset: {x: 10.71, y: 8.7}
+  scale: 86.1
+  octaves: 2
+  persistence: 0.41
+  lacunarity: 2.9
+  offset: {x: 11.2, y: 45.85}

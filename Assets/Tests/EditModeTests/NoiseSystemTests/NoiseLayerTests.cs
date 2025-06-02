@@ -20,6 +20,11 @@ namespace EditModeTests
         {
             return 0f;
         }
+
+        public override float Compose(float currentValue, Vector2 point)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class NoiseLayerSoTests
     {
