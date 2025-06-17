@@ -2,7 +2,6 @@
 
 An optimized and modular procedural terrain generation system designed for real-time rendering in Unity. This project implements a quad tree algorithm to efficiently generate large-scale terrain using a viewer-dependent level of detail system.
 
-## Click for Demo! (Current state)
 ![Procedural Terrain Demo](thumbnail.png)
 
 ## Features
