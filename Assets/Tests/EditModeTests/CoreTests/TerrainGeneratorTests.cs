@@ -17,23 +17,23 @@ namespace EditModeTests
             var go = new GameObject();
             var terrainGeneratorUnderTest = go.AddComponent<TerrainGenerator>();
             
-            var chunkData1 = new ChunkManager.ChunkData()
+            var chunkData1 = new ChunkData()
             {
                 SideLength = 1f
             };
             
-            var chunkData2 = new ChunkManager.ChunkData()
+            var chunkData2 = new ChunkData()
             {
                 SideLength = 2f
             };
 
-            var chunkData3 = new ChunkManager.ChunkData()
+            var chunkData3 = new ChunkData()
             {
                 SideLength = 3f
             };
 
-            var activeChunks = new Dictionary<ChunkManager.ChunkData, GameObject>();
-            var chunksFromLeafNodes = new List<ChunkManager.ChunkData>();
+            var activeChunks = new Dictionary<ChunkData, GameObject>();
+            var chunksFromLeafNodes = new List<ChunkData>();
 
             activeChunks[chunkData1] = new GameObject();
             activeChunks[chunkData2] = new GameObject();

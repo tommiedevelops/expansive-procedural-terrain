@@ -12,9 +12,15 @@ using UnityEngine.Serialization;
 namespace _Scripts.Core {
     public class TerrainGenerator : MonoBehaviour
     {
-        #region Fields
+        // Unity Facing Class
 
         private const int MIN_CHUNK_SIZE = 240;
+
+        private ChunkManager _chunkManager;
+        private NoiseGenerator _noiseGenerator;
+        private QTViewer _terrainViewer;
+        private QuadTree _quadTree;
+        private LODManager _lodManager;
         
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
@@ -23,20 +29,11 @@ namespace _Scripts.Core {
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
         
-        private QTViewer _viewer;
-        private QuadTree _quadTree;
-        private ChunkManager  _chunkManager;
-        private LODManager _lodManager;
         private float _renderDistance;
-        
-        #endregion
-        
-        #region Unity Functions
         private void Awake()
         {
             _renderDistance = viewerCamera.farClipPlane;
-            // keeping QTViewer here in case I want to modify algorithm again
-            _viewer = new QTViewer(viewerCamera.transform, viewerCamera.fieldOfView, _renderDistance);
+            _terrainViewer = new QTViewer(viewerCamera.transform, viewerCamera.fieldOfView, _renderDistance);
             _chunkManager = new ChunkManager();
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
@@ -76,21 +73,19 @@ namespace _Scripts.Core {
             
         }
         
-        #endregion
-        
         #region Helpers
-        public static List<ChunkManager.ChunkData> IdentifyLeafNodesNotActive(List<ChunkManager.ChunkData> newActiveChunks, Dictionary<ChunkManager.ChunkData, GameObject>.KeyCollection currentActiveChunks)
+        public static List<ChunkData> IdentifyLeafNodesNotActive(List<ChunkData> newActiveChunks, Dictionary<ChunkData, GameObject>.KeyCollection currentActiveChunks)
         {
             var chunksToAdd = newActiveChunks
-                .Where(chunk => !currentActiveChunks.Contains<ChunkManager.ChunkData>(chunk))
+                .Where(chunk => !currentActiveChunks.Contains<ChunkData>(chunk))
                 .ToList();
 
             return chunksToAdd;
         }
-        private List<ChunkManager.ChunkData> ConvertQuadNodesToChunkData(List<QuadNode> quadNodes)
+        private List<ChunkData> ConvertQuadNodesToChunkData(List<QuadNode> quadNodes)
         {
             var chunks = quadNodes
-                .Select(node => new ChunkManager.ChunkData()
+                .Select(node => new ChunkData()
                 {
                     SideLength = node.GetSideLength(),
                     BotLeftPoint = node.GetBotLeftPoint(),
@@ -101,7 +96,7 @@ namespace _Scripts.Core {
         }
         private QuadTree GenerateQuadTree()
         { // Factory method to prevent side effects
-            if (_viewer == null) throw new Exception("Viewer not initialized");
+            if (_terrainViewer == null) throw new Exception("Viewer not initialized");
             
             float rootNodeSideLength = rootNodeLengthMultiplier * MIN_CHUNK_SIZE;
             
@@ -110,7 +105,7 @@ namespace _Scripts.Core {
             var rootNode = new QuadNode(null, rootNodeBottomLeftPoint, rootNodeSideLength);
             
             var quadTree = new QuadTree(rootNode, MIN_CHUNK_SIZE, nodeMultiplier);
-            quadTree.SetViewer(_viewer);
+            quadTree.SetViewer(_terrainViewer);
 
             return quadTree;
         }
@@ -118,7 +113,7 @@ namespace _Scripts.Core {
         #endregion
         
         #region Getters & Setters
-        public QTViewer GetViewer() { return _viewer; }
+        public QTViewer GetViewer() { return _terrainViewer; }
         public QuadTree GetQuadTree() { return _quadTree; }
         public void SetCamera(Camera cam) { viewerCamera = cam; }
         public ChunkManager GetChunkManager() {return _chunkManager;}

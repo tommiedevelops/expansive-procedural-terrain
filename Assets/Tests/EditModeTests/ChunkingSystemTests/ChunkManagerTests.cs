@@ -45,11 +45,11 @@ namespace EditModeTests
             var chunkManagerUnderTest = new ChunkManager();
             
             // mock a List<ChunkData> to recycle
-            var chunksToRender = new List<ChunkManager.ChunkData>();
+            var chunksToRender = new List<ChunkData>();
             
             const float sideLength = 1f;
             
-            var chunkData = new ChunkManager.ChunkData
+            var chunkData = new ChunkData
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = sideLength,
@@ -71,17 +71,17 @@ namespace EditModeTests
             var chunkManagerUnderTest = new ChunkManager();
             
             // mock a List<ChunkData> to recycle
-            var chunksToRender = new List<ChunkManager.ChunkData>();
+            var chunksToRender = new List<ChunkData>();
             if (chunksToRender == null) throw new ArgumentNullException(nameof(chunksToRender));
 
-            var chunkData1 = new ChunkManager.ChunkData
+            var chunkData1 = new ChunkData
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = 1f,
                 NumVertices = 2
             };
             
-            var chunkData2 = new ChunkManager.ChunkData
+            var chunkData2 = new ChunkData
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = 2f,
@@ -103,7 +103,7 @@ namespace EditModeTests
         public void Can_Render_Chunk_Then_Recycle_It()
         {
             var chunkManagerUnderTest = new ChunkManager();
-            var chunkData = new ChunkManager.ChunkData
+            var chunkData = new ChunkData
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = 1f,
@@ -112,14 +112,14 @@ namespace EditModeTests
             };
             
             // first render the chunk
-            var chunksToRender = new List<ChunkManager.ChunkData> { chunkData };
+            var chunksToRender = new List<ChunkData> { chunkData };
             chunkManagerUnderTest.CreateNewChunksFromChunkData(chunksToRender);
             
             // Check that it's been added to the active chunks list (sanity check here)
             Assert.That(chunkManagerUnderTest.GetActiveChunks()[chunkData], Is.Not.Null);
             
             // then recycle the chunk
-            var chunksToRecycle = new List<ChunkManager.ChunkData> { chunkData };
+            var chunksToRecycle = new List<ChunkData> { chunkData };
             chunkManagerUnderTest.RecycleChunks(chunksToRecycle);
             chunkManagerUnderTest.GetActiveChunks().TryGetValue(chunkData, out var result);
             
@@ -132,7 +132,7 @@ namespace EditModeTests
         public void Can_Create_Chunk_Correctly_From_ChunkData()
         {
             // Prepare test chunkData
-            var chunkData = new ChunkManager.ChunkData()
+            var chunkData = new ChunkData()
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = 1f,
@@ -156,7 +156,7 @@ namespace EditModeTests
         [Test]
         public void Can_Create_Chunk_From_ChunkData()
         {
-            var chunkData = new ChunkManager.ChunkData()
+            var chunkData = new ChunkData()
             {
                 BotLeftPoint = Vector2.zero,
                 SideLength = 187.5f,

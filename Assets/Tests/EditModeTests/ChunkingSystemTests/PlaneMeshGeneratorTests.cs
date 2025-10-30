@@ -30,10 +30,8 @@ namespace EditModeTests {
         [Test]
         public void CreateTwoByTwoVertexGrid() {
             // Arrange
-            float worldXLength = 1f;
-            float worldYLength = 1f;
-            int numXVerts = 2;
-            int numYVerts = 2;
+            const int numXVerts = 2;
+            const int numYVerts = 2;
 
             // ORDER IS IMPORTANT HERE
             //  3 4

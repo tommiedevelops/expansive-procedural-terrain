@@ -8,39 +8,39 @@ using static _Scripts.ChunkingSystem.PlaneMeshGenerator;
 // ReSharper disable All
 
 namespace _Scripts.ChunkingSystem {
-    public class ChunkManager {
-        public struct ChunkData : IEquatable<ChunkData>
+    public struct ChunkData : IEquatable<ChunkData>
+    {
+        public float SideLength;
+        public int NumVertices;
+        public Vector2 BotLeftPoint;
+
+        public bool Equals(ChunkData other)
         {
-            public float SideLength;
-            public int NumVertices;
-            public Vector2 BotLeftPoint;
-
-            public bool Equals(ChunkData other)
-            {
-                return SideLength.Equals(other.SideLength) && BotLeftPoint.Equals(other.BotLeftPoint);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is ChunkData other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(SideLength, BotLeftPoint);
-            }
-
-            public void Print()
-            {
-                Debug.Log($"SL:  {SideLength}, BL: {BotLeftPoint}");
-            }
+            return SideLength.Equals(other.SideLength) && BotLeftPoint.Equals(other.BotLeftPoint);
         }
-        
+
+        public override bool Equals(object obj)
+        {
+            return obj is ChunkData other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SideLength, BotLeftPoint);
+        }
+
+        public void Print()
+        {
+            Debug.Log($"SL:  {SideLength}, BL: {BotLeftPoint}");
+        }
+    }
+    public class ChunkManager {
+                
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
         private static NoiseGenerator _noiseGenerator;
         private static float _globalHeightMultiplier = 1f;
-        
+      
         public static GameObject CreateChunk(ChunkData chunkData)
         {
             if (_noiseGenerator == null)
