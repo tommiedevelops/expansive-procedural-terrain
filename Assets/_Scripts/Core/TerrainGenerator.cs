@@ -25,16 +25,18 @@ namespace _Scripts.Core {
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
-        [SerializeField] private float globalHeightMultiplier = 5.0f;
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
+        
+        // Needed for normalizing the height values
+        [SerializeField] private float _heightRange = 5.0f;
         
         private float _renderDistance;
         private void Awake()
         {
             _renderDistance = viewerCamera.farClipPlane;
             _terrainViewer = new QTViewer(viewerCamera.transform, viewerCamera.fieldOfView, _renderDistance);
-            _chunkManager = new ChunkManager(noiseGenerator);
+            _chunkManager = new ChunkManager(noiseGenerator, _heightRange);
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
@@ -44,7 +46,6 @@ namespace _Scripts.Core {
         {
             // add noise from user input
             foreach(var layer in noiseLayers) noiseGenerator.AddLayer(layer);
-            ChunkManager.SetGlobalHeightMultiplier(globalHeightMultiplier);
             
             _quadTree.Update();
             

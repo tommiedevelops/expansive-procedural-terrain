@@ -37,17 +37,19 @@ namespace _Scripts.ChunkingSystem {
     public class ChunkManager {
 
         private NoiseGenerator _noiseGen;
-        public ChunkManager(NoiseGenerator noiseGen) {
-            _noiseGen = noiseGen;
-        }
-
+        
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
-        private static float _globalHeightMultiplier;
 
+        private float _heightRange;
+
+        public ChunkManager(NoiseGenerator noiseGen, float heightRange) {
+            _noiseGen = noiseGen;
+            _heightRange = heightRange;
+        }
         private Mesh PrepareMesh(NoiseGenerator noiseGen, ChunkData cd) {
             var meshData = new SquareMeshData(cd.NumVertices, cd.SideLength);
-            HeightMap heightMap = _noiseGen.GenerateNoiseMap(cd.BotLeftPoint, meshData.DistanceBetweenPoints, 5.0f, cd.NumVertices, cd.NumVertices);
+            HeightMap heightMap = _noiseGen.GenerateNoiseMap(cd.BotLeftPoint, meshData.DistanceBetweenPoints, _heightRange, cd.NumVertices, cd.NumVertices);
             Mesh mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
             return mesh;
         }
@@ -121,10 +123,6 @@ namespace _Scripts.ChunkingSystem {
         public void SetNoiseGenerator(NoiseGenerator noiseGenerator)
         {
             _noiseGen = noiseGenerator;
-        }
-        public static void SetGlobalHeightMultiplier(float globalHeightMultiplier)
-        {
-            _globalHeightMultiplier =  globalHeightMultiplier;
         }
     }
 

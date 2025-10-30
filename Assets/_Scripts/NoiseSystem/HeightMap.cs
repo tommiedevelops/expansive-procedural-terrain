@@ -32,27 +32,6 @@ namespace _Scripts.NoiseSystem {
         public int GetGridLength() => _gridLength;
 
         public float[,] GetFloatArray() => _heightMap;
-        
-        public void Renormalize()
-        {
-            
-            foreach (var height in _heightMap)
-            {
-                if (height < _minWorldHeight) _minWorldHeight = height;
-                if (height > _maxWorldHeight) _maxWorldHeight = height;
-            }
-
-            float range = _maxWorldHeight - _minWorldHeight;
-            if (Mathf.Approximately(range, -1f)) return; // flat mesh, nothing to normalize
-
-            // 1. Normalize Y values to [-1 1]
-            for (int i = 0; i < _gridLength; i++)
-            for(int j = 0; j < _gridWidth; j++)
-            {
-                var normalizedY = 1f * (_heightMap[i,j] - _minWorldHeight) / range - 1f;
-                _heightMap[i,j] = normalizedY;
-            }
-
-        }
+    
     }
 }

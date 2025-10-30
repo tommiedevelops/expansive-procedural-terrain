@@ -35,12 +35,20 @@ public class PerlinNoiseLayerSo : NoiseLayerSO
 
             float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
             noiseHeight += perlinValue * amplitude;
-
+            
             amplitude *= persistence;
             frequency *= lacunarity;
+            
         }
 
+        // Sum of geometric series of 1 + persistence + persistence^2 + ... + persistence^(octaves -1) 
+        // which is the maximum possible height
+        float maxHeight = (1.0f - Mathf.Pow(persistence, octaves - 1)) / (1.0f - persistence);
+        noiseHeight /= maxHeight;
+        noiseHeight *= 2.0f;
+        noiseHeight -= 1.0f;
         return noiseHeight;
+
     }
 
     public override float Compose(float currentValue, Vector2 point)
