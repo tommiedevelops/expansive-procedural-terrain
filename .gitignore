@@ -4,6 +4,8 @@
 Assets/ExternalAssets/
 Assets/ExternalAssets.meta
 "Assets/TextMesh Pro"
+.idea
+UIElementsSchema/
 
 # Unity-specific
 [Ll]ibrary/

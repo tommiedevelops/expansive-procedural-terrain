@@ -35,48 +35,58 @@ namespace _Scripts.ChunkingSystem {
         }
     }
     public class ChunkManager {
-                
+
+        private NoiseGenerator _noiseGen;
+        public ChunkManager(NoiseGenerator noiseGen) {
+            _noiseGen = noiseGen;
+        }
+
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
-        private static NoiseGenerator _noiseGenerator;
-        private static float _globalHeightMultiplier = 1f;
-      
-        public static GameObject CreateChunk(ChunkData chunkData)
-        {
-            if (_noiseGenerator == null)
-                throw new Exception("No Noise Generator has been created");
+        private static float _globalHeightMultiplier;
+
+        private Mesh PrepareMesh(NoiseGenerator noiseGen, ChunkData cd) {
+            var meshData = new SquareMeshData(cd.NumVertices, cd.SideLength);
+            HeightMap heightMap = _noiseGen.GenerateHeightMap(cd.BotLeftPoint, meshData.DistanceBetweenPoints, 5.0f);
             
-            var gameObject = new GameObject($"BL{chunkData.BotLeftPoint}, SL: {chunkData.SideLength}, NV: {chunkData.NumVertices}")
+            Mesh mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
+            
+            return mesh;
+        }
+
+        private GameObject CreateGameObject(Mesh mesh, ChunkData cd) {
+                
+            var go = new GameObject($"BL{cd.BotLeftPoint}, SL: {cd.SideLength}, NV: {cd.NumVertices}")
             {
                 transform =
                 {
-                    position = new Vector3(chunkData.BotLeftPoint.x, 0f, chunkData.BotLeftPoint.y),
+                    position = new Vector3(cd.BotLeftPoint.x, 0f, cd.BotLeftPoint.y),
                     rotation = Quaternion.identity,
                     localScale = new Vector3(1, 1, 1)
                 }
             };
+
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var material = go.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             
-            // Prepare a heightMap for the chunk
-            _noiseGenerator.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
-            var meshData = new SquareMeshData(chunkData.NumVertices, chunkData.SideLength);
-            var heightMap = _noiseGenerator.GenerateHeightMap(chunkData.BotLeftPoint, meshData.DistanceBetweenPoints, _globalHeightMultiplier);
-            
-            // Generate Mesh from height map 
-            var mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
-            
-            // Assign mesh to gameObject
-            gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
-            var material = gameObject.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            var color = (float)new Random((int)chunkData.SideLength).NextDouble();
+            var color = (float)new Random((int)cd.SideLength).NextDouble();
             material.color = new Color(color, color, color);
-            return gameObject;
+
+            return go;
+        }
+
+        public GameObject CreateGameObjectFromChunkData(ChunkData chunkData)
+        {
+            _noiseGen.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
+            Mesh mesh = PrepareMesh(_noiseGen, chunkData);
+            return CreateGameObject(mesh, chunkData);
         }
         public static void SetChunkPosition(GameObject chunk, Vector3 position) { chunk.transform.position = position; }
         public Dictionary<ChunkData, GameObject> GetActiveChunks() { return _activeChunks; }
         public void CreateNewChunksFromChunkData(List<ChunkData> chunkDataList)
         {
             foreach (var chunkData in chunkDataList)
-                _activeChunks[chunkData] = CreateChunk(chunkData);
+                _activeChunks[chunkData] = CreateGameObjectFromChunkData(chunkData);
         }
         public void RecycleChunks(List<ChunkData> culledChunks)
         {
@@ -101,7 +111,7 @@ namespace _Scripts.ChunkingSystem {
 
                 if (chunk is null)
                 {
-                    chunk = CreateChunk(chunkData);
+                    chunk = CreateGameObjectFromChunkData(chunkData);
                     _activeChunks[chunkData] = chunk;
                 } else {
                     chunk.transform.position = new Vector3(chunkData.BotLeftPoint.x, 0f, chunkData.BotLeftPoint.y);
@@ -111,9 +121,9 @@ namespace _Scripts.ChunkingSystem {
 
             }
         }
-        public static void SetNoiseGenerator(NoiseGenerator noiseGenerator)
+        public void SetNoiseGenerator(NoiseGenerator noiseGenerator)
         {
-            _noiseGenerator = noiseGenerator;
+            _noiseGen = noiseGenerator;
         }
         public static void SetGlobalHeightMultiplier(float globalHeightMultiplier)
         {
