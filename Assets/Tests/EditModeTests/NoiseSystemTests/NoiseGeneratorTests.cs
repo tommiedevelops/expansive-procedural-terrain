@@ -75,38 +75,6 @@ namespace EditModeTests
         }
 
         [Test]
-        public void Test_Origin_Is_Vector3_Zero_By_Default()
-        {
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            var expectedOrigin = new Vector3(0, 0, 0);
-            var origin = noiseGeneratorUnderTest.GetWorldSpaceOrigin();
-            Assert.AreEqual(expectedOrigin, origin);
-        }
-
-        [Test]
-        public void Test_Can_Set_Custom_Origin()
-        {
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            var customOrigin = new Vector3(1, 1, 1);
-            noiseGeneratorUnderTest.SetWorldSpaceOrigin(customOrigin);
-            Assert.AreEqual(customOrigin, noiseGeneratorUnderTest.GetWorldSpaceOrigin());
-        }
-        
-        [Test]
-        public void Test_Can_Set_Grid_Dimensions()
-        {
-            var noiseGeneratorUnderTest = new NoiseGenerator();
-            int gridWidth = 2;
-            int gridHeight = 2;
-            
-            noiseGeneratorUnderTest.SetGridWidth(gridWidth);
-            noiseGeneratorUnderTest.SetGridHeight(gridHeight);
-            
-            Assert.That(noiseGeneratorUnderTest.GetGridWidth(), Is.EqualTo(gridWidth));
-            Assert.That(noiseGeneratorUnderTest.GetGridHeight(), Is.EqualTo(gridHeight));
-        }
-        
-        [Test]
         public void Can_Remove_Specified_Layer()
         {
             var noiseGeneratorUnderTest = new NoiseGenerator();

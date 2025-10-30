@@ -45,7 +45,6 @@ namespace _Scripts.Core {
             // add noise from user input
             foreach(var layer in noiseLayers) noiseGenerator.AddLayer(layer);
             ChunkManager.SetGlobalHeightMultiplier(globalHeightMultiplier);
-            noiseGenerator.SetWorldHeightBounds(globalHeightMultiplier, -globalHeightMultiplier);
             
             _quadTree.Update();
             

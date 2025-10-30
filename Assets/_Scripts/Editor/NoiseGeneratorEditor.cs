@@ -27,8 +27,7 @@ public class NoiseGeneratorEditor : Editor
         var noiseGenerator = target as NoiseGenerator;
         if (!noiseGenerator) return;
         
-        noiseGenerator.SetGridDimensions(gridResolution,gridResolution);
-        var heightMap = noiseGenerator.GenerateHeightMap(Vector2.zero, 1f, heightMultiplier);
+        var heightMap = noiseGenerator.GenerateNoiseMap(Vector2.zero, 1f, heightMultiplier, gridResolution, gridResolution);
         var meshData = new PlaneMeshGenerator.SquareMeshData(gridResolution, sideLength);
         var mesh = PlaneMeshGenerator.GeneratePlaneMeshFromHeightMap(heightMap, meshData);
         Material mat = new  Material(Shader.Find("Standard"));

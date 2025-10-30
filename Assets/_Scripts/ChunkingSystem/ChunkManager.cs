@@ -47,10 +47,8 @@ namespace _Scripts.ChunkingSystem {
 
         private Mesh PrepareMesh(NoiseGenerator noiseGen, ChunkData cd) {
             var meshData = new SquareMeshData(cd.NumVertices, cd.SideLength);
-            HeightMap heightMap = _noiseGen.GenerateHeightMap(cd.BotLeftPoint, meshData.DistanceBetweenPoints, 5.0f);
-            
+            HeightMap heightMap = _noiseGen.GenerateNoiseMap(cd.BotLeftPoint, meshData.DistanceBetweenPoints, 5.0f, cd.NumVertices, cd.NumVertices);
             Mesh mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
-            
             return mesh;
         }
 
@@ -77,7 +75,6 @@ namespace _Scripts.ChunkingSystem {
 
         public GameObject CreateGameObjectFromChunkData(ChunkData chunkData)
         {
-            _noiseGen.SetGridDimensions(chunkData.NumVertices, chunkData.NumVertices);
             Mesh mesh = PrepareMesh(_noiseGen, chunkData);
             return CreateGameObject(mesh, chunkData);
         }

@@ -337,12 +337,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75079b266c7edd8439a42deace39634a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootNodeLengthMultiplier: 50
+  rootNodeLengthMultiplier: 10
   viewerCamera: {fileID: 786935566}
   noiseLayers:
   - {fileID: 11400000, guid: 13078924def356841b36a4a66976c88d, type: 2}
-  globalHeightMultiplier: 50
-  nodeMultiplier: 5
+  globalHeightMultiplier: 10
+  nodeMultiplier: 1
   noiseGenerator: {fileID: 1434315750}
 --- !u!1001 &428172463
 PrefabInstance:
@@ -578,7 +578,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: -1.24
+    Value: -1.2400055
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
