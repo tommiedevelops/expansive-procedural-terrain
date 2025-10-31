@@ -42,10 +42,12 @@ namespace _Scripts.ChunkingSystem {
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
         private float _heightRange;
-
-        public ChunkManager(NoiseGenerator noiseGen, float heightRange) {
+        private Material _chunkMaterial;
+        
+        public ChunkManager(NoiseGenerator noiseGen, float heightRange, Material terrainMaterial) {
             _noiseGen = noiseGen;
             _heightRange = heightRange;
+            _chunkMaterial = terrainMaterial;
         }
         private Mesh PrepareMesh(NoiseGenerator noiseGen, ChunkData cd) {
             var meshData = new SquareMeshData(cd.NumVertices, cd.SideLength);
@@ -67,11 +69,8 @@ namespace _Scripts.ChunkingSystem {
             };
 
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
-            var material = go.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            
-            var color = (float)new Random((int)cd.SideLength).NextDouble();
-            material.color = new Color(color, color, color);
-
+            var material = go.AddComponent<MeshRenderer>().material = _chunkMaterial;
+           
             return go;
         }
 

@@ -27,7 +27,7 @@ namespace _Scripts.Core {
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
-        
+        [SerializeField] private Material terrainMaterial; 
         // Needed for normalizing the height values
         [SerializeField] private float _heightRange = 5.0f;
         
@@ -36,7 +36,7 @@ namespace _Scripts.Core {
         {
             _renderDistance = viewerCamera.farClipPlane;
             _terrainViewer = new QTViewer(viewerCamera.transform, viewerCamera.fieldOfView, _renderDistance);
-            _chunkManager = new ChunkManager(noiseGenerator, _heightRange);
+            _chunkManager = new ChunkManager(noiseGenerator, _heightRange, terrainMaterial);
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
