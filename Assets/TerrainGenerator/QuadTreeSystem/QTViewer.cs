@@ -5,16 +5,11 @@ using UnityEngine;
 namespace TerrainGenerator.QuadTreeSystem {
     public class QTViewer {
 
-        #region Fields
-
         private Transform _cameraTransform;
         private float _renderDistance;
         private Vector3[] _viewTriangle;
         private Bounds _triBounds; //temporary
         private readonly float _cameraFOV;
-
-        #endregion
-
         public QTViewer(Transform cameraTransform, float cameraFOV, float renderDistance) {
             // Validate inputs
             if (cameraTransform == null || cameraFOV < 0 || cameraFOV > 90 || renderDistance < 0) {
@@ -25,10 +20,6 @@ namespace TerrainGenerator.QuadTreeSystem {
             _cameraFOV = cameraFOV;
             _renderDistance = renderDistance;
         }
-
-
-        #region Helpers
-
         private void ComputeViewTriangle() {
             // 3D Coords
             Vector3 camPos = _cameraTransform.position; //world
@@ -56,7 +47,6 @@ namespace TerrainGenerator.QuadTreeSystem {
 
             this._viewTriangle = triangle;
         }
-
         public Bounds ComputeTriBounds() {
             // approximate triangle as rectangle for now
             ComputeViewTriangle();
@@ -75,48 +65,17 @@ namespace TerrainGenerator.QuadTreeSystem {
             this._triBounds = triBounds;
             return triBounds;
         }
-
         private float DegToRad(float angleInDeg) {
             return angleInDeg * Mathf.PI / 180f;
         }
-
-        #endregion
-
-        #region Setters & Getters
-
-        // SETTERS & GETTERS
-        public void SetRenderDistance(int renderDistance) {
-            this._renderDistance = renderDistance;
-        }
-
-        public void SetCameraTransform(Transform cameraTransform) {
-            this._cameraTransform = cameraTransform;
-        }
-
         public Vector3[] GetViewTriangle() {
             ComputeViewTriangle();
             return _viewTriangle;
         }
-
         public Bounds GetTriBounds() {
             ComputeTriBounds();
             return _triBounds;
         }
-
-        public Transform GetCameraTransform() {
-            return _cameraTransform.transform;
-        }
-
-        public float GetRenderDist() {
-            return _renderDistance;
-        }
-
-        public float GetFOV() {
-            return _cameraFOV;
-        }
-
-        #endregion
-
         public Vector2 GetPosition() => new Vector2(_cameraTransform.position.x, _cameraTransform.position.z);
 
     }

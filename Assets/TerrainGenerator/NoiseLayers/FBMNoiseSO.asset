@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c152025fb5fb22941abe01fdb570e6cd, type: 3}
-  m_Name: PerlinNoiseSO
+  m_Script: {fileID: 11500000, guid: 64091dd48359c3548a71f2ae7c61df1f, type: 3}
+  m_Name: FBMNoiseSO
   m_EditorClassIdentifier: 
-  scale: 57.07
-  octaves: 2
-  persistence: 0.54
-  lacunarity: 1
-  offset: {x: 0, y: 0}
+  octaves: 3
+  frequency: 0.82
+  persistence: 0.35
+  lacunarity: 1.53
+  offset: {x: 0.99, y: 0}
+  baseNoise: {fileID: 11400000, guid: 05b5c6a038f03274c87309e5b691f9f9, type: 2}

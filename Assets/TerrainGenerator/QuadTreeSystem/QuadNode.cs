@@ -12,26 +12,16 @@ namespace TerrainGenerator.QuadTreeSystem {
             NOTSET
         }
 
-        #region Fields
-
-        // LOGICAL
         NodeType type;
         bool levelSet;
         int level;
         int maxLOD;
         QuadNode parent;
         QuadNode[] children = null;
-
-        // SPATIAL
         Vector2 bottomLeftPoint;
         float sideLength; // in metres
         Bounds bounds;
 
-        #endregion
-
-        #region Constructor
-
-        // CONSTRUCTOR
         public QuadNode(QuadNode parent, Vector2 botLeftPoint, float sideLength) {
 
             Vector3 boundsCenter = new(botLeftPoint.x + sideLength / 2f, 0f, botLeftPoint.y + sideLength / 2f);
@@ -45,13 +35,6 @@ namespace TerrainGenerator.QuadTreeSystem {
             this.levelSet = false;
             this.bounds = new Bounds(boundsCenter, boundsDimensions);
         }
-
-        #endregion
-
-        #region Helper Functions
-
-        // HELPERS
-
         public override string ToString() {
             return $"BLP: {bottomLeftPoint.ToString()} SL: {sideLength.ToString()}";
         }
@@ -143,9 +126,6 @@ namespace TerrainGenerator.QuadTreeSystem {
             Debug.Log($"BotLeftPoint:{GetBotLeftPoint()} SideLength:{GetSideLength()}");
         }
 
-        #endregion
-
-        #region Getters & Setters
 
         public void SetLevel(int level) {
             this.level = level;
@@ -214,7 +194,6 @@ namespace TerrainGenerator.QuadTreeSystem {
             maxLOD = maxHeight;
         }
 
-        #endregion
     }
 
 }
