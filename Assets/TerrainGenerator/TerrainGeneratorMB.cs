@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TerrainGenerator.ChunkingSystem;
 using TerrainGenerator.NoiseSystem;
-using TerrainGenerator.QuadTreeSystem;
 using TerrainGenerator.NoiseLayers;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -52,7 +51,7 @@ namespace TerrainGenerator {
             
             _quadTree.UpdateChildren(viewerCamera.transform.position);
             
-            var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
+            var leafNodes = _quadTree.GetAllLeafNodes(_quadTree.GetRootNode());
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
             
             _chunkManager.CreateNewChunksFromChunkData(chunksToRender); 
@@ -65,9 +64,9 @@ namespace TerrainGenerator {
             var culledNodesConverted = ConvertQuadNodesToChunkData(culledNodes);
 
             _chunkManager.RecycleChunks(culledNodesConverted);
-            
+
             var currLeafNodes = ConvertQuadNodesToChunkData(
-                                    _quadTree.GetRootNode().GetAllLeafNodes());
+                                    _quadTree.GetAllLeafNodes(_quadTree.GetRootNode()));
             
             var chunksNeeded = IdentifyLeafNodesNotActive(currLeafNodes, _chunkManager.GetActiveChunks().Keys);
             
