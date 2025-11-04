@@ -9,7 +9,6 @@ using UnityEngine;
 namespace TerrainGenerator.ChunkingSystem
 {
     
-    //ReSharper disable all
     public class LODManager
     {
         // For the purposes of this program LOD represents the integer number of vertices used
