@@ -6,7 +6,6 @@ using TerrainGenerator.MeshGenerators;
 [CustomEditor(typeof(NoiseGenerator))]
 public class NoiseGeneratorEditor : Editor
 {
-    
     bool previewEnabled = false;
     private int gridResolution = 10;
     private float sideLength = 10f;

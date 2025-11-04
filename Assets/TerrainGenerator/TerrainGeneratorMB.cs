@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace TerrainGenerator {
-    public class TerrainGenerator : MonoBehaviour
+    public class TerrainGeneratorMB : MonoBehaviour
     {
         // Unity Facing Class
         private const int MIN_CHUNK_SIZE = 240;
@@ -30,11 +30,6 @@ namespace TerrainGenerator {
         [SerializeField] private float _heightRange = 5.0f;
         
         private float _renderDistance;
-
-        [ExecuteAlways]
-        private void OnDrawGizmos() {
-            Gizmos.DrawWireCube(transform.position, terrainDimensions);
-        }
         private void Awake()
         {
             _renderDistance = viewerCamera.farClipPlane;
@@ -113,5 +108,7 @@ namespace TerrainGenerator {
         public LODManager GetLODManager() {return _lodManager;}
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
+
+        public Vector3 GetTerrainDimensions() { return terrainDimensions; }
     }
 }
