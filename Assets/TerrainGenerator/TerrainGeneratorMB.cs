@@ -13,30 +13,33 @@ namespace TerrainGenerator {
     public class TerrainGenerator : MonoBehaviour
     {
         // Unity Facing Class
-
         private const int MIN_CHUNK_SIZE = 240;
 
         private ChunkManager _chunkManager;
-        private NoiseGenerator _noiseGenerator;
-        private QTViewer _terrainViewer;
         private QuadTree _quadTree;
         private LODManager _lodManager;
-        
+
+        [SerializeField] private Vector3 terrainDimensions;
+
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
         [SerializeField] private Material terrainMaterial; 
-        // Needed for normalizing the height values
+
         [SerializeField] private float _heightRange = 5.0f;
         
         private float _renderDistance;
+
+        [ExecuteAlways]
+        private void OnDrawGizmos() {
+            Gizmos.DrawWireCube(transform.position, terrainDimensions);
+        }
         private void Awake()
         {
             _renderDistance = viewerCamera.farClipPlane;
-            _terrainViewer = new QTViewer(viewerCamera.transform, viewerCamera.fieldOfView, _renderDistance);
-            _chunkManager = new ChunkManager(noiseGenerator, _heightRange, terrainMaterial);
+            _chunkManager = new ChunkManager(noiseGenerator, _heightRange, terrainMaterial, transform);
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
@@ -47,7 +50,7 @@ namespace TerrainGenerator {
             // add noise from user input
             foreach(var layer in noiseLayers) noiseGenerator.AddLayer(layer);
             
-            _quadTree.Update();
+            _quadTree.UpdateChildren(viewerCamera.transform.position);
             
             var leafNodes = _quadTree.GetRootNode().GetAllLeafNodes();
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
@@ -58,7 +61,7 @@ namespace TerrainGenerator {
         private void Update()
         {
             
-            var culledNodes = _quadTree.Update();
+            var culledNodes = _quadTree.UpdateChildren(viewerCamera.transform.position);
             var culledNodesConverted = ConvertQuadNodesToChunkData(culledNodes);
 
             _chunkManager.RecycleChunks(culledNodesConverted);
@@ -71,8 +74,6 @@ namespace TerrainGenerator {
             _chunkManager.RequestChunks(chunksNeeded);
             
         }
-        
-        #region Helpers
         public static List<ChunkData> IdentifyLeafNodesNotActive(List<ChunkData> newActiveChunks, Dictionary<ChunkData, GameObject>.KeyCollection currentActiveChunks)
         {
             var chunksToAdd = newActiveChunks
@@ -95,7 +96,6 @@ namespace TerrainGenerator {
         }
         private QuadTree GenerateQuadTree()
         { // Factory method to prevent side effects
-            if (_terrainViewer == null) throw new Exception("Viewer not initialized");
             
             float rootNodeSideLength = rootNodeLengthMultiplier * MIN_CHUNK_SIZE;
             
@@ -104,21 +104,15 @@ namespace TerrainGenerator {
             var rootNode = new QuadNode(null, rootNodeBottomLeftPoint, rootNodeSideLength);
             
             var quadTree = new QuadTree(rootNode, MIN_CHUNK_SIZE, nodeMultiplier);
-            quadTree.SetViewer(_terrainViewer);
 
             return quadTree;
         }
-        
-        #endregion
-        
-        #region Getters & Setters
-        public QTViewer GetViewer() { return _terrainViewer; }
+
         public QuadTree GetQuadTree() { return _quadTree; }
         public void SetCamera(Camera cam) { viewerCamera = cam; }
         public ChunkManager GetChunkManager() {return _chunkManager;}
         public LODManager GetLODManager() {return _lodManager;}
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
-        #endregion
     }
 }

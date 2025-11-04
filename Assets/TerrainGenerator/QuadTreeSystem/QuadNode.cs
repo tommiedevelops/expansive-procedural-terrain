@@ -68,7 +68,7 @@ namespace TerrainGenerator.QuadTreeSystem {
             if (nodeType == NodeType.NOTSET) {
                 Debug.Log("Node type not set");
                 return;
-            }
+           }
 
             children[(int)nodeType] = null;
         }

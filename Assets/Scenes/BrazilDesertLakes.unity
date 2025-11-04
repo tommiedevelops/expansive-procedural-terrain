@@ -147,7 +147,7 @@ Transform:
   m_GameObject: {fileID: 111722346}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalPosition: {x: 300, y: 22.99, z: 300}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -249,7 +249,7 @@ Transform:
   m_GameObject: {fileID: 368722008}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -292,14 +292,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9bbc2f2dabd19f4db771ad6b681bfa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootNodeLengthMultiplier: 10
+  rootNodeLengthMultiplier: 1000
   viewerCamera: {fileID: 786935566}
   noiseLayers:
   - {fileID: 11400000, guid: 05b5c6a038f03274c87309e5b691f9f9, type: 2}
   nodeMultiplier: 3
   noiseGenerator: {fileID: 1434315752}
   terrainMaterial: {fileID: 2100000, guid: 67079c989e095654f982bf679507183e, type: 2}
-  _heightRange: 5
+  _heightRange: 6.97
 --- !u!1 &451850266
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,7 +854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9bbc2f2dabd19f4db771ad6b681bfa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootNodeLengthMultiplier: 10
+  rootNodeLengthMultiplier: 1000
   viewerCamera: {fileID: 786935566}
   noiseLayers:
   - {fileID: 11400000, guid: be17b1db99f4ae549b9a2ad1eff0406f, type: 2}

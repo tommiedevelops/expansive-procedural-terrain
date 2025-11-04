@@ -6,7 +6,6 @@ namespace TerrainGenerator.QuadTreeSystem
     public sealed class QuadTree {
         
         private readonly QuadNode _rootNode;
-        private QTViewer _viewer;
 
         private int _minChunkSize;
         private int _treeHeight;
@@ -19,10 +18,11 @@ namespace TerrainGenerator.QuadTreeSystem
         }
         public QuadNode GetRootNode() { return _rootNode; }
         public int GetTreeHeight() { return _treeHeight; }
-        public List<QuadNode> Update() {
-            
+        public List<QuadNode> UpdateChildren(Vector3 viewerPosition) {
+
+            Vector2 pos = new(viewerPosition.x, viewerPosition.z);
+
             int maxLevel = 0;
-            if (_viewer == null) { throw new System.Exception("Viewer has not been set");}
 
             Queue<QuadNode> queue = new();
             queue.Enqueue(_rootNode);
@@ -35,20 +35,19 @@ namespace TerrainGenerator.QuadTreeSystem
                 if (null == curr) continue;
                 
                 if(curr.GetLevel() > maxLevel) maxLevel = curr.GetLevel();
-                var viewerPosition = _viewer.GetPosition();
 
-                if(!curr.IsLeafNode() && curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
+                if(!curr.IsLeafNode() && curr.IsCloseEnoughToSplitNode(pos, _nodeMultiplier)) {
                     EnqueueChildren(queue, curr);
                     continue;
                 }
 
-                if(!curr.IsLeafNode() && !curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
+                if(!curr.IsLeafNode() && !curr.IsCloseEnoughToSplitNode(pos, _nodeMultiplier)) {
                     culledNodes.AddRange(curr.GetAllLeafNodes());
                     curr.ClearChildren();
                     continue;
                 }
 
-                if (curr.IsLeafNode() && curr.IsCloseEnoughToSplitNode(viewerPosition, _nodeMultiplier)) {
+                if (curr.IsLeafNode() && curr.IsCloseEnoughToSplitNode(pos, _nodeMultiplier)) {
                     if (curr.GetSideLength() > _minChunkSize) {
                         SplitNode(curr);
                         culledNodes.Add(curr);
@@ -84,7 +83,6 @@ namespace TerrainGenerator.QuadTreeSystem
         private void EnqueueChildren(Queue<QuadNode> queue, QuadNode curr) {
             foreach (QuadNode child in curr.GetChildren()) queue.Enqueue(child);
         }
-        public void SetViewer(QTViewer viewer) { this._viewer = viewer; }
         public void PrintTree()
         {
             Queue<QuadNode> queue = new();
@@ -96,9 +94,6 @@ namespace TerrainGenerator.QuadTreeSystem
                 Debug.Log($"BL:{curr.GetBotLeftPoint()}, SL: {curr.GetSideLength()}");
                 EnqueueChildren(queue, curr);
             }
-        }
-        public object GetViewer() {
-            return _viewer;
         }
 
     }

@@ -37,7 +37,6 @@ namespace TerrainGenerator.MeshGenerators
 
             return mesh;
         }
-
         public static Vector3[] GenerateVertexGridFromHeightMap(HeightMap heightMap, SquareMeshData meshData)
         {
             var numVerts =  meshData.NumVerticesPerSide;
