@@ -8,37 +8,48 @@ using TerrainGenerator.NoiseLayers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+
 namespace TerrainGenerator {
     public class TerrainGeneratorMB : MonoBehaviour
     {
-        // Unity Facing Class
         private const int MIN_CHUNK_SIZE = 240;
 
         private ChunkManager _chunkManager;
-        private QuadTree _quadTree;
-        private LODManager _lodManager;
+        private QuadTree     _quadTree;
+        private LODManager   _lodManager;
 
-        [SerializeField] private Vector3 terrainDimensions;
+        // Terrain Generator Config
+        // Instance's transform to parent all chunks.
+        [Header("Terrain Properties")]
+        [SerializeField] private Transform viewer; 
+        [SerializeField] float terrainSideLength = 0.0f;
+        [SerializeField] float terrainHeight = 1.0f; 
+        [SerializeField] int terrainResolution; // number of vertices per side
+        [SerializeField, Range(1, 32)] private int numLODs = 1;
+        [SerializeField] private Material terrainMaterial; 
 
+        [Header("Terrain Preview Properties")]
+        [SerializeField] bool previewOn;
+        [SerializeField] int previewLOD;
+
+        [Header("Noise Editor")]
+        [SerializeField] private List<NoiseLayerSO> noiseLayers;
+
+        // Noise Generator Config
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private Camera viewerCamera;
-        [SerializeField] private List<NoiseLayerSO> noiseLayers;
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
-        [SerializeField] private Material terrainMaterial; 
 
         [SerializeField] private float _heightRange = 5.0f;
         
-        private float _renderDistance;
         private void Awake()
         {
-            _renderDistance = viewerCamera.farClipPlane;
             _chunkManager = new ChunkManager(noiseGenerator, _heightRange, terrainMaterial, transform);
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
         }
-        
         private void Start()
         {
             // add noise from user input
@@ -51,7 +62,6 @@ namespace TerrainGenerator {
             
             _chunkManager.CreateNewChunksFromChunkData(chunksToRender); 
         }
-
         private void Update()
         {
             
@@ -68,6 +78,11 @@ namespace TerrainGenerator {
             _chunkManager.RequestChunks(chunksNeeded);
             
         }
+
+        internal static void SampleNoise(Vector3 worldPos) {
+            // TODO
+        }
+
         public static List<ChunkData> IdentifyLeafNodesNotActive(List<ChunkData> newActiveChunks, Dictionary<ChunkData, GameObject>.KeyCollection currentActiveChunks)
         {
             var chunksToAdd = newActiveChunks
@@ -101,14 +116,13 @@ namespace TerrainGenerator {
 
             return quadTree;
         }
-
         public QuadTree GetQuadTree() { return _quadTree; }
         public void SetCamera(Camera cam) { viewerCamera = cam; }
         public ChunkManager GetChunkManager() {return _chunkManager;}
         public LODManager GetLODManager() {return _lodManager;}
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
-
-        public Vector3 GetTerrainDimensions() { return terrainDimensions; }
+        public float GetTerrainSideLength() { return terrainSideLength; }
+        public float GetTerrainHeight() { return terrainHeight; }
     }
 }

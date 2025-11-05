@@ -7,8 +7,9 @@ using TerrainGenerator;
 public class TerrainEditor : Editor
 {
     private void OnSceneGUI() {
-        TerrainGeneratorMB terrainGenerator = (TerrainGeneratorMB)target; 
-        Handles.DrawWireCube(terrainGenerator.transform.position, terrainGenerator.GetTerrainDimensions());   
+        TerrainGeneratorMB tg = (TerrainGeneratorMB)target;
+        Vector3 dimensions = new(tg.GetTerrainSideLength(), tg.GetTerrainHeight(), tg.GetTerrainSideLength());
+        Handles.DrawWireCube(tg.transform.position, dimensions);   
     }
 
     public override void OnInspectorGUI() {

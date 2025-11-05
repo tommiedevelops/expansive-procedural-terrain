@@ -37,7 +37,8 @@ namespace TerrainGenerator.ChunkingSystem {
 
         private NoiseGenerator _noiseGen;
         private Transform _chunkParent;
-        
+        private QuadTree _quadTree;        
+
         private readonly ChunkPool _chunkPool = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
