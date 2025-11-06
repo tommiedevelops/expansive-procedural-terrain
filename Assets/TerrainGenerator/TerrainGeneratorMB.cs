@@ -7,6 +7,7 @@ using TerrainGenerator.NoiseSystem;
 using TerrainGenerator.NoiseLayers;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.Data;
 
 
 namespace TerrainGenerator {
@@ -37,7 +38,6 @@ namespace TerrainGenerator {
 
         // Noise Generator Config
         [SerializeField] private int rootNodeLengthMultiplier = 10;
-        [SerializeField] private Camera viewerCamera;
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
 
@@ -54,18 +54,15 @@ namespace TerrainGenerator {
         {
             // add noise from user input
             foreach(var layer in noiseLayers) noiseGenerator.AddLayer(layer);
-            
-            _quadTree.UpdateChildren(viewerCamera.transform.position);
-            
+            _quadTree.UpdateChildren(viewer.position);
             var leafNodes = _quadTree.GetAllLeafNodes(_quadTree.GetRootNode());
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
-            
             _chunkManager.CreateNewChunksFromChunkData(chunksToRender); 
         }
         private void Update()
         {
             
-            var culledNodes = _quadTree.UpdateChildren(viewerCamera.transform.position);
+            var culledNodes = _quadTree.UpdateChildren(viewer.position);
             var culledNodesConverted = ConvertQuadNodesToChunkData(culledNodes);
 
             _chunkManager.RecycleChunks(culledNodesConverted);
@@ -117,7 +114,6 @@ namespace TerrainGenerator {
             return quadTree;
         }
         public QuadTree GetQuadTree() { return _quadTree; }
-        public void SetCamera(Camera cam) { viewerCamera = cam; }
         public ChunkManager GetChunkManager() {return _chunkManager;}
         public LODManager GetLODManager() {return _lodManager;}
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
