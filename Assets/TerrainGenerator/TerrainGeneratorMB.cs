@@ -11,6 +11,17 @@ using System.Data;
 
 
 namespace TerrainGenerator {
+
+    [CreateAssetMenu(menuName = "ScriptableObjects/TerrainConfig")]
+    [Serializable]
+    public class TerrainConfig : ScriptableObject {
+        [SerializeField] public float terrainSideLength = 0.0f;
+        [SerializeField] public float terrainHeight = 0.0f;
+        [SerializeField] public int terrainResolution;
+        [SerializeField] public int numLODs;
+        [SerializeField] public Material terrainMaterial;
+    }
+        
     public class TerrainGeneratorMB : MonoBehaviour
     {
         private const int MIN_CHUNK_SIZE = 240;
@@ -19,19 +30,11 @@ namespace TerrainGenerator {
         private QuadTree     _quadTree;
         private LODManager   _lodManager;
 
-        // Terrain Generator Config
         // Instance's transform to parent all chunks.
         [Header("Terrain Properties")]
-        [SerializeField] private Transform viewer; 
-        [SerializeField] float terrainSideLength = 0.0f;
-        [SerializeField] float terrainHeight = 1.0f; 
-        [SerializeField] int terrainResolution; // number of vertices per side
-        [SerializeField, Range(1, 32)] private int numLODs = 1;
-        [SerializeField] private Material terrainMaterial; 
-
-        [Header("Terrain Preview Properties")]
-        [SerializeField] bool previewOn;
-        [SerializeField] int previewLOD;
+        [SerializeField] private Material terrainMaterial;
+        [SerializeField] private Vector3 terrainDimensions = Vector3.one;
+        //[SerializeField] private Vector2 terrainResolution; // how many vertices in X or Z
 
         [Header("Noise Editor")]
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
@@ -40,9 +43,12 @@ namespace TerrainGenerator {
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private float nodeMultiplier = 3f;
 		[SerializeField] private NoiseGenerator noiseGenerator;
-
         [SerializeField] private float _heightRange = 5.0f;
-        
+
+        [Header("Optimization Settings")]
+        [SerializeField] Transform viewer;
+        [SerializeField] Transform terrainParent;
+
         private void Awake()
         {
             _chunkManager = new ChunkManager(noiseGenerator, _heightRange, terrainMaterial, transform);
@@ -76,10 +82,13 @@ namespace TerrainGenerator {
             
         }
 
+        public float GetHeight(float x, float z) {
+            return 0.0f;
+        }
+
         internal static void SampleNoise(Vector3 worldPos) {
             // TODO
         }
-
         public static List<ChunkData> IdentifyLeafNodesNotActive(List<ChunkData> newActiveChunks, Dictionary<ChunkData, GameObject>.KeyCollection currentActiveChunks)
         {
             var chunksToAdd = newActiveChunks
@@ -118,7 +127,9 @@ namespace TerrainGenerator {
         public LODManager GetLODManager() {return _lodManager;}
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
-        public float GetTerrainSideLength() { return terrainSideLength; }
-        public float GetTerrainHeight() { return terrainHeight; }
+
+        public Vector3 GetTerrainDimensions() {
+            return terrainDimensions;
+        }
     }
 }

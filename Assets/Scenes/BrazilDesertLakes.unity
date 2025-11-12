@@ -197,7 +197,7 @@ MonoBehaviour:
   animator: {fileID: 111722354}
   freeLookVCam: {fileID: 603030747}
   input: {fileID: 11400000, guid: a3d3ae09f842ca34eaa61875e3ed5ed2, type: 2}
-  moveSpeed: 13.79
+  moveSpeed: 20
   rotationSpeed: 15
   smoothTime: 0.2
 --- !u!95 &111722354
@@ -577,6 +577,11 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!4 &658629138 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
+  m_PrefabInstance: {fileID: 3629020026450061423}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &786935564
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,18 +781,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9bbc2f2dabd19f4db771ad6b681bfa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewer: {fileID: 0}
-  terrainSideLength: 0
-  terrainHeight: 1
-  terrainResolution: 0
-  numLODs: 0
+  viewer: {fileID: 111722350}
+  terrainParent: {fileID: 1108282618}
   terrainMaterial: {fileID: 2100000, guid: fd4a29354fe334a44a4e35766cbb5cf1, type: 2}
   previewOn: 0
   previewLOD: 0
   noiseLayers:
   - {fileID: 11400000, guid: be17b1db99f4ae549b9a2ad1eff0406f, type: 2}
   rootNodeLengthMultiplier: 1000
-  viewerCamera: {fileID: 786935566}
   nodeMultiplier: 1
   noiseGenerator: {fileID: 1434315752}
   _heightRange: 0
@@ -1007,6 +1008,10 @@ PrefabInstance:
       propertyPath: terrainHeight
       value: 18.38
       objectReference: {fileID: 0}
+    - target: {fileID: 4163664185661548427, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
+      propertyPath: terrainParent
+      value: 
+      objectReference: {fileID: 658629138}
     - target: {fileID: 4163664185661548427, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: noiseGenerator
       value: 

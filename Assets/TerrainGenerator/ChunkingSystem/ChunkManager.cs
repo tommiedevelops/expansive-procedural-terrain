@@ -5,7 +5,6 @@ using TerrainGenerator.NoiseSystem;
 using TerrainGenerator.MeshGenerators;
 using static TerrainGenerator.MeshGenerators.PlaneMeshGenerator;
 
-// ReSharper disable All
 namespace TerrainGenerator.ChunkingSystem {
     public struct ChunkData : IEquatable<ChunkData>
     {

@@ -17,7 +17,7 @@ namespace CharacterControllerFactory {
         [SerializeField, Anywhere] InputReader input;
 
         [Header("Settings")]
-        [SerializeField] float moveSpeed = 6f;
+        [SerializeField] float moveSpeed = 20f;
         [SerializeField] float rotationSpeed = 15f;
         [SerializeField] float smoothTime = 0.2f; // How fast the animator will change speed
 
