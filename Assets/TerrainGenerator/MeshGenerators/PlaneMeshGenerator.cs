@@ -81,12 +81,16 @@ namespace TerrainGenerator.MeshGenerators
 
             return triangles;
         }
-        internal static void GenerateVertices(int resolutionX, int resolutionZ, ref Vector3[] vertices, Func<float, Vector2> heightFunc) {
+        internal static void GenerateVertices(float lengthX, float lengthZ, int resolutionX, int resolutionZ, Vector3 originWS, ref Vector3[] vertices, Func<float, float, float> heightFunc) {
+
+            float distanceBetweenXPoints = lengthX / resolutionX;
+            float distanceBetweenZPoints = lengthZ / resolutionZ;
+
             for (int x = 0; x < resolutionX; x++)
                 for (int z = 0; z < resolutionZ; z++) {
-                    float xCoord = 0;
-                    float zCoord = 0;
-                    float yCoord = 0;
+                    float xCoord = (x - originWS.x) * distanceBetweenXPoints;
+                    float zCoord = (z - originWS.z) * distanceBetweenZPoints;
+                    float yCoord = heightFunc(xCoord, zCoord);
 
                     vertices[z * resolutionX + x] = new Vector3(xCoord, yCoord, zCoord);
                 }
@@ -119,8 +123,8 @@ namespace TerrainGenerator.MeshGenerators
                                              float lengthZ,
                                              int resolutionX,
                                              int resolutionZ,
-                                             Vector2 worldSpaceOrigin,
-                                             Func<float, Vector2> heightFunc) {
+                                             Vector3 originWS,
+                                             Func<float, float, float> heightFunc) {
 
             int vertexCount = resolutionZ * resolutionX;
             int trianglesCount = (resolutionX - 1) * (resolutionZ - 1) * 6;
@@ -129,14 +133,16 @@ namespace TerrainGenerator.MeshGenerators
             int[] triangles = new int[trianglesCount];
             Vector2[] uvs = new Vector2[vertexCount];
 
-            GenerateVertices(resolutionX, resolutionZ, ref vertices, heightFunc);
+            GenerateVertices(lengthX, lengthZ, resolutionX, resolutionZ, originWS, ref vertices, heightFunc);
             GenerateTriangles(resolutionX, resolutionZ, ref triangles);
             GenerateUVs(resolutionX, resolutionZ, ref uvs);
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.uv = uvs;
+            Mesh mesh = new() {
+                vertices = vertices,
+                triangles = triangles,
+                uv = uvs
+            };
+
             mesh.RecalculateNormals();
 
             return mesh;

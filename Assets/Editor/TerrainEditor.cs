@@ -4,6 +4,7 @@ using UnityEditor;
 using TerrainGenerator;
 using TerrainGenerator.MeshGenerators;
 using static TerrainGenerator.MeshGenerators.PlaneMeshGenerator;
+using System;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainEditor : Editor
@@ -11,7 +12,9 @@ public class TerrainEditor : Editor
 
     public enum PreviewType { Texture, Wireframe, Mesh }
     Vector3 terrainDimensions = Vector3.zero;
-    Vector2 terrainResolution = Vector2.zero;
+    Vector2Int terrainResolution = Vector2Int.zero;
+    Vector3 terrainOrigin = Vector3.zero;
+    Func<float, float, float> heightFunc = null;
     PreviewType previewType = PreviewType.Wireframe;
 
     void DrawTexturePreview() {
@@ -24,14 +27,17 @@ public class TerrainEditor : Editor
 
     void DrawMeshPreview() {
         // Generate Plane Mesh with specified parameters
-        // Mesh mesh = GeneratePlaneMesh(float lengthX, float lengthZ, float resolutionX, float resolutionZ, HeightMap heightMap);
-        //Graphics.DrawMeshNow()
+        Mesh mesh = GeneratePlaneMesh(terrainDimensions.x,terrainDimensions.y,terrainResolution.x,terrainResolution.y, terrainOrigin, heightFunc);
+        Graphics.DrawMeshNow(mesh, terrainOrigin, Quaternion.identity);
     }
 
     private void OnSceneGUI() {
         TerrainGeneratorMB tg = (TerrainGeneratorMB)target;
 
         terrainDimensions = tg.GetTerrainDimensions();
+        terrainResolution = tg.GetTerrainResolution();
+        terrainOrigin = tg.transform.position;
+        heightFunc = tg.GetNoiseGenerator().GetHeightFunc();
 
         // Draw Terrain Boundary
         Handles.DrawWireCube(tg.transform.position, terrainDimensions);

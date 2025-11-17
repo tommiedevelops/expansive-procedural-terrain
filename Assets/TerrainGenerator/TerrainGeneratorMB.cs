@@ -29,12 +29,14 @@ namespace TerrainGenerator {
         private ChunkManager _chunkManager;
         private QuadTree     _quadTree;
         private LODManager   _lodManager;
+        private NoiseGenerator _noiseGen = new();
 
         // Instance's transform to parent all chunks.
         [Header("Terrain Properties")]
         [SerializeField] private Material terrainMaterial;
         [SerializeField] private Vector3 terrainDimensions = Vector3.one;
-        //[SerializeField] private Vector2 terrainResolution; // how many vertices in X or Z
+        [SerializeField] private int resolutionX = 1;
+        [SerializeField] private int resolutionY = 1;
 
         [Header("Noise Editor")]
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
@@ -42,7 +44,6 @@ namespace TerrainGenerator {
         // Noise Generator Config
         [SerializeField] private int rootNodeLengthMultiplier = 10;
         [SerializeField] private float nodeMultiplier = 3f;
-		[SerializeField] private NoiseGenerator noiseGenerator;
         [SerializeField] private float _heightRange = 5.0f;
 
         [Header("Optimization Settings")]
@@ -51,7 +52,7 @@ namespace TerrainGenerator {
 
         private void Awake()
         {
-            _chunkManager = new ChunkManager(noiseGenerator, _heightRange, terrainMaterial, transform);
+            _chunkManager = new ChunkManager(_noiseGen, _heightRange, terrainMaterial, transform);
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
@@ -59,7 +60,7 @@ namespace TerrainGenerator {
         private void Start()
         {
             // add noise from user input
-            foreach(var layer in noiseLayers) noiseGenerator.AddLayer(layer);
+            foreach(var layer in noiseLayers) _noiseGen.AddLayer(layer);
             _quadTree.UpdateChildren(viewer.position);
             var leafNodes = _quadTree.GetAllLeafNodes(_quadTree.GetRootNode());
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
@@ -130,6 +131,12 @@ namespace TerrainGenerator {
 
         public Vector3 GetTerrainDimensions() {
             return terrainDimensions;
+        }
+        public Vector2Int GetTerrainResolution() {
+            return new Vector2Int(resolutionX, resolutionY);
+        }
+        public NoiseGenerator GetNoiseGenerator() {
+            return _noiseGen;
         }
     }
 }

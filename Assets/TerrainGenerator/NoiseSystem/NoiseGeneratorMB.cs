@@ -5,18 +5,24 @@ using NUnit.Framework.Constraints;
 using UnityEngine;
 
 using TerrainGenerator.NoiseLayers;
+using Unity.VisualScripting;
 namespace TerrainGenerator.NoiseSystem
 {
-    public class NoiseGenerator : MonoBehaviour
+    public class NoiseGenerator
     {
-        [SerializeField] private List<NoiseLayerSO> additiveNoiseLayers;
-        [SerializeField] private List<NoiseLayerSO> multiplicativeNoiseLayers;
-        [SerializeField] private List<NoiseLayerSO> compositionalNoiseLayers;
+        private List<NoiseLayerSO> additiveNoiseLayers = new();
+        private List<NoiseLayerSO> multiplicativeNoiseLayers;
+        private List<NoiseLayerSO> compositionalNoiseLayers;
 
         private float maxHeight = float.MinValue;
         private float minHeight = float.MaxValue;
         
         private readonly List<NoiseLayerSO> _noiseLayers = new();
+
+        public Func<float, float, float> GetHeightFunc() {
+            return SampleNoise;
+        }
+
         public HeightMap GenerateNoiseMap(Vector2 offset, float distanceBetweenPoints, float heightRange, int gridWidth, int gridHeight)
         {
             var heightMap = new HeightMap(gridHeight, gridWidth);
@@ -32,10 +38,6 @@ namespace TerrainGenerator.NoiseSystem
         private float SampleNoise(float x, float y)
         {
             var result = additiveNoiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
-
-            foreach (var layer in compositionalNoiseLayers)
-                result = layer.Compose(result, new Vector2(x, y));
-
             return result;
         }
         public void AddLayer(NoiseLayerSO layer)
