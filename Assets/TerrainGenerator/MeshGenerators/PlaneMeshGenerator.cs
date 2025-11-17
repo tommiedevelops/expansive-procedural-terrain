@@ -1,5 +1,7 @@
-﻿using TerrainGenerator.NoiseSystem;
+﻿using System;
+using TerrainGenerator.NoiseSystem;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TerrainGenerator.MeshGenerators
 {
@@ -17,17 +19,13 @@ namespace TerrainGenerator.MeshGenerators
         }
     }
 
-    public static class PlaneMeshGenerator
-    {
-
-        public static Mesh GeneratePlaneMeshFromHeightMap(HeightMap heightMap, SquareMeshData squareMeshData)
-        {
+    public static class PlaneMeshGenerator {
+        public static Mesh GeneratePlaneMeshFromHeightMap(HeightMap heightMap, SquareMeshData squareMeshData) {
             var vertices = GenerateVertexGridFromHeightMap(heightMap, squareMeshData);
             var triangles = GenerateTriangleArray(squareMeshData.NumVerticesPerSide);
-            
+
             // Assign mesh properties
-            Mesh mesh = new()
-            {
+            Mesh mesh = new() {
                 //name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
                 vertices = vertices,
                 triangles = triangles,
@@ -37,21 +35,18 @@ namespace TerrainGenerator.MeshGenerators
 
             return mesh;
         }
-        public static Vector3[] GenerateVertexGridFromHeightMap(HeightMap heightMap, SquareMeshData meshData)
-        {
-            var numVerts =  meshData.NumVerticesPerSide;
+        public static Vector3[] GenerateVertexGridFromHeightMap(HeightMap heightMap, SquareMeshData meshData) {
+            var numVerts = meshData.NumVerticesPerSide;
             var distBetweenPoints = meshData.DistanceBetweenPoints;
-            
+
             var totalVertices = numVerts * numVerts;
             var vertices = new Vector3[totalVertices];
 
             var vertexIndex = 0;
-            for (var z = 0; z < numVerts; z++)
-            {
-                for (var x = 0; x < numVerts; x++)
-                {
+            for (var z = 0; z < numVerts; z++) {
+                for (var x = 0; x < numVerts; x++) {
                     vertices[vertexIndex] = new Vector3(x * distBetweenPoints,
-                        heightMap.GetPoint(x,z),
+                        heightMap.GetPoint(x, z),
                         z * distBetweenPoints);
                     vertexIndex++;
                 }
@@ -59,8 +54,7 @@ namespace TerrainGenerator.MeshGenerators
 
             return vertices;
         }
-        public static int[] GenerateTriangleArray(int numVertsPerSide)
-        {
+        public static int[] GenerateTriangleArray(int numVertsPerSide) {
 
             int totalTrianglePoints = (numVertsPerSide - 1) * (numVertsPerSide - 1) * 6;
 
@@ -68,10 +62,8 @@ namespace TerrainGenerator.MeshGenerators
 
             // Generate triangles
             int triIndex = 0;
-            for (int z = 0; z < (numVertsPerSide - 1); z++)
-            {
-                for (int x = 0; x < (numVertsPerSide - 1); x++)
-                {
+            for (int z = 0; z < (numVertsPerSide - 1); z++) {
+                for (int x = 0; x < (numVertsPerSide - 1); x++) {
                     int bottomLeft = z * numVertsPerSide + x;
                     int bottomRight = bottomLeft + 1;
                     int topLeft = bottomLeft + numVertsPerSide;
@@ -89,6 +81,66 @@ namespace TerrainGenerator.MeshGenerators
 
             return triangles;
         }
+        internal static void GenerateVertices(int resolutionX, int resolutionZ, ref Vector3[] vertices, Func<float, Vector2> heightFunc) {
+            for (int x = 0; x < resolutionX; x++)
+                for (int z = 0; z < resolutionZ; z++) {
+                    float xCoord = 0;
+                    float zCoord = 0;
+                    float yCoord = 0;
 
-    }
+                    vertices[z * resolutionX + x] = new Vector3(xCoord, yCoord, zCoord);
+                }
+        }
+        internal static void GenerateTriangles(int resolutionX, int resolutionZ, ref int[] triangles) {
+            int triIndex = 0;
+            for (int z = 0; z < resolutionZ - 1; z++)
+                for (int x = 0; x < resolutionX - 1; x++) {
+                    int bottomLeft = z * resolutionX + x;
+                    int bottomRight = bottomLeft + 1;
+                    int topLeft = bottomLeft + resolutionX;
+                    int topRight = topLeft + 1;
+
+                    triangles[triIndex++] = bottomLeft;
+                    triangles[triIndex++] = topLeft;
+                    triangles[triIndex++] = topRight;
+
+                    triangles[triIndex++] = bottomLeft;
+                    triangles[triIndex++] = topRight;
+                    triangles[triIndex++] = bottomRight;
+                }
+        }
+        internal static void GenerateUVs(int resolutionX, int resolutionZ, ref Vector2[] uvs) {
+            for (int x = 0; x < resolutionX; x++)
+                for (int z = 0; z < resolutionZ; z++) {
+                    uvs[z * resolutionX + x] = new Vector2((float)x / (resolutionX - 1), (float)z/(resolutionZ - 1));
+                }
+        }
+        public static Mesh GeneratePlaneMesh(float lengthX,
+                                             float lengthZ,
+                                             int resolutionX,
+                                             int resolutionZ,
+                                             Vector2 worldSpaceOrigin,
+                                             Func<float, Vector2> heightFunc) {
+
+            int vertexCount = resolutionZ * resolutionX;
+            int trianglesCount = (resolutionX - 1) * (resolutionZ - 1) * 6;
+
+            Vector3[] vertices = new Vector3[vertexCount];
+            int[] triangles = new int[trianglesCount];
+            Vector2[] uvs = new Vector2[vertexCount];
+
+            GenerateVertices(resolutionX, resolutionZ, ref vertices, heightFunc);
+            GenerateTriangles(resolutionX, resolutionZ, ref triangles);
+            GenerateUVs(resolutionX, resolutionZ, ref uvs);
+
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.uv = uvs;
+            mesh.RecalculateNormals();
+
+            return mesh;
+        }
+
+    } 
 }

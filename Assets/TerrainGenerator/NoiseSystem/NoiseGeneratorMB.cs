@@ -38,7 +38,6 @@ namespace TerrainGenerator.NoiseSystem
 
             return result;
         }
-      
         public void AddLayer(NoiseLayerSO layer)
         {
             _noiseLayers.Add(layer);
@@ -47,7 +46,6 @@ namespace TerrainGenerator.NoiseSystem
         {
             _noiseLayers.RemoveAll(layer => layer is TLayerType);
         }
-    
         public List<NoiseLayerSO> GetLayers() { return _noiseLayers; }
 
 

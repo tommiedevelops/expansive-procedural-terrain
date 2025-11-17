@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 
 using TerrainGenerator;
+using TerrainGenerator.MeshGenerators;
+using static TerrainGenerator.MeshGenerators.PlaneMeshGenerator;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainEditor : Editor
@@ -12,7 +14,6 @@ public class TerrainEditor : Editor
     Vector2 terrainResolution = Vector2.zero;
     PreviewType previewType = PreviewType.Wireframe;
 
-
     void DrawTexturePreview() {
         //TODO
     }
@@ -22,7 +23,9 @@ public class TerrainEditor : Editor
     }
 
     void DrawMeshPreview() {
-        // TODO
+        // Generate Plane Mesh with specified parameters
+        // Mesh mesh = GeneratePlaneMesh(float lengthX, float lengthZ, float resolutionX, float resolutionZ, HeightMap heightMap);
+        //Graphics.DrawMeshNow()
     }
 
     private void OnSceneGUI() {
