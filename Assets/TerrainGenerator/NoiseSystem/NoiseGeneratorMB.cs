@@ -10,13 +10,6 @@ namespace TerrainGenerator.NoiseSystem
 {
     public class NoiseGenerator
     {
-        private List<NoiseLayerSO> additiveNoiseLayers = new();
-        private List<NoiseLayerSO> multiplicativeNoiseLayers;
-        private List<NoiseLayerSO> compositionalNoiseLayers;
-
-        private float maxHeight = float.MinValue;
-        private float minHeight = float.MaxValue;
-        
         private readonly List<NoiseLayerSO> _noiseLayers = new();
 
         public Func<float, float, float> GetHeightFunc() {
@@ -37,7 +30,8 @@ namespace TerrainGenerator.NoiseSystem
         }
         private float SampleNoise(float x, float y)
         {
-            var result = additiveNoiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
+            //TODO
+            var result = _noiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
             return result;
         }
         public void AddLayer(NoiseLayerSO layer)

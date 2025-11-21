@@ -128,7 +128,6 @@ namespace TerrainGenerator {
         public LODManager GetLODManager() {return _lodManager;}
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
-
         public Vector3 GetTerrainDimensions() {
             return terrainDimensions;
         }
