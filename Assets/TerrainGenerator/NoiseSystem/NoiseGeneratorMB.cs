@@ -8,6 +8,8 @@ using TerrainGenerator.NoiseLayers;
 using Unity.VisualScripting;
 namespace TerrainGenerator.NoiseSystem
 {
+
+    // TODO : re-design to allow for user to express mathematical layers and their compositions
     public class NoiseGenerator
     {
         private readonly List<NoiseLayerSO> _noiseLayers = new();
@@ -30,7 +32,6 @@ namespace TerrainGenerator.NoiseSystem
         }
         private float SampleNoise(float x, float y)
         {
-            //TODO
             var result = _noiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
             return result;
         }
