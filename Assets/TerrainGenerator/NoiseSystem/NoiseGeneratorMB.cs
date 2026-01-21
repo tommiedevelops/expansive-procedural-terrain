@@ -5,12 +5,10 @@ using NUnit.Framework.Constraints;
 using UnityEngine;
 
 using TerrainGenerator.NoiseLayers;
-using Unity.VisualScripting;
 namespace TerrainGenerator.NoiseSystem
 {
-
     // TODO : re-design to allow for user to express mathematical layers and their compositions
-    public class NoiseGenerator
+    public class NoiseGenerator 
     {
         private readonly List<NoiseLayerSO> _noiseLayers = new();
 
