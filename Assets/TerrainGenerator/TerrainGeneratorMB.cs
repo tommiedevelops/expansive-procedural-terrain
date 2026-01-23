@@ -86,7 +86,6 @@ namespace TerrainGenerator {
         public float GetHeight(float x, float z) {
             return 0.0f;
         }
-
         internal static void SampleNoise(Vector3 worldPos) {
             // TODO
         }

@@ -16,6 +16,7 @@ public class TerrainEditor : Editor
     Vector3 terrainOrigin = Vector2.zero;
     Func<float, float, float> heightFunc = null;
     PreviewType previewType = PreviewType.Wireframe;
+    Matrix4x4 model = Matrix4x4.identity;
 
     void DrawTexturePreview() {
         //TODO
@@ -23,27 +24,31 @@ public class TerrainEditor : Editor
 
     void DrawWireframePreview() {
 
+        // NEED TO SAMPLE HEIGHTS
         Vector3 startCoord = terrainOrigin - (0.5f * terrainDimensions);
-        startCoord.y = 0;
+        startCoord.y += 0.5f * terrainDimensions.y;
 
-        float distanceBetweenXPoints = terrainDimensions.x / terrainResolution.x;
-        float distanceBetweenZPoints = terrainDimensions.z / terrainResolution.y;
+        float xDist = terrainDimensions.x / terrainResolution.x;
+        float zDist = terrainDimensions.z / terrainResolution.y;
 
-        for(int x = 0; x < terrainResolution.x - 1; x++) {
-            for(int z = 0; z < terrainResolution.y - 1; z++) {
-                float xDist = distanceBetweenXPoints * x;
-                float zDist = distanceBetweenZPoints * z;
+        for(int x = 0; x < terrainResolution.x; x++) {
+            for(int z = 0; z < terrainResolution.y; z++) {
 
                 Vector3 a = new Vector3(x*xDist, 0, z*zDist);
                 Vector3 b = new Vector3(x*xDist, 0, (z+1)*zDist);
                 Vector3 c = new Vector3((x + 1) * xDist, 0, (z + 1) * zDist);
                 Vector3 d = new Vector3(x*xDist, 0, (z+1)*zDist);
 
+                a = model * (startCoord + a);
+                b = model * (startCoord + b);
+                c = model * (startCoord + c);
+                d = model * (startCoord + d);
+
                 Handles.DrawLine(a, b);
                 Handles.DrawLine(b, c);
                 Handles.DrawLine(c, d);
                 Handles.DrawLine(a, d);
-                Handles.DrawLine(b, d);
+                Handles.DrawLine(a, c);
             }
         }
 
@@ -62,9 +67,10 @@ public class TerrainEditor : Editor
         terrainResolution = tg.GetTerrainResolution();
         terrainOrigin = tg.transform.position; 
         heightFunc = tg.GetNoiseGenerator().GetHeightFunc();
+        model = tg.transform.localToWorldMatrix;
 
         // Draw Terrain Boundary
-        Handles.DrawWireCube(tg.transform.position, terrainDimensions);
+        DrawBoundaries(tg.transform.position, terrainDimensions);
 
         // Draw Preview
         switch (previewType) {
@@ -79,6 +85,10 @@ public class TerrainEditor : Editor
                 break;
         }
 
+    }
+
+    private void DrawBoundaries(Vector3 origin, Vector3 terrainDimensions) {
+        Handles.DrawWireCube(origin, terrainDimensions);
     }
 
     public override void OnInspectorGUI() {
