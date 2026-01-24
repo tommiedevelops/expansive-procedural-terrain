@@ -7,15 +7,19 @@ using UnityEngine;
 using TerrainGenerator.NoiseLayers;
 namespace TerrainGenerator.NoiseSystem
 {
-    // TODO : re-design to allow for user to express mathematical layers and their compositions
-    public class NoiseGenerator 
-    {
-        private readonly List<NoiseLayerSO> _noiseLayers = new();
 
+    [CreateAssetMenu(menuName = "ScriptableObjects/NoiseGenerator")]
+    [Serializable]
+    public class NoiseGeneratorSO : ScriptableObject
+    {
+
+        [SerializeField] private List<NoiseLayerSO> _noiseLayers;
+        private void OnEnable() {
+            _noiseLayers = new List<NoiseLayerSO>();    
+        }
         public Func<float, float, float> GetHeightFunc() {
             return SampleNoise;
         }
-
         public HeightMap GenerateNoiseMap(Vector2 offset, float distanceBetweenPoints, float heightRange, int gridWidth, int gridHeight)
         {
             var heightMap = new HeightMap(gridHeight, gridWidth);
@@ -42,7 +46,6 @@ namespace TerrainGenerator.NoiseSystem
             _noiseLayers.RemoveAll(layer => layer is TLayerType);
         }
         public List<NoiseLayerSO> GetLayers() { return _noiseLayers; }
-
 
     }
 }

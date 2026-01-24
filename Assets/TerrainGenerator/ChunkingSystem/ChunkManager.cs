@@ -34,7 +34,7 @@ namespace TerrainGenerator.ChunkingSystem {
     }
     public class ChunkManager {
 
-        private NoiseGenerator _noiseGen;
+        private NoiseGeneratorSO _noiseGen;
         private Transform _chunkParent;
         private QuadTree _quadTree;        
 
@@ -44,13 +44,13 @@ namespace TerrainGenerator.ChunkingSystem {
         private float _heightRange;
         private Material _chunkMaterial;
         
-        public ChunkManager(NoiseGenerator noiseGen, float heightRange, Material terrainMaterial, Transform chunkParent) {
+        public ChunkManager(NoiseGeneratorSO noiseGen, float heightRange, Material terrainMaterial, Transform chunkParent) {
             _noiseGen = noiseGen;
             _heightRange = heightRange;
             _chunkMaterial = terrainMaterial;
             _chunkParent = chunkParent;
         }
-        private Mesh PrepareMesh(NoiseGenerator noiseGen, ChunkData cd) {
+        private Mesh PrepareMesh(NoiseGeneratorSO noiseGen, ChunkData cd) {
             var meshData = new SquareMeshData(cd.NumVertices, cd.SideLength);
             HeightMap heightMap = _noiseGen.GenerateNoiseMap(cd.BotLeftPoint, meshData.DistanceBetweenPoints, _heightRange, cd.NumVertices, cd.NumVertices);
             Mesh mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
@@ -121,7 +121,7 @@ namespace TerrainGenerator.ChunkingSystem {
 
             }
         }
-        public void SetNoiseGenerator(NoiseGenerator noiseGenerator)
+        public void SetNoiseGenerator(NoiseGeneratorSO noiseGenerator)
         {
             _noiseGen = noiseGenerator;
         }

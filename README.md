@@ -1,6 +1,9 @@
 # Procedural Terrain Generator
 
 An optimized and modular procedural terrain generation system designed for real-time rendering in Unity. This project implements a quad tree algorithm to efficiently generate large-scale terrain using a viewer-dependent level of detail system.
+
+The core part of the system is found in the Assets/TerrainGenerator folder. You can think of each prepared 'Scene' as an example application of the system.
+
 ## Features
 - **Quad Tree-Based LOD**: Dynamically subdivides terrain based on the viewer's field of view for optimal performance.
 - **Advanced Chunking System**: Uses memory efficient data structures & algorithms to manage chunking

@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TerrainGenerator.ChunkingSystem;
 using TerrainGenerator.NoiseSystem;
@@ -10,16 +8,6 @@ using System.Data;
 
 
 namespace TerrainGenerator {
-
-    [CreateAssetMenu(menuName = "ScriptableObjects/TerrainConfig")]
-    [Serializable]
-    public class TerrainConfig : ScriptableObject {
-        [SerializeField] public float terrainSideLength = 0.0f;
-        [SerializeField] public float terrainHeight = 0.0f;
-        [SerializeField] public int terrainResolution;
-        [SerializeField] public int numLODs;
-        [SerializeField] public Material terrainMaterial;
-    }
         
     public class TerrainGeneratorMB : MonoBehaviour
     {
@@ -28,16 +16,13 @@ namespace TerrainGenerator {
         private ChunkManager _chunkManager;
         private QuadTree     _quadTree;
         private LODManager   _lodManager;
-        private NoiseGenerator _noiseGen = new();
+        private NoiseGeneratorSO _noiseGen;
 
-        // Instance's transform to parent all chunks.
-        [Header("Terrain Properties")]
-        [SerializeField] private Material terrainMaterial;
-        [SerializeField] private Vector3 terrainDimensions = Vector3.one;
-        [SerializeField] private int resolutionX = 1;
-        [SerializeField] private int resolutionY = 1;
+        [Header("Terrain Config")]
+        [SerializeField] TerrainConfigSO _terrainConfigSO;
 
         [Header("Noise Editor")]
+        [SerializeField] NoiseGeneratorSO _noiseGeneratorSO;
         [SerializeField] private List<NoiseLayerSO> noiseLayers;
 
         // Noise Generator Config
@@ -51,7 +36,7 @@ namespace TerrainGenerator {
 
         private void Awake()
         {
-            _chunkManager = new ChunkManager(_noiseGen, _heightRange, terrainMaterial, transform);
+            _chunkManager = new ChunkManager(_noiseGen, _heightRange, _terrainConfigSO.terrainMaterial, transform);
             _quadTree = GenerateQuadTree();
             _lodManager = new LODManager(MIN_CHUNK_SIZE);
             _lodManager.SetNumLODLevels(4);
@@ -127,12 +112,12 @@ namespace TerrainGenerator {
         public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
         public Vector3 GetTerrainDimensions() {
-            return terrainDimensions;
+            return _terrainConfigSO.terrainDimensions;
         }
         public Vector2Int GetTerrainResolution() {
-            return new Vector2Int(resolutionX, resolutionY);
+            return new Vector2Int(_terrainConfigSO.resolutionX, _terrainConfigSO.resolutionY);
         }
-        public NoiseGenerator GetNoiseGenerator() {
+        public NoiseGeneratorSO GetNoiseGenerator() {
             return _noiseGen;
         }
     }

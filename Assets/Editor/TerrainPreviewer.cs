@@ -7,9 +7,8 @@ using static TerrainGenerator.MeshGenerators.PlaneMeshGenerator;
 using System;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
-public class TerrainEditor : Editor
+public class TerrainPreviewer : Editor
 {
-
     public enum PreviewType { Texture, Wireframe, Mesh }
     Vector3 terrainDimensions  = Vector3.zero;
     Vector2Int terrainResolution = Vector2Int.zero;
