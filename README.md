@@ -7,8 +7,8 @@ An optimized and modular procedural terrain generation system designed for real-
 - **Multithreaded** (Planned): Optimise further through multithreading
 - **Stylized through custom shaders** (Planned): Add terrain textures and other stylistic features to make it look nice
 
-[Procedural Terrain Demo](thumbnail.png)
+![Procedural Terrain Demo](thumbnail.png)
 
 ## System Diagram
 
-[System Diagram](system-diagram.svg)
+![System Diagram](system-diagram.svg)
