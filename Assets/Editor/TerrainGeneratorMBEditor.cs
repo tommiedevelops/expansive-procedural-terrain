@@ -7,7 +7,7 @@ using static TerrainGenerator.MeshGenerators.PlaneMeshGenerator;
 using System;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
-public class TerrainGeneratorMBPreviewer : Editor
+public class TerrainGeneratorMBEditor : Editor
 {
     public enum PreviewType { Texture, Wireframe, Mesh }
     Vector3 terrainDimensions  = Vector3.zero;
@@ -90,9 +90,57 @@ public class TerrainGeneratorMBPreviewer : Editor
         Handles.DrawWireCube(origin, terrainDimensions);
     }
 
-    public override void OnInspectorGUI() {
-        base.OnInspectorGUI();
+    private Editor m_terrainConfigSOEditor;
+    private Editor m_noiseGeneratorSOEditor;
+
+    private void OnEnable()
+    {
+        m_terrainConfigSOEditor = Editor.CreateEditor(((TerrainGeneratorMB)target).GetTerrainConfigSO());
+    }
+
+    private bool _showTerrainConfigSettings = false;
+    private bool _showTerrainPreviewSettings = false;
+
+    void TerrainConfigSOSelection()
+    {
+        var terrainConfig = serializedObject.FindProperty("_terrainConfigSO");
+        serializedObject.Update();
+        EditorGUILayout.PropertyField(terrainConfig);
+        serializedObject.ApplyModifiedProperties();
+
         EditorGUILayout.Space();
-        previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", previewType);
+    }
+
+    void TerrainConfigSOModification()
+    {
+        // Modifying Selected Terrain Config
+        _showTerrainConfigSettings = EditorGUILayout.BeginFoldoutHeaderGroup(
+                _showTerrainConfigSettings,
+                "Terrain Configuration"
+            );
+
+        if(_showTerrainConfigSettings) m_terrainConfigSOEditor.OnInspectorGUI();
+
+        EditorGUILayout.EndFoldoutHeaderGroup();
+    }
+
+    void TerrainConfigPreviewSettings()
+    {
+        _showTerrainPreviewSettings = EditorGUILayout.BeginFoldoutHeaderGroup(
+                _showTerrainPreviewSettings,
+                "Terrain Preview Settings"
+            );
+
+        if (_showTerrainPreviewSettings)
+        {
+            previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", previewType);
+        }
+
+        EditorGUILayout.EndFoldoutHeaderGroup();
+    }
+    public override void OnInspectorGUI() {
+        TerrainConfigSOSelection();
+        TerrainConfigSOModification();
+        TerrainConfigPreviewSettings();
     }
 }

@@ -18,21 +18,18 @@ namespace TerrainGenerator {
         private LODManager   _lodManager;
         private NoiseGeneratorSO _noiseGen;
 
-        [Header("Terrain Config")]
+        // FOR DEBUG
+        private const int rootNodeLengthMultiplier = 8;
+        private const int nodeMultiplier = 1;
+        private const float _heightRange = 10.0f;
+
+        [Header("Terrain Viewer")]
+        [SerializeField] Transform viewer;
+        
         [SerializeField] TerrainConfigSO _terrainConfigSO;
 
         [Header("Noise Editor")]
         [SerializeField] NoiseGeneratorSO _noiseGeneratorSO;
-        [SerializeField] private List<NoiseLayerSO> noiseLayers;
-
-        // Noise Generator Config
-        [SerializeField] private int rootNodeLengthMultiplier = 10;
-        [SerializeField] private float nodeMultiplier = 3f;
-        [SerializeField] private float _heightRange = 5.0f;
-
-        [Header("Optimization Settings")]
-        [SerializeField] Transform viewer;
-        [SerializeField] Transform terrainParent;
 
         private void Awake()
         {
@@ -44,7 +41,6 @@ namespace TerrainGenerator {
         private void Start()
         {
             // add noise from user input
-            foreach(var layer in noiseLayers) _noiseGen.AddLayer(layer);
             _quadTree.UpdateChildren(viewer.position);
             var leafNodes = _quadTree.GetAllLeafNodes(_quadTree.GetRootNode());
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
@@ -63,6 +59,7 @@ namespace TerrainGenerator {
             
             var chunksNeeded = IdentifyLeafNodesNotActive(currLeafNodes, _chunkManager.GetActiveChunks().Keys);
             
+
             _chunkManager.RequestChunks(chunksNeeded);
             
         }
@@ -108,7 +105,6 @@ namespace TerrainGenerator {
         public QuadTree GetQuadTree() { return _quadTree; }
         public ChunkManager GetChunkManager() {return _chunkManager;}
         public LODManager GetLODManager() {return _lodManager;}
-        public void SetRootNodeLengthMultiplier(int multiplier) { rootNodeLengthMultiplier = multiplier; }
         public int GetRootNodeLengthMultiplier() { return rootNodeLengthMultiplier;}
         public Vector3 GetTerrainDimensions() {
             return _terrainConfigSO.terrainDimensions;
@@ -118,6 +114,10 @@ namespace TerrainGenerator {
         }
         public NoiseGeneratorSO GetNoiseGenerator() {
             return _noiseGeneratorSO;
+        }
+
+        public TerrainConfigSO GetTerrainConfigSO() {
+            return _terrainConfigSO;
         }
     }
 }
