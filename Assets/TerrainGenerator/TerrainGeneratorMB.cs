@@ -66,7 +66,6 @@ namespace TerrainGenerator {
             _chunkManager.RequestChunks(chunksNeeded);
             
         }
-
         public float GetHeight(float x, float z) {
             return 0.0f;
         }
@@ -118,7 +117,7 @@ namespace TerrainGenerator {
             return new Vector2Int(_terrainConfigSO.resolutionX, _terrainConfigSO.resolutionY);
         }
         public NoiseGeneratorSO GetNoiseGenerator() {
-            return _noiseGen;
+            return _noiseGeneratorSO;
         }
     }
 }
