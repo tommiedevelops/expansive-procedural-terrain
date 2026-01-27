@@ -112,10 +112,9 @@ namespace TerrainGenerator {
         public Vector2Int GetTerrainResolution() {
             return new Vector2Int(_terrainConfigSO.resolutionX, _terrainConfigSO.resolutionY);
         }
-        public NoiseGeneratorSO GetNoiseGenerator() {
+        public NoiseGeneratorSO GetNoiseGeneratorSO() {
             return _noiseGeneratorSO;
         }
-
         public TerrainConfigSO GetTerrainConfigSO() {
             return _terrainConfigSO;
         }
