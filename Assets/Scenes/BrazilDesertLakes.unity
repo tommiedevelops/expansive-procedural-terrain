@@ -1032,15 +1032,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9bbc2f2dabd19f4db771ad6b681bfa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  viewer: {fileID: 111722350}
   _terrainConfigSO: {fileID: 11400000, guid: 1caad075402c92d4da96fb82dd7580b9, type: 2}
   _noiseGeneratorSO: {fileID: 11400000, guid: 79d1c91903063be4d85d4e67bf39d075, type: 2}
-  noiseLayers:
-  - {fileID: 11400000, guid: be17b1db99f4ae549b9a2ad1eff0406f, type: 2}
-  rootNodeLengthMultiplier: 1000
-  nodeMultiplier: 1
-  _heightRange: 0
-  viewer: {fileID: 111722350}
-  terrainParent: {fileID: 1108282618}
 --- !u!4 &1108282618
 Transform:
   m_ObjectHideFlags: 0
@@ -1232,7 +1226,7 @@ PrefabInstance:
     - target: {fileID: 4163664185661548427, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: _terrainConfigSO
       value: 
-      objectReference: {fileID: 11400000, guid: 1caad075402c92d4da96fb82dd7580b9, type: 2}
+      objectReference: {fileID: 11400000, guid: 29001f5682a49bf4599d0dae9266ef50, type: 2}
     - target: {fileID: 4163664185661548427, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: _noiseGeneratorSO
       value: 

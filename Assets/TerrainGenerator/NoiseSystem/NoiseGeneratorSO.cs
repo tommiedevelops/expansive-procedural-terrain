@@ -12,7 +12,6 @@ namespace TerrainGenerator.NoiseSystem
     [Serializable]
     public class NoiseGeneratorSO : ScriptableObject
     {
-
         [SerializeField] private List<NoiseLayerSO> _noiseLayers;
         private void OnEnable() {
             _noiseLayers = new List<NoiseLayerSO>();    

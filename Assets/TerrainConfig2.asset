@@ -12,11 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 787583c8fc36c3345932c89ab22c39fd, type: 3}
   m_Name: TerrainConfig2
   m_EditorClassIdentifier: 
-  terrainSideLength: 0
-  terrainHeight: 0
-  terrainResolution: 0
-  numLODs: 0
   terrainMaterial: {fileID: 0}
-  terrainDimensions: {x: 1, y: 1, z: 1}
-  resolutionX: 1
-  resolutionY: 1
+  terrainDimensions: {x: 14.3, y: 6.2, z: 13.4}
+  resolutionX: 40
+  resolutionY: 30

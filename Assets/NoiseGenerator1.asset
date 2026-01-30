@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fe3213a8d879754a838996090af6d8e, type: 3}
   m_Name: NoiseGenerator1
   m_EditorClassIdentifier: 
+  _noiseLayers: []

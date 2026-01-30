@@ -15,38 +15,41 @@ public class TerrainGeneratorMBEditor : Editor
     Vector3 terrainOrigin = Vector2.zero;
     Func<float, float, float> heightFunc = null;
     PreviewType previewType = PreviewType.Wireframe;
-    Matrix4x4 model = Matrix4x4.identity;
+    Matrix4x4 modelMatrix = Matrix4x4.identity;
     void DrawTexturePreview() {
         //TODO
     }
     void DrawWireframePreview() {
 
-        // NEED TO SAMPLE HEIGHTS
         Vector3 startCoord = terrainOrigin - (0.5f * terrainDimensions);
         startCoord.y += 0.5f * terrainDimensions.y;
 
         float xDist = terrainDimensions.x / terrainResolution.x;
         float zDist = terrainDimensions.z / terrainResolution.y;
 
-        for(int x = 0; x < terrainResolution.x; x++) {
-            for(int z = 0; z < terrainResolution.y; z++) {
+        for(int x = 0; x < terrainResolution.x; x++)
+        for(int z = 0; z < terrainResolution.y; z++) 
+        {
+                float currX = x * xDist;
+                float currZ = z * zDist;
+                float nextX = (x + 1) * xDist;
+                float nextZ = (z + 1) * zDist;
 
-                Vector3 a = new Vector3(x*xDist, 0, z*zDist);
-                Vector3 b = new Vector3(x*xDist, 0, (z+1)*zDist);
-                Vector3 c = new Vector3((x + 1) * xDist, 0, (z + 1) * zDist);
-                Vector3 d = new Vector3(x*xDist, 0, (z+1)*zDist);
+                var a = new Vector3(currX, heightFunc(currX, currZ), currZ);
+                var b = new Vector3(currX, heightFunc(currX, nextZ), nextZ);
+                var c = new Vector3(nextX, heightFunc(nextX, currZ), currZ);
+                var d = new Vector3(nextX, heightFunc(nextX, nextZ), nextZ);
 
-                a = model * (startCoord + a);
-                b = model * (startCoord + b);
-                c = model * (startCoord + c);
-                d = model * (startCoord + d);
+                a = modelMatrix * (startCoord + a);
+                b = modelMatrix * (startCoord + b);
+                c = modelMatrix * (startCoord + c);
+                d = modelMatrix * (startCoord + d);
 
                 Handles.DrawLine(a, b);
                 Handles.DrawLine(b, c);
                 Handles.DrawLine(c, d);
                 Handles.DrawLine(a, d);
                 Handles.DrawLine(a, c);
-            }
         }
 
     }
@@ -62,7 +65,7 @@ public class TerrainGeneratorMBEditor : Editor
         terrainResolution = tg.GetTerrainResolution();
         terrainOrigin = tg.transform.position; 
         heightFunc = tg.GetNoiseGeneratorSO().GetHeightFunc();
-        model = tg.transform.localToWorldMatrix;
+        modelMatrix = tg.transform.localToWorldMatrix;
 
         // Draw Terrain Boundary
         DrawBoundaries(tg.transform.position, terrainDimensions);
@@ -87,7 +90,6 @@ public class TerrainGeneratorMBEditor : Editor
 
     private Editor m_terrainConfigSOEditor;
     private Editor m_noiseGeneratorSOEditor;
-
     private void OnEnable()
     {
         m_terrainConfigSOEditor = Editor.CreateEditor(((TerrainGeneratorMB)target).GetTerrainConfigSO());
