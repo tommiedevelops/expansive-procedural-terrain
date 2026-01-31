@@ -19,14 +19,14 @@ namespace TerrainGenerator.NoiseLayers {
 
         }
 
-        public override float Evaluate(Vector2 point) {
+        public override float Evaluate(float x, float y) {
             float amplitude = 1;
             float frequency = 1;
             float noiseHeight = 0;
 
             for (int i = 0; i < octaves; i++) {
-                float sampleX = (point.x + offset.x) / scale * frequency;
-                float sampleY = (point.y + offset.y) / scale * frequency;
+                float sampleX = (x + offset.x) / scale * frequency;
+                float sampleY = (y + offset.y) / scale * frequency;
 
                 float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
                 noiseHeight += perlinValue * amplitude;

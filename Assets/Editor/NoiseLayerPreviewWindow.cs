@@ -66,8 +66,7 @@ namespace _Scripts.Editor
             {
                 for (var y = 0; y < height; y++)
                 {
-                    var point = new Vector2(x, y);
-                    var value = layerSo.Evaluate(point);
+                    var value = layerSo.Evaluate(x,y);
                     tex.SetPixel(x, y, new Color(value, value, value));
                 }
             }

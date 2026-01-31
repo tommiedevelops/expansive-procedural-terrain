@@ -5,7 +5,7 @@ namespace TerrainGenerator.NoiseLayers
     public abstract class NoiseLayerSO : ScriptableObject
     {
         public abstract void ValidateValues();
-        public abstract float Evaluate(Vector2 point);
+        public abstract float Evaluate(float x, float y);
         private void OnValidate()
         {
             ValidateValues();

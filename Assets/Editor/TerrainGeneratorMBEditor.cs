@@ -5,11 +5,12 @@ using TerrainGenerator;
 using TerrainGenerator.MeshGenerators;
 using static TerrainGenerator.MeshGenerators.PlaneMeshGenerator;
 using System;
+using Unity.VisualScripting;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
 {
-    public enum PreviewType { Texture, Wireframe, Mesh }
+    public enum PreviewType { Texture, Wireframe, Vertices, Mesh }
     Vector3 terrainDimensions  = Vector3.zero;
     Vector2Int terrainResolution = Vector2Int.zero;
     Vector3 terrainOrigin = Vector2.zero;
@@ -81,8 +82,18 @@ public class TerrainGeneratorMBEditor : Editor
             case PreviewType.Mesh:
                 DrawMeshPreview();
                 break;
+            case PreviewType.Vertices:
+                DrawVerticesPreview();
+                break;
+            default:
+                DrawVerticesPreview();
+                break;
         }
 
+    }
+    private void DrawVerticesPreview()
+    {
+        throw new NotImplementedException();
     }
     private void DrawBoundaries(Vector3 origin, Vector3 terrainDimensions) {
         Handles.DrawWireCube(origin, terrainDimensions);

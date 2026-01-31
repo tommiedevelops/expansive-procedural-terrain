@@ -30,7 +30,7 @@ namespace TerrainGenerator.NoiseLayers
             if (baseNoise != null) baseNoise.ValidateValues();
         }
 
-        public override float Evaluate(Vector2 point)
+        public override float Evaluate(float x, float y)
         {
             if (baseNoise == null)
                 return 0f;
@@ -40,10 +40,11 @@ namespace TerrainGenerator.NoiseLayers
             float freq = frequency;
             float maxAmplitude = 0f;
 
+            var point = new Vector2(x, y);
             for (int i = 0; i < octaves; i++)
             {
                 Vector2 samplePoint = (point + offset) * freq;
-                float value = baseNoise.Evaluate(samplePoint);
+                float value = baseNoise.Evaluate(point.x, point.y);
 
                 total += value * amplitude;
                 maxAmplitude += amplitude;

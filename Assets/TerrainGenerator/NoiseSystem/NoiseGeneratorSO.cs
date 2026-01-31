@@ -33,7 +33,13 @@ namespace TerrainGenerator.NoiseSystem
         }
         private float SampleNoise(float x, float y)
         {
-            var result = _noiseLayers.Sum(layer => layer.Evaluate(new Vector2(x,y)));
+            float result = 0.0f;
+            foreach (var layer in _noiseLayers)
+            {
+                if (layer == null) continue;
+                result += layer.Evaluate(x,y);
+            }
+            // Temporary
             return result;
         }
         public void AddLayer(NoiseLayerSO layer)

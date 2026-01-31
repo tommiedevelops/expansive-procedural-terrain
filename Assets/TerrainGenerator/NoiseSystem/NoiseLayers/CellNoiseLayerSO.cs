@@ -19,10 +19,10 @@ namespace TerrainGenerator.NoiseLayers
             _prng = new System.Random(seed);
         }
 
-        public override float Evaluate(Vector2 point)
+        public override float Evaluate(float x, float y)
         {
-            int px = Mathf.FloorToInt(point.x / cellSize);
-            int py = Mathf.FloorToInt(point.y / cellSize);
+            int px = Mathf.FloorToInt(x / cellSize);
+            int py = Mathf.FloorToInt(y / cellSize);
 
             float minDist = float.MaxValue;
 
@@ -36,7 +36,7 @@ namespace TerrainGenerator.NoiseLayers
 
                     // Hash-based pseudo-random offset
                     Vector2 cellCenter = new Vector2(cx, cy) * cellSize + GetRandomOffset(cx, cy);
-                    float dist = Vector2.Distance(point, cellCenter);
+                    float dist = Vector2.Distance(new Vector2(x,y), cellCenter);
                     if (dist < minDist)
                         minDist = dist;
                 }
