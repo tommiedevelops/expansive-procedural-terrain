@@ -10,15 +10,12 @@ namespace TerrainGenerator.NoiseLayers
 
         [Range(1, 10)]
         public int seed = 1;
-
         private System.Random _prng;
-
         public override void ValidateValues()
         {
             if (cellSize < 1) cellSize = 1;
             _prng = new System.Random(seed);
         }
-
         public override float Evaluate(float x, float y)
         {
             int px = Mathf.FloorToInt(x / cellSize);
@@ -46,12 +43,6 @@ namespace TerrainGenerator.NoiseLayers
             float maxDist = Mathf.Sqrt(2) * cellSize;
             return 1f - Mathf.Clamp01(minDist / maxDist);
         }
-
-        public override float Compose(float currentValue, Vector2 point)
-        {
-            throw new System.NotImplementedException();
-        }
-
         private Vector2 GetRandomOffset(int x, int y)
         {
             int hash = x * 73856093 ^ y * 19349663 ^ seed * 83492791;

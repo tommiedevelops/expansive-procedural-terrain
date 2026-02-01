@@ -8,7 +8,6 @@ namespace TerrainGenerator.NoiseLayers {
         public float persistence = 0.5f;
         public float lacunarity = 2.0f;
         public Vector2 offset;
-
         public override void ValidateValues() {
             if (lacunarity < 0f) lacunarity = 0f;
             if (octaves < 0) octaves = 0;
@@ -18,7 +17,6 @@ namespace TerrainGenerator.NoiseLayers {
             if (scale < 0f) scale = 0f;
 
         }
-
         public override float Evaluate(float x, float y) {
             float amplitude = 1;
             float frequency = 1;
@@ -44,10 +42,6 @@ namespace TerrainGenerator.NoiseLayers {
             noiseHeight -= 1.0f;
             return noiseHeight;
 
-        }
-
-        public override float Compose(float currentValue, Vector2 point) {
-            throw new System.NotImplementedException();
         }
     }
 }

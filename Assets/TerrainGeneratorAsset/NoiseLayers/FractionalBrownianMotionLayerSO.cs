@@ -55,10 +55,5 @@ namespace TerrainGenerator.NoiseLayers
 
             return total / maxAmplitude;
         }
-
-        public override float Compose(float currentValue, Vector2 point)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

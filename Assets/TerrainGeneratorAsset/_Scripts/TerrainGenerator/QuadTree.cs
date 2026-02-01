@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace TerrainGenerator.ChunkingSystem
+namespace TerrainGeneratorAsset
 {
     public sealed class QuadNode {
 

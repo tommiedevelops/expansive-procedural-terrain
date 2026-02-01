@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TerrainGenerator.NoiseLayers
+namespace TerrainGeneratorAsset
 {
     public abstract class NoiseLayerSO : ScriptableObject
     {

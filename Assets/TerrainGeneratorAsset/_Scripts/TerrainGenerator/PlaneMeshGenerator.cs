@@ -1,9 +1,7 @@
 ﻿using System;
-using TerrainGenerator.NoiseSystem;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace TerrainGenerator.MeshGenerators
+namespace TerrainGeneratorAsset
 {
     public struct SquareMeshData
     {
@@ -20,40 +18,6 @@ namespace TerrainGenerator.MeshGenerators
     }
 
     public static class PlaneMeshGenerator {
-        public static Mesh GeneratePlaneMeshFromHeightMap(HeightMap heightMap, SquareMeshData squareMeshData) {
-            var vertices = GenerateVertexGridFromHeightMap(heightMap, squareMeshData);
-            var triangles = GenerateTriangleArray(squareMeshData.NumVerticesPerSide);
-
-            // Assign mesh properties
-            Mesh mesh = new() {
-                //name = $"Plane Mesh: Dim: {width} x {length}. Scale: {scale}",
-                vertices = vertices,
-                triangles = triangles,
-            };
-
-            mesh.RecalculateNormals();
-
-            return mesh;
-        }
-        public static Vector3[] GenerateVertexGridFromHeightMap(HeightMap heightMap, SquareMeshData meshData) {
-            var numVerts = meshData.NumVerticesPerSide;
-            var distBetweenPoints = meshData.DistanceBetweenPoints;
-
-            var totalVertices = numVerts * numVerts;
-            var vertices = new Vector3[totalVertices];
-
-            var vertexIndex = 0;
-            for (var z = 0; z < numVerts; z++) {
-                for (var x = 0; x < numVerts; x++) {
-                    vertices[vertexIndex] = new Vector3(x * distBetweenPoints,
-                        heightMap.GetPoint(x, z),
-                        z * distBetweenPoints);
-                    vertexIndex++;
-                }
-            }
-
-            return vertices;
-        }
         public static int[] GenerateTriangleArray(int numVertsPerSide) {
 
             int totalTrianglePoints = (numVertsPerSide - 1) * (numVertsPerSide - 1) * 6;

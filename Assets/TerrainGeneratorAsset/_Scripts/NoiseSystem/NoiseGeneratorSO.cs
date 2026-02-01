@@ -5,7 +5,7 @@ using NUnit.Framework.Constraints;
 using UnityEngine;
 
 using TerrainGenerator.NoiseLayers;
-namespace TerrainGenerator.NoiseSystem
+namespace TerrainGeneratorAsset
 {
 
     [CreateAssetMenu(menuName = "ScriptableObjects/NoiseGenerator")]
