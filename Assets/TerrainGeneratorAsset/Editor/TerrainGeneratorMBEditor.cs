@@ -115,7 +115,7 @@ public class TerrainGeneratorMBEditor : Editor
     {
         // Generate Plane Mesh with specified parameters
         Mesh mesh = GeneratePlaneMesh(m_terrainDimensions.x, m_terrainDimensions.y, m_terrainResolution.x, m_terrainResolution.y, m_terrainOrigin, m_heightFunc);
-        Graphics.DrawMeshNow(mesh, m_terrainOrigin, Quaternion.identity);
+        Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
     }
     private void DrawVerticesPreview()
     {
