@@ -10,6 +10,5 @@ namespace TerrainGenerator.NoiseLayers
         {
             ValidateValues();
         }
-        public abstract float Compose(float currentValue, Vector2 point);
     }
 }
