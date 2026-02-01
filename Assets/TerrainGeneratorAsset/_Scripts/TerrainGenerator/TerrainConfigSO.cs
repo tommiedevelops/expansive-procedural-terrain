@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 using UnityEngine;
 
-
-namespace TerrainGenerator {
+namespace TerrainGeneratorAsset 
+{
     [CreateAssetMenu(menuName = "ScriptableObjects/TerrainConfig")]
     [Serializable]
     public class TerrainConfigSO : ScriptableObject {
