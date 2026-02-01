@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-using TerrainGenerator.NoiseSystem;
-using TerrainGenerator.MeshGenerators;
+using TerrainGeneratorAsset;
 
 [CustomEditor(typeof(NoiseGeneratorSO))]
 public class NoiseGeneratorSOEditor : Editor

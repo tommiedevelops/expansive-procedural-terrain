@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TerrainGenerator.NoiseLayers {
+namespace TerrainGeneratorAsset {
     [CreateAssetMenu(menuName = "Noise/PerlinNoiseSettings")]
     public class PerlinNoiseLayerSo : NoiseLayerSO {
         public float scale = 10f;

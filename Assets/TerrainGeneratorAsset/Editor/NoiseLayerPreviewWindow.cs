@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-
-using TerrainGenerator.NoiseLayers;
+using TerrainGeneratorAsset;
 
 namespace _Scripts.Editor
 {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TerrainGenerator.NoiseLayers
+namespace TerrainGeneratorAsset
 {
     [CreateAssetMenu(menuName = "Noise/FBmNoiseSettings")]
     public class FBmNoiseLayerSo : NoiseLayerSO

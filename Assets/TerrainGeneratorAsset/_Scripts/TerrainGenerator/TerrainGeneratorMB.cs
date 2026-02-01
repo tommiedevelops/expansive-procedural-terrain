@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TerrainGenerator.ChunkingSystem;
-using TerrainGenerator.NoiseSystem;
-using TerrainGenerator.NoiseLayers;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
-using System.Data;
 
 
 namespace TerrainGeneratorAsset {
@@ -16,6 +12,8 @@ namespace TerrainGeneratorAsset {
         [SerializeField] private NoiseGeneratorSO noiseGen;
 
         private List<Chunk> activeChunks = new();
+
+
         private void Awake()
         {
             if (!terrainViewer || !terrainConfig || !noiseGen)
@@ -29,5 +27,14 @@ namespace TerrainGeneratorAsset {
         {
             
         }
+        public NoiseGeneratorSO GetNoiseGeneratorSO()
+        {
+            return noiseGen;
+        }
+        public TerrainConfigSO GetTerrainConfigSO()
+        {
+            return terrainConfig;
+        }
+
      }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TerrainGenerator.NoiseLayers
+namespace TerrainGeneratorAsset
 {
     [CreateAssetMenu(menuName = "Noise/CellNoiseLayer")]
     public class CellNoiseLayerSo : NoiseLayerSO

@@ -1,5 +1,5 @@
 
-using TerrainGenerator;
+using TerrainGeneratorAsset;
 using UnityEditor;
 
 [CustomEditor(typeof(TerrainConfigSO))]

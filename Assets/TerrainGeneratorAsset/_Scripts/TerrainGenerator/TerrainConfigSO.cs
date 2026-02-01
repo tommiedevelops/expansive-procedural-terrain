@@ -5,11 +5,13 @@ namespace TerrainGeneratorAsset
 {
     [CreateAssetMenu(menuName = "ScriptableObjects/TerrainConfig")]
     [Serializable]
-    public class TerrainConfigSO : ScriptableObject {
-        [SerializeField] private bool isInfinite; 
-        [SerializeField] private Material terrainMaterial;
-        [SerializeField] private Vector3 terrainDimensions = Vector3.one;
-        [SerializeField] private int resolutionX = 1;
-        [SerializeField] private int resolutionY = 1;
+    public class TerrainConfigSO : ScriptableObject 
+    {
+        public bool isInfinite;
+        public Material terrainMaterial;
+        public Vector3 terrainDimensions = Vector3.one;
+        public int resolutionX = 1;
+        public int resolutionY = 1;
+
     }
 }
