@@ -23,12 +23,8 @@ namespace TerrainGenerator {
         private const int nodeMultiplier = 1;
         private const float _heightRange = 10.0f;
 
-        [Header("Terrain Viewer")]
-        [SerializeField] Transform viewer;
-        
+        [SerializeField] Transform terrainViewer;
         [SerializeField] TerrainConfigSO _terrainConfigSO;
-
-        [Header("Noise Editor")]
         [SerializeField] NoiseGeneratorSO _noiseGeneratorSO;
 
         private void Awake()
@@ -41,7 +37,7 @@ namespace TerrainGenerator {
         private void Start()
         {
             // add noise from user input
-            _quadTree.UpdateChildren(viewer.position);
+            _quadTree.UpdateChildren(terrainViewer.position);
             var leafNodes = _quadTree.GetAllLeafNodes(_quadTree.GetRootNode());
             var chunksToRender = ConvertQuadNodesToChunkData(leafNodes);
             _chunkManager.CreateNewChunksFromChunkData(chunksToRender); 
@@ -49,7 +45,7 @@ namespace TerrainGenerator {
         private void Update()
         {
             
-            var culledNodes = _quadTree.UpdateChildren(viewer.position);
+            var culledNodes = _quadTree.UpdateChildren(terrainViewer.position);
             var culledNodesConverted = ConvertQuadNodesToChunkData(culledNodes);
 
             _chunkManager.RecycleChunks(culledNodesConverted);

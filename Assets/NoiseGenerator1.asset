@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: NoiseGenerator1
   m_EditorClassIdentifier: 
   _noiseLayers:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 05b5c6a038f03274c87309e5b691f9f9, type: 2}

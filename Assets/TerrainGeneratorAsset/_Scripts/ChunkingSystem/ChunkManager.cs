@@ -11,22 +11,18 @@ namespace TerrainGenerator.ChunkingSystem {
         public float SideLength;
         public int NumVertices;
         public Vector2 BotLeftPoint;
-
         public bool Equals(ChunkData other)
         {
             return SideLength.Equals(other.SideLength) && BotLeftPoint.Equals(other.BotLeftPoint);
         }
-
         public override bool Equals(object obj)
         {
             return obj is ChunkData other && Equals(other);
         }
-
         public override int GetHashCode()
         {
             return HashCode.Combine(SideLength, BotLeftPoint);
         }
-
         public void Print()
         {
             Debug.Log($"SL:  {SideLength}, BL: {BotLeftPoint}");
@@ -36,14 +32,13 @@ namespace TerrainGenerator.ChunkingSystem {
 
         private NoiseGeneratorSO _noiseGen;
         private Transform _chunkParent;
-        private QuadTree _quadTree;        
+        private QuadTree _quadTree;
 
-        private readonly ChunkPool _chunkPool = new();
+        private readonly Dictionary<ChunkData, GameObject> _inactiveChunks = new();
         private readonly Dictionary<ChunkData, GameObject> _activeChunks = new();
 
         private float _heightRange;
         private Material _chunkMaterial;
-        
         public ChunkManager(NoiseGeneratorSO noiseGen, float heightRange, Material terrainMaterial, Transform chunkParent) {
             _noiseGen = noiseGen;
             _heightRange = heightRange;
@@ -56,7 +51,6 @@ namespace TerrainGenerator.ChunkingSystem {
             Mesh mesh = GeneratePlaneMeshFromHeightMap(heightMap,meshData);
             return mesh;
         }
-
         private GameObject CreateGameObject(Mesh mesh, ChunkData cd) {
                 
             var go = new GameObject($"BL{cd.BotLeftPoint}, SL: {cd.SideLength}, NV: {cd.NumVertices}")
@@ -75,7 +69,6 @@ namespace TerrainGenerator.ChunkingSystem {
            
             return go;
         }
-
         public GameObject CreateGameObjectFromChunkData(ChunkData chunkData)
         {
             Mesh mesh = PrepareMesh(_noiseGen, chunkData);
@@ -99,10 +92,9 @@ namespace TerrainGenerator.ChunkingSystem {
                 }
                 chunkRemoved.SetActive(false);
                 _activeChunks.Remove(chunkData);
-                _chunkPool.RecycleChunk(chunkRemoved, chunkData.SideLength, chunkData.BotLeftPoint);
+                _inactiveChunks.Add(chunkData, chunkRemoved);
             }
         }
-        public ChunkPool GetChunkPool() { return _chunkPool; }
         public void RequestChunks(List<ChunkData> chunksToAdd)
         {
             foreach (var chunkData in chunksToAdd)
