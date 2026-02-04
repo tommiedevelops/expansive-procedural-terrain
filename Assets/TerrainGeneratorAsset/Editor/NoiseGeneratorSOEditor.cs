@@ -15,10 +15,11 @@ public class NoiseGeneratorSOEditor : Editor
         var noiseGen = (NoiseGeneratorSO)target;
 
         var noiseLayers = noiseGen.GetNoiseLayers();
-        if (noiseLayers == null) return;
+        if (noiseLayers == null || (noiseLayers.Count == 0) ) return;
 
         foreach(var layer in noiseLayers)
         {
+            if (layer == null) continue;
             Editor editor = CreateEditor(layer);
             editor.OnInspectorGUI();
         }

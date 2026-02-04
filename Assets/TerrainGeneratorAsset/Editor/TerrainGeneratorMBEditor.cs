@@ -7,7 +7,7 @@ using static TerrainGeneratorAsset.PlaneMeshGenerator;
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
 {
-    public enum PreviewType { Texture, Wireframe, Vertices, Mesh }
+    public enum PreviewType { None, Texture, Wireframe, Vertices, Mesh }
     private PreviewType m_previewType = PreviewType.Wireframe;
 
     private Editor m_terrainConfigSOEditor;
@@ -15,7 +15,6 @@ public class TerrainGeneratorMBEditor : Editor
     private TerrainConfigSO m_terrainConfig;
     private NoiseGeneratorSO m_noiseGen;
 
-    private bool m_showPreview = false;
     private bool _showNoiseGeneratorSettings = false;
     private bool _showTerrainConfigSettings = false;
     private bool _showTerrainPreviewSettings = false;
@@ -32,7 +31,6 @@ public class TerrainGeneratorMBEditor : Editor
     }
     private void OnSceneGUI()
     {
-        if (!m_showPreview) return;
 
         TerrainGeneratorMB tg = (TerrainGeneratorMB)target;
 
@@ -45,11 +43,13 @@ public class TerrainGeneratorMBEditor : Editor
         var heightFunc = noiseGen.GetHeightFunc();
 
         // Draw Terrain Boundary
-        OnSceneGUI_DrawBoundaries(tg.transform.position, terrainConfig.terrainDimensions);
+        OnSceneGUI_DrawBoundaries(tg.transform, terrainConfig.terrainDimensions);
 
         // Draw Preview
         switch (m_previewType)
         {
+            case PreviewType.None:
+                return;
             case PreviewType.Texture:
                 OnSceneGUI_DrawTexturePreview();
                 break;
@@ -124,9 +124,11 @@ public class TerrainGeneratorMBEditor : Editor
     {
         throw new NotImplementedException();
     }
-    private void OnSceneGUI_DrawBoundaries(Vector3 origin, Vector3 terrainDimensions)
+    private void OnSceneGUI_DrawBoundaries(Transform terrainTransform, Vector3 terrainDimensions)
     {
-        Handles.DrawWireCube(origin, terrainDimensions);
+        Handles.color = Color.red;
+        Handles.matrix = terrainTransform.localToWorldMatrix;
+        Handles.DrawWireCube(Vector3.zero, terrainDimensions);
     }
     void OnInspectorGUI_NoiseGeneratorSOSelection()
     {
@@ -178,7 +180,6 @@ public class TerrainGeneratorMBEditor : Editor
 
         if (_showTerrainPreviewSettings)
         {
-            m_showPreview = EditorGUILayout.Toggle("Show Preview", m_showPreview);
             m_previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", m_previewType);
         }
 

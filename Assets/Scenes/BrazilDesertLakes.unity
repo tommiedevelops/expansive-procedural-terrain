@@ -1242,6 +1242,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 658629138}
     - target: {fileID: 4163664185661548427, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
+      propertyPath: terrainViewer
+      value: 
+      objectReference: {fileID: 111722350}
+    - target: {fileID: 4163664185661548427, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: noiseGenerator
       value: 
       objectReference: {fileID: 0}
@@ -1311,7 +1315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.95494235
       objectReference: {fileID: 0}
     - target: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1319,7 +1323,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.29679152
       objectReference: {fileID: 0}
     - target: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: m_LocalRotation.z
@@ -1331,7 +1335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 34.53
       objectReference: {fileID: 0}
     - target: {fileID: 4280815310061454090, guid: bd8db5c1aaa502643aa647ed08d9d6d9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
