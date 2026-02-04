@@ -11,7 +11,8 @@ namespace TerrainGeneratorAsset
     {
         [SerializeField] private List<NoiseLayerSO> _noiseLayers;
         private void OnEnable() {
-            _noiseLayers = new List<NoiseLayerSO>();    
+            // only initialize if its null
+            _noiseLayers ??= new List<NoiseLayerSO>();    
         }
         public Func<float, float, float> GetHeightFunc() {
             return SampleNoise;
@@ -35,7 +36,7 @@ namespace TerrainGeneratorAsset
         {
             _noiseLayers.RemoveAll(layer => layer is TLayerType);
         }
-        public List<NoiseLayerSO> GetLayers() { return _noiseLayers; }
+        public List<NoiseLayerSO> GetNoiseLayers() { return _noiseLayers; }
 
     }
 }

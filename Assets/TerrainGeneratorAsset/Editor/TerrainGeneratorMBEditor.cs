@@ -8,19 +8,32 @@ using static TerrainGeneratorAsset.PlaneMeshGenerator;
 public class TerrainGeneratorMBEditor : Editor
 {
     public enum PreviewType { Texture, Wireframe, Vertices, Mesh }
-    Vector3 m_terrainDimensions = Vector3.zero;
-    Vector2Int m_terrainResolution = Vector2Int.zero;
-    Vector3 m_terrainOrigin = Vector2.zero;
-    Func<float, float, float> m_heightFunc = null;
-    PreviewType m_previewType = PreviewType.Wireframe;
-    Matrix4x4 modelMatrix = Matrix4x4.identity;
+    private PreviewType m_previewType = PreviewType.Wireframe;
+
     private Editor m_terrainConfigSOEditor;
     private Editor m_noiseGeneratorSOEditor;
+    private TerrainConfigSO m_terrainConfig;
+    private NoiseGeneratorSO m_noiseGen;
+
+    private bool m_showPreview = false;
     private bool _showNoiseGeneratorSettings = false;
     private bool _showTerrainConfigSettings = false;
     private bool _showTerrainPreviewSettings = false;
+    private void OnEnable()
+    {
+        var terrainGen = (TerrainGeneratorMB)target;
+        m_terrainConfig = terrainGen.GetTerrainConfigSO();
+        m_noiseGen = terrainGen.GetNoiseGeneratorSO();
+
+        if(!m_terrainConfig || !m_noiseGen) return;
+
+        m_terrainConfigSOEditor = Editor.CreateEditor(m_terrainConfig);
+        m_noiseGeneratorSOEditor = Editor.CreateEditor(m_noiseGen);
+    }
     private void OnSceneGUI()
     {
+        if (!m_showPreview) return;
+
         TerrainGeneratorMB tg = (TerrainGeneratorMB)target;
 
         var terrainConfig = tg.GetTerrainConfigSO();
@@ -29,80 +42,70 @@ public class TerrainGeneratorMBEditor : Editor
         var noiseGen = tg.GetNoiseGeneratorSO();
         if (noiseGen == null) return;
 
-        m_terrainDimensions = terrainConfig.terrainDimensions;
-        m_terrainResolution = new Vector2Int(terrainConfig.resolutionX, terrainConfig.resolutionY);
-        m_terrainOrigin = tg.transform.position;
-        m_heightFunc = tg.GetNoiseGeneratorSO().GetHeightFunc();
-        modelMatrix = tg.transform.localToWorldMatrix;
+        var heightFunc = noiseGen.GetHeightFunc();
 
         // Draw Terrain Boundary
-        DrawBoundaries(tg.transform.position, m_terrainDimensions);
+        OnSceneGUI_DrawBoundaries(tg.transform.position, terrainConfig.terrainDimensions);
 
         // Draw Preview
         switch (m_previewType)
         {
             case PreviewType.Texture:
-                DrawTexturePreview();
+                OnSceneGUI_DrawTexturePreview();
                 break;
             case PreviewType.Wireframe:
-                DrawWireframePreview();
+                OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 break;
             case PreviewType.Mesh:
-                DrawMeshPreview();
+                //DrawMeshPreview(terrainConfig);
                 break;
             case PreviewType.Vertices:
-                DrawVerticesPreview();
+                //DrawVerticesPreview(terrainConfig);
                 break;
             default:
-                DrawVerticesPreview();
+                OnSceneGUI_DrawVerticesPreview();
                 break;
         }
 
     }
-    private void OnEnable()
-    {
-        m_terrainConfigSOEditor = Editor.CreateEditor(((TerrainGeneratorMB)target).GetTerrainConfigSO());
-        m_noiseGeneratorSOEditor = Editor.CreateEditor(((TerrainGeneratorMB)target).GetNoiseGeneratorSO());
-    }
     public override void OnInspectorGUI()
     {
-        TerrainConfigSOSelection();
-        TerrainConfigSOModification();
-        TerrainConfigPreviewSettings();
-        NoiseGeneratorSOSelection();
-        NoiseGeneratorSOModification();
+        OnInspectorGUI_TerrainConfigSOSelection();
+        OnInspectorGUI_TerrainConfigSOModification();
+        OnInspectorGUI_TerrainConfigPreviewSettings();
+        OnInspectorGUI_NoiseGeneratorSOSelection();
+        OnInspectorGUI_NoiseGeneratorSOModification();
     }
-    void DrawTexturePreview()
+    void OnSceneGUI_DrawTexturePreview()
     {
         //TODO
     }
-    void DrawWireframePreview()
+    void OnSceneGUI_DrawWireframePreview(TerrainConfigSO terrainConfig, Transform terrainTr, Func<float,float,float> heightFunc)
     {
+        Vector3 startCoord = terrainTr.position - (0.5f * terrainConfig.terrainDimensions);
+        startCoord.y += 0.5f * terrainConfig.terrainDimensions.y;
 
-        Vector3 startCoord = m_terrainOrigin - (0.5f * m_terrainDimensions);
-        startCoord.y += 0.5f * m_terrainDimensions.y;
+        float xDist = terrainConfig.terrainDimensions.x / terrainConfig.resolutionX;
+        float zDist = terrainConfig.terrainDimensions.z / terrainConfig.resolutionY;
 
-        float xDist = m_terrainDimensions.x / m_terrainResolution.x;
-        float zDist = m_terrainDimensions.z / m_terrainResolution.y;
-
-        for (int x = 0; x < m_terrainResolution.x; x++)
-            for (int z = 0; z < m_terrainResolution.y; z++)
+        for (int x = 0; x < terrainConfig.resolutionX; x++)
+            for (int z = 0; z < terrainConfig.resolutionY; z++)
             {
                 float currX = x * xDist;
                 float currZ = z * zDist;
                 float nextX = (x + 1) * xDist;
                 float nextZ = (z + 1) * zDist;
 
-                var a = new Vector3(currX, m_heightFunc(currX, currZ), currZ);
-                var b = new Vector3(currX, m_heightFunc(currX, nextZ), nextZ);
-                var c = new Vector3(nextX, m_heightFunc(nextX, currZ), currZ);
-                var d = new Vector3(nextX, m_heightFunc(nextX, nextZ), nextZ);
+                var a = new Vector3(currX, heightFunc(currX, currZ), currZ);
+                var b = new Vector3(currX, heightFunc(currX, nextZ), nextZ);
+                var c = new Vector3(nextX, heightFunc(nextX, currZ), currZ);
+                var d = new Vector3(nextX, heightFunc(nextX, nextZ), nextZ);
 
-                a = modelMatrix * (startCoord + a);
-                b = modelMatrix * (startCoord + b);
-                c = modelMatrix * (startCoord + c);
-                d = modelMatrix * (startCoord + d);
-
+                a = terrainTr.TransformPoint((startCoord + a));
+                b = terrainTr.TransformPoint((startCoord + b));
+                c = terrainTr.TransformPoint((startCoord + c));
+                d = terrainTr.TransformPoint((startCoord + d));
+                
                 Handles.DrawLine(a, b);
                 Handles.DrawLine(b, c);
                 Handles.DrawLine(c, d);
@@ -111,31 +114,31 @@ public class TerrainGeneratorMBEditor : Editor
             }
 
     }
-    void DrawMeshPreview()
+    void OnSceneGUI_DrawMeshPreview()
     {
         // Generate Plane Mesh with specified parameters
-        Mesh mesh = GeneratePlaneMesh(m_terrainDimensions.x, m_terrainDimensions.y, m_terrainResolution.x, m_terrainResolution.y, m_terrainOrigin, m_heightFunc);
-        Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
+        //Mesh mesh = GeneratePlaneMesh(m_terrainDimensions.x, m_terrainDimensions.y, m_terrainResolution.x, m_terrainResolution.y, m_terrainOrigin, m_heightFunc);
+        //Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
     }
-    private void DrawVerticesPreview()
+    private void OnSceneGUI_DrawVerticesPreview()
     {
         throw new NotImplementedException();
     }
-    private void DrawBoundaries(Vector3 origin, Vector3 terrainDimensions)
+    private void OnSceneGUI_DrawBoundaries(Vector3 origin, Vector3 terrainDimensions)
     {
         Handles.DrawWireCube(origin, terrainDimensions);
     }
-    void NoiseGeneratorSOSelection()
+    void OnInspectorGUI_NoiseGeneratorSOSelection()
     {
-        var noiseGen = serializedObject.FindProperty("noiseGen");
+        SerializedProperty noiseGen_Prop = serializedObject.FindProperty("noiseGen");
         serializedObject.Update();
-        EditorGUILayout.PropertyField(noiseGen);
+        EditorGUILayout.PropertyField(noiseGen_Prop);
         serializedObject.ApplyModifiedProperties();
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
-    void NoiseGeneratorSOModification()
+    void OnInspectorGUI_NoiseGeneratorSOModification()
     {
-        // Modifying Selected Terrain Config
+        // Drop Down for Noise Generator Settings
         _showNoiseGeneratorSettings = EditorGUILayout.BeginFoldoutHeaderGroup(
                 _showNoiseGeneratorSettings,
                 "Noise Generator Settings"
@@ -145,14 +148,14 @@ public class TerrainGeneratorMBEditor : Editor
 
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
-    void TerrainConfigSOSelection()
+    void OnInspectorGUI_TerrainConfigSOSelection()
     {
-        var terrainConfig = serializedObject.FindProperty("terrainConfig");
+        SerializedProperty terrainConfig_Prop = serializedObject.FindProperty("terrainConfig");
         serializedObject.Update();
-        EditorGUILayout.PropertyField(terrainConfig);
+        EditorGUILayout.PropertyField(terrainConfig_Prop);
         serializedObject.ApplyModifiedProperties();
     }
-    void TerrainConfigSOModification()
+    void OnInspectorGUI_TerrainConfigSOModification()
     {
         // Modifying Selected Terrain Config
         _showTerrainConfigSettings = EditorGUILayout.BeginFoldoutHeaderGroup(
@@ -164,7 +167,7 @@ public class TerrainGeneratorMBEditor : Editor
 
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
-    void TerrainConfigPreviewSettings()
+    void OnInspectorGUI_TerrainConfigPreviewSettings()
     {
         _showTerrainPreviewSettings = EditorGUILayout.BeginFoldoutHeaderGroup(
                 _showTerrainPreviewSettings,
@@ -175,6 +178,7 @@ public class TerrainGeneratorMBEditor : Editor
 
         if (_showTerrainPreviewSettings)
         {
+            m_showPreview = EditorGUILayout.Toggle("Show Preview", m_showPreview);
             m_previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", m_previewType);
         }
 

@@ -12,6 +12,5 @@ namespace TerrainGeneratorAsset
         public Vector3 terrainDimensions = Vector3.one;
         public int resolutionX = 1;
         public int resolutionY = 1;
-
     }
 }

@@ -12,8 +12,6 @@ namespace TerrainGeneratorAsset {
         [SerializeField] private NoiseGeneratorSO noiseGen;
 
         private List<Chunk> activeChunks = new();
-
-
         private void Awake()
         {
             if (!terrainViewer || !terrainConfig || !noiseGen)
@@ -25,7 +23,6 @@ namespace TerrainGeneratorAsset {
         }
         private void Update()
         {
-            
         }
         public NoiseGeneratorSO GetNoiseGeneratorSO()
         {
