@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fe3213a8d879754a838996090af6d8e, type: 3}
-  m_Name: NoiseGenerator1
-  m_EditorClassIdentifier: 
-  _noiseLayers:
-  - {fileID: 11400000, guid: 7062870f210a7df4e8c511d424f44dad, type: 2}
+  m_Script: {fileID: 11500000, guid: 10834cbcb0fa0754e9b02ac7fe698e32, type: 3}
+  m_Name: Sin
+  m_EditorClassIdentifier: Assembly-CSharp::SinNoiseLayerSO
+  xFreq: -0.91
+  yFreq: 1.02

@@ -15,9 +15,9 @@ namespace TerrainGeneratorAsset {
             if (persistence < 0f) persistence = 0f;
             if (persistence > 1f) persistence = 1f;
             if (scale < 0f) scale = 0f;
-
         }
-        public override float Evaluate(float x, float y) {
+        public override float Evaluate(float x, float y) 
+        {
             float amplitude = 1;
             float frequency = 1;
             float noiseHeight = 0;
@@ -34,12 +34,6 @@ namespace TerrainGeneratorAsset {
 
             }
 
-            // Sum of geometric series of 1 + persistence + persistence^2 + ... + persistence^(octaves -1) 
-            // which is the maximum possible height
-            float maxHeight = (1.0f - Mathf.Pow(persistence, octaves - 1)) / (1.0f - persistence);
-            noiseHeight /= maxHeight;
-            noiseHeight *= 2.0f;
-            noiseHeight -= 1.0f;
             return noiseHeight;
 
         }

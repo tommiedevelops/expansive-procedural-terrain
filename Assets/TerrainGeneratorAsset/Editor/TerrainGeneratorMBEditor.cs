@@ -80,6 +80,7 @@ public class TerrainGeneratorMBEditor : Editor
     {
         //TODO
     }
+
     void OnSceneGUI_DrawWireframePreview(TerrainConfigSO terrainConfig, Transform terrainTr, Func<float,float,float> heightFunc)
     {
         // High level idea: Do everything in object space (origin is 0), then convert to world space using the localToWorld matrix
@@ -92,6 +93,7 @@ public class TerrainGeneratorMBEditor : Editor
 
         float xLengthOS = terrainConfig.terrainDimensions.x;
         float zLengthOS = terrainConfig.terrainDimensions.z;
+        float yLengthOS = 0.5f * terrainConfig.terrainDimensions.y;
         int resolutionX = terrainConfig.resolutionX;
         int resolutionZ = terrainConfig.resolutionZ;
 
@@ -102,25 +104,30 @@ public class TerrainGeneratorMBEditor : Editor
         float startX = -0.5f * xLengthOS;
         float startZ = -0.5f * zLengthOS;
 
-        for (int x = 0; x < terrainConfig.resolutionX; ++x)
-        for (int z = 0; z < terrainConfig.resolutionZ; ++z)
+        for (int x = 0; x < resolutionX; ++x)
+        for (int z = 0; z < resolutionZ; ++z)
         {
-            // Object Space
-            float currX = startX + x * xDistBetweenPtsOS;
-            float currZ = startZ + z * zDistBetweenPtsOS;
-            float nextX = startX + (x + 1) * xDistBetweenPtsOS;
-            float nextZ = startZ + (z + 1) * zDistBetweenPtsOS;
+                // currX, currZ, nextX, nextZ all in Object Space
+                float currX = startX + x * xDistBetweenPtsOS;
+                float currZ = startZ + z * zDistBetweenPtsOS;
+                float nextX = startX + (x + 1) * xDistBetweenPtsOS;
+                float nextZ = startZ + (z + 1) * zDistBetweenPtsOS;
 
-            var a = new Vector3(currX, heightFunc(currX, currZ), currZ);
-            var b = new Vector3(currX, heightFunc(currX, nextZ), nextZ);
-            var c = new Vector3(nextX, heightFunc(nextX, currZ), nextZ);
-            var d = new Vector3(nextX, heightFunc(nextX, nextZ), currZ);
-                
-            Handles.DrawLine(a, b);
-            Handles.DrawLine(b, c);
-            Handles.DrawLine(c, d);
-            Handles.DrawLine(a, d);
-            Handles.DrawLine(a, c);
+                float aHeight = yLengthOS * (2 * heightFunc(currX, currZ) - 1.0f);
+                float bHeight = yLengthOS * (2 * heightFunc(currX, nextZ) - 1.0f);
+                float cHeight = yLengthOS * (2 * heightFunc(nextX, nextZ) - 1.0f);
+                float dHeight = yLengthOS * (2 * heightFunc(nextX, currZ) - 1.0f);
+
+                var a = new Vector3(currX, aHeight, currZ);
+                var b = new Vector3(currX, bHeight, nextZ);
+                var c = new Vector3(nextX, cHeight, nextZ);
+                var d = new Vector3(nextX, dHeight, currZ);
+
+                Handles.DrawLine(a, b);
+                Handles.DrawLine(b, c);
+                Handles.DrawLine(c, d);
+                Handles.DrawLine(a, d);
+                Handles.DrawLine(a, c);
         }
 
     }
