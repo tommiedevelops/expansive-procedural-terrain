@@ -1,8 +1,8 @@
-using UnityEngine;
-using UnityEditor;
+using Codice.CM.WorkspaceServer.Tree;
 using System;
 using TerrainGeneratorAsset;
-using static TerrainGeneratorAsset.PlaneMeshGenerator;
+using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
@@ -82,36 +82,46 @@ public class TerrainGeneratorMBEditor : Editor
     }
     void OnSceneGUI_DrawWireframePreview(TerrainConfigSO terrainConfig, Transform terrainTr, Func<float,float,float> heightFunc)
     {
-        Vector3 startCoord = terrainTr.position - (0.5f * terrainConfig.terrainDimensions);
-        startCoord.y += 0.5f * terrainConfig.terrainDimensions.y;
+        // High level idea: Do everything in object space (origin is 0), then convert to world space using the localToWorld matrix
+        // 'OS' suffix denotes an Object Space value
 
-        float xDist = terrainConfig.terrainDimensions.x / terrainConfig.resolutionX;
-        float zDist = terrainConfig.terrainDimensions.z / terrainConfig.resolutionY;
+        // Set to a param soon
+        Handles.color = Color.white;
 
-        for (int x = 0; x < terrainConfig.resolutionX; x++)
-            for (int z = 0; z < terrainConfig.resolutionY; z++)
-            {
-                float currX = x * xDist;
-                float currZ = z * zDist;
-                float nextX = (x + 1) * xDist;
-                float nextZ = (z + 1) * zDist;
+        if (!terrainConfig) return;
 
-                var a = new Vector3(currX, heightFunc(currX, currZ), currZ);
-                var b = new Vector3(currX, heightFunc(currX, nextZ), nextZ);
-                var c = new Vector3(nextX, heightFunc(nextX, currZ), currZ);
-                var d = new Vector3(nextX, heightFunc(nextX, nextZ), nextZ);
+        float xLengthOS = terrainConfig.terrainDimensions.x;
+        float zLengthOS = terrainConfig.terrainDimensions.z;
+        int resolutionX = terrainConfig.resolutionX;
+        int resolutionZ = terrainConfig.resolutionZ;
 
-                a = terrainTr.TransformPoint((startCoord + a));
-                b = terrainTr.TransformPoint((startCoord + b));
-                c = terrainTr.TransformPoint((startCoord + c));
-                d = terrainTr.TransformPoint((startCoord + d));
+        float xDistBetweenPtsOS = xLengthOS / resolutionX;
+        float zDistBetweenPtsOS = zLengthOS / resolutionZ;
+
+        // starting coordinate in object space
+        float startX = -0.5f * xLengthOS;
+        float startZ = -0.5f * zLengthOS;
+
+        for (int x = 0; x < terrainConfig.resolutionX; ++x)
+        for (int z = 0; z < terrainConfig.resolutionZ; ++z)
+        {
+            // Object Space
+            float currX = startX + x * xDistBetweenPtsOS;
+            float currZ = startZ + z * zDistBetweenPtsOS;
+            float nextX = startX + (x + 1) * xDistBetweenPtsOS;
+            float nextZ = startZ + (z + 1) * zDistBetweenPtsOS;
+
+            var a = new Vector3(currX, heightFunc(currX, currZ), currZ);
+            var b = new Vector3(currX, heightFunc(currX, nextZ), nextZ);
+            var c = new Vector3(nextX, heightFunc(nextX, currZ), nextZ);
+            var d = new Vector3(nextX, heightFunc(nextX, nextZ), currZ);
                 
-                Handles.DrawLine(a, b);
-                Handles.DrawLine(b, c);
-                Handles.DrawLine(c, d);
-                Handles.DrawLine(a, d);
-                Handles.DrawLine(a, c);
-            }
+            Handles.DrawLine(a, b);
+            Handles.DrawLine(b, c);
+            Handles.DrawLine(c, d);
+            Handles.DrawLine(a, d);
+            Handles.DrawLine(a, c);
+        }
 
     }
     void OnSceneGUI_DrawMeshPreview()
