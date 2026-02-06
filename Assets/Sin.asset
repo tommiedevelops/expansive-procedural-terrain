@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10834cbcb0fa0754e9b02ac7fe698e32, type: 3}
   m_Name: Sin
   m_EditorClassIdentifier: Assembly-CSharp::SinNoiseLayerSO
-  xFreq: -0.91
-  yFreq: 1.02
+  xFreq: -0.81
+  yFreq: 1.44

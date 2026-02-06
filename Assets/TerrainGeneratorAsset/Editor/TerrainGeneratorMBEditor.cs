@@ -140,8 +140,9 @@ public class TerrainGeneratorMBEditor : Editor
         {
             return 0.5f *cfg.terrainDimensions.y * heightFunc(x, y);
         }
-        var mesh = GeneratePlaneMesh(cfg.terrainDimensions.x, cfg.terrainDimensions.z, cfg.resolutionX , 
-                                     cfg.resolutionZ, newHeightFunc);
+
+        var mesh = GeneratePlaneMesh(cfg.terrainDimensions.x, cfg.terrainDimensions.z, 
+                                     cfg.resolutionX, cfg.resolutionZ, newHeightFunc);
 
         cfg.terrainMaterial.SetPass(0); // Draw mesh with the provided Material
         Graphics.DrawMeshNow(mesh, tr.localToWorldMatrix);

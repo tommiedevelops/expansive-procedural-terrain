@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace TerrainGeneratorAsset
@@ -32,8 +33,8 @@ namespace TerrainGeneratorAsset
         }
         internal static void GenerateVertices(float lengthX, float lengthZ, int resolutionX, int resolutionZ,ref Vector3[] vertices, Func<float, float, float> heightFunc) {
 
-            float distanceBetweenXPoints = lengthX / resolutionX;
-            float distanceBetweenZPoints = lengthZ / resolutionZ;
+            float distanceBetweenXPoints = lengthX / (resolutionX - 1);
+            float distanceBetweenZPoints = lengthZ / (resolutionZ - 1);
 
             float startX = -0.5f * lengthX;
             float startZ = -0.5f * lengthZ;
@@ -74,21 +75,19 @@ namespace TerrainGeneratorAsset
                     uvs[z * resolutionX + x] = new Vector2((float)x / (resolutionX - 1), (float)z/(resolutionZ - 1));
                 }
         }
-        public static Mesh GeneratePlaneMesh(float lengthX,
-                                             float lengthZ,
-                                             int resolutionX,
-                                             int resolutionZ,
+        
+        public static Mesh GeneratePlaneMesh(float lengthX, float lengthZ,
+                                             int resolutionX, int resolutionZ,
                                              Func<float, float, float> heightFunc) {
 
             // Generates plane mesh using heightFunc for y values in Object Space. 
             // The bottom left point will be (-lengthX, -lengthZ) and the top right point will be (lengthX, lengthZ)
-            int vertexCount = resolutionZ * resolutionX;
+            int vertexCount =    resolutionZ * resolutionX;
             int triIndexCount = (resolutionX - 1) * (resolutionZ - 1) * 6; // every triangle has 3 indicies
 
-            //hello
             Vector3[] vertices  = new Vector3[vertexCount];
-            int[]     triangles = new int[triIndexCount];
             Vector2[] uvs       = new Vector2[vertexCount];
+                int[] triangles = new int[triIndexCount];
 
             GenerateVertices(lengthX, lengthZ, resolutionX, resolutionZ, ref vertices, heightFunc);
             GenerateTriangles(resolutionX, resolutionZ, ref triangles);
