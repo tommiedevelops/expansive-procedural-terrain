@@ -3,6 +3,7 @@ using System;
 using TerrainGeneratorAsset;
 using UnityEditor;
 using UnityEngine;
+using static TerrainGeneratorAsset.PlaneMeshGenerator;
 
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
@@ -57,7 +58,8 @@ public class TerrainGeneratorMBEditor : Editor
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 break;
             case PreviewType.Mesh:
-                //DrawMeshPreview(terrainConfig);
+                OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
+                OnSceneGUI_DrawMeshPreview(terrainConfig, tg.transform, heightFunc);
                 break;
             case PreviewType.Vertices:
                 //DrawVerticesPreview(terrainConfig);
@@ -87,7 +89,7 @@ public class TerrainGeneratorMBEditor : Editor
         // 'OS' suffix denotes an Object Space value
 
         // Set to a param soon
-        Handles.color = Color.white;
+        Handles.color = Color.red;
 
         if (!terrainConfig) return;
 
@@ -131,11 +133,19 @@ public class TerrainGeneratorMBEditor : Editor
         }
 
     }
-    void OnSceneGUI_DrawMeshPreview()
+    void OnSceneGUI_DrawMeshPreview(TerrainConfigSO cfg, Transform tr, Func<float,float,float> heightFunc)
     {
         // Generate Plane Mesh with specified parameters
-        //Mesh mesh = GeneratePlaneMesh(m_terrainDimensions.x, m_terrainDimensions.y, m_terrainResolution.x, m_terrainResolution.y, m_terrainOrigin, m_heightFunc);
-        //Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
+        float newHeightFunc(float x, float y)
+        {
+            return 0.5f *cfg.terrainDimensions.y * heightFunc(x, y);
+        }
+        var mesh = GeneratePlaneMesh(cfg.terrainDimensions.x, cfg.terrainDimensions.z, cfg.resolutionX , 
+                                     cfg.resolutionZ, newHeightFunc);
+
+        cfg.terrainMaterial.SetPass(0); // Draw mesh with the provided Material
+        Graphics.DrawMeshNow(mesh, tr.localToWorldMatrix);
+
     }
     private void OnSceneGUI_DrawVerticesPreview()
     {
