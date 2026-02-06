@@ -85,6 +85,7 @@ namespace TerrainGeneratorAsset
             int vertexCount = resolutionZ * resolutionX;
             int triIndexCount = (resolutionX - 1) * (resolutionZ - 1) * 6; // every triangle has 3 indicies
 
+            //hello
             Vector3[] vertices  = new Vector3[vertexCount];
             int[]     triangles = new int[triIndexCount];
             Vector2[] uvs       = new Vector2[vertexCount];
