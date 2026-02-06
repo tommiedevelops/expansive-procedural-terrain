@@ -34,7 +34,8 @@ namespace TerrainGeneratorAsset {
 
             }
 
-            return noiseHeight;
+            // Remap to -1 and 1
+            return 2 *  noiseHeight - 1;
 
         }
     }

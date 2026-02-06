@@ -113,10 +113,10 @@ public class TerrainGeneratorMBEditor : Editor
                 float nextX = startX + (x + 1) * xDistBetweenPtsOS;
                 float nextZ = startZ + (z + 1) * zDistBetweenPtsOS;
 
-                float aHeight = yLengthOS * (2 * heightFunc(currX, currZ) - 1.0f);
-                float bHeight = yLengthOS * (2 * heightFunc(currX, nextZ) - 1.0f);
-                float cHeight = yLengthOS * (2 * heightFunc(nextX, nextZ) - 1.0f);
-                float dHeight = yLengthOS * (2 * heightFunc(nextX, currZ) - 1.0f);
+                float aHeight = yLengthOS * heightFunc(currX, currZ);
+                float bHeight = yLengthOS * heightFunc(currX, nextZ);
+                float cHeight = yLengthOS * heightFunc(nextX, nextZ);
+                float dHeight = yLengthOS * heightFunc(nextX, currZ);
 
                 var a = new Vector3(currX, aHeight, currZ);
                 var b = new Vector3(currX, bHeight, nextZ);
