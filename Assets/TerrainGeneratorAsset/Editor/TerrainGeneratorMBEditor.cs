@@ -8,8 +8,8 @@ using static TerrainGeneratorAsset.PlaneMeshGenerator;
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
 {
-    public enum PreviewType { None, Texture, Wireframe, Vertices, Mesh }
-    private PreviewType m_previewType = PreviewType.Wireframe;
+    public enum PreviewType { None, Wireframe, Mesh }
+    private static PreviewType m_previewType; // static to extend lifetime 
 
     private Editor m_terrainConfigSOEditor;
     private Editor m_noiseGeneratorSOEditor;
@@ -19,6 +19,7 @@ public class TerrainGeneratorMBEditor : Editor
     private bool _showNoiseGeneratorSettings = false;
     private bool _showTerrainConfigSettings = false;
     private bool _showTerrainPreviewSettings = false;
+
     private void OnEnable()
     {
         var terrainGen = (TerrainGeneratorMB)target;
@@ -27,8 +28,12 @@ public class TerrainGeneratorMBEditor : Editor
 
         if(!m_terrainConfig || !m_noiseGen) return;
 
-        m_terrainConfigSOEditor = Editor.CreateEditor(m_terrainConfig);
-        m_noiseGeneratorSOEditor = Editor.CreateEditor(m_noiseGen);
+        if(!m_terrainConfigSOEditor)
+            m_terrainConfigSOEditor = Editor.CreateEditor(m_terrainConfig);
+
+        if(!m_noiseGeneratorSOEditor)
+            m_noiseGeneratorSOEditor = Editor.CreateEditor(m_noiseGen);
+        
     }
     private void OnSceneGUI()
     {
@@ -51,18 +56,12 @@ public class TerrainGeneratorMBEditor : Editor
         {
             case PreviewType.None:
                 return;
-            case PreviewType.Texture:
-                OnSceneGUI_DrawTexturePreview();
-                break;
             case PreviewType.Wireframe:
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 break;
             case PreviewType.Mesh:
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 OnSceneGUI_DrawMeshPreview(terrainConfig, tg.transform, heightFunc);
-                break;
-            case PreviewType.Vertices:
-                //DrawVerticesPreview(terrainConfig);
                 break;
             default:
                 OnSceneGUI_DrawVerticesPreview();
@@ -78,11 +77,6 @@ public class TerrainGeneratorMBEditor : Editor
         OnInspectorGUI_NoiseGeneratorSOSelection();
         OnInspectorGUI_NoiseGeneratorSOModification();
     }
-    void OnSceneGUI_DrawTexturePreview()
-    {
-        //TODO
-    }
-
     void OnSceneGUI_DrawWireframePreview(TerrainConfigSO terrainConfig, Transform terrainTr, Func<float,float,float> heightFunc)
     {
         // High level idea: Do everything in object space (origin is 0), then convert to world space using the localToWorld matrix
