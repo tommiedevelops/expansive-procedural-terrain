@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TerrainConfig2
   m_EditorClassIdentifier: 
   terrainMaterial: {fileID: 0}
-  terrainDimensions: {x: 14.3, y: 6.2, z: 13.4}
-  resolutionX: 40
-  resolutionY: 30
+  terrainDimensions: {x: 9.67, y: 7, z: 18.42}
+  resolutionX: 53
+  resolutionY: 56
