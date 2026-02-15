@@ -8,7 +8,7 @@ using static TerrainGeneratorAsset.PlaneMeshGenerator;
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
 {
-    public enum PreviewType { None, Wireframe, Mesh }
+    public enum PreviewType { Wireframe, Mesh }
     private static PreviewType m_previewType; // static to extend lifetime 
 
     private Editor m_terrainConfigSOEditor;
@@ -54,17 +54,12 @@ public class TerrainGeneratorMBEditor : Editor
         // Draw Preview
         switch (m_previewType)
         {
-            case PreviewType.None:
-                return;
             case PreviewType.Wireframe:
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 break;
             case PreviewType.Mesh:
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 OnSceneGUI_DrawMeshPreview(terrainConfig, tg.transform, heightFunc);
-                break;
-            default:
-                OnSceneGUI_DrawVerticesPreview();
                 break;
         }
 
@@ -141,10 +136,6 @@ public class TerrainGeneratorMBEditor : Editor
         cfg.terrainMaterial.SetPass(0); // Draw mesh with the provided Material
         Graphics.DrawMeshNow(mesh, tr.localToWorldMatrix);
 
-    }
-    private void OnSceneGUI_DrawVerticesPreview()
-    {
-        throw new NotImplementedException();
     }
     private void OnSceneGUI_DrawBoundaries(Transform terrainTransform, Vector3 terrainDimensions)
     {

@@ -14,7 +14,6 @@ public class NoiseGeneratorSOEditor : Editor
         var noiseGen = (NoiseGeneratorSO)target;
         var noiseLayers = noiseGen.GetNoiseLayers();
 
-
         for (int i = 0; i < noiseLayers.Count; i++)
         {
             if(noiseLayers[i] == null)
@@ -62,7 +61,7 @@ public class NoiseGeneratorSOEditor : Editor
 
         Func<float, float, float> sampler = noise.Evaluate;
 
-        Color[] pixels = new Color[texWidth * texWidth];
+        Color32[] pixels = new Color32[texWidth * texWidth];
 
         for (int i = 0; i < texWidth; i++)
         for (int j = 0; j < texWidth; j++)
@@ -74,7 +73,7 @@ public class NoiseGeneratorSOEditor : Editor
                 pixels[j + i * texWidth] = new Color(value, value, value, 1f);
         }
 
-        tex.SetPixels(pixels);
+        tex.SetPixels32(pixels);
         tex.Apply(false);
 
         return tex;
