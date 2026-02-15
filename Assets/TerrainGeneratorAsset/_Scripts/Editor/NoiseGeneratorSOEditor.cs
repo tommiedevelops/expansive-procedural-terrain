@@ -4,6 +4,7 @@ using TerrainGeneratorAsset;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System;
+using TMPro;
 
 [CustomEditor(typeof(NoiseGeneratorSO))]
 public class NoiseGeneratorSOEditor : Editor
@@ -50,7 +51,7 @@ public class NoiseGeneratorSOEditor : Editor
         if (GUILayout.Button(new GUIContent("Add New Layer"))) noiseLayers.Add(null);
 
     }
-    internal static void OnInspectorGUI_DrawNoiseTexturePreview(List<NoiseLayerSO> noiseLayers, int i)
+    private void OnInspectorGUI_DrawNoiseTexturePreview(List<NoiseLayerSO> noiseLayers, int i)
     {
         // Draw a texture preview
         const int texPreviewLength = 200;
@@ -58,26 +59,21 @@ public class NoiseGeneratorSOEditor : Editor
         Texture2D tex = OnInspectorGUI_GenerateTexturePreview(noiseLayers[i], texPreviewLength);
         EditorGUI.DrawPreviewTexture(previewRect, tex);
     }
-    internal static Texture2D OnInspectorGUI_GenerateTexturePreview(NoiseLayerSO noise, int texWidth)
+    private Texture2D OnInspectorGUI_GenerateTexturePreview(NoiseLayerSO noise, int texWidth)
     {
         var tex = new Texture2D(texWidth, texWidth, TextureFormat.RGBA32, false);
 
-        const float xMin = 0.0f;
-        const float xMax = 1.0f;
-        const float yMin = 0.0f;
-        const float yMax = 1.0f;
-
         Func<float, float, float> sampler = noise.Evaluate;
+
+        float pixelLengthX = m_terrainConfig.terrainDimensions.x / (texWidth - 1);
+        float pixelLengthZ = m_terrainConfig.terrainDimensions.z / (texWidth - 1);
 
         Color32[] pixels = new Color32[texWidth * texWidth];
 
         for (int i = 0; i < texWidth; i++)
         for (int j = 0; j < texWidth; j++)
         {
-                float u = Mathf.Lerp(xMin, xMax, (float)i / (texWidth - 1));
-                float v = Mathf.Lerp(yMin, yMax, (float)j / (texWidth - 1));
-
-                float value = Mathf.Clamp01(sampler(u, v));
+                float value = Mathf.Clamp01(sampler(i*pixelLengthX, j*pixelLengthZ));
                 pixels[j + i * texWidth] = new Color(value, value, value, 1f);
         }
 
