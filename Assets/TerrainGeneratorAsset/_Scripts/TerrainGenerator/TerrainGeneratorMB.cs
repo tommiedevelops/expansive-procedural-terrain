@@ -16,7 +16,7 @@ namespace TerrainGeneratorAsset {
         {
             if (!terrainViewer || !terrainConfig || !noiseGen)
                 Debug.Assert(false, "Terrain Viewer, Terrain Config and Noise Generator are required. Exiting...");
-                
+
         }
         private void Start()
         {

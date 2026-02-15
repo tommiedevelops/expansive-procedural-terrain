@@ -8,11 +8,11 @@ using static TerrainGeneratorAsset.PlaneMeshGenerator;
 [CustomEditor(typeof(TerrainGeneratorMB))]
 public class TerrainGeneratorMBEditor : Editor
 {
-    public enum PreviewType { None, Wireframe, Mesh }
+    public enum PreviewType { Wireframe, Mesh }
     private static PreviewType m_previewType; // static to extend lifetime 
 
-    private Editor m_terrainConfigSOEditor;
-    private Editor m_noiseGeneratorSOEditor;
+    private TerrainConfigSOEditor m_terrainConfigSOEditor;
+    private NoiseGeneratorSOEditor m_noiseGeneratorSOEditor;
     private TerrainConfigSO m_terrainConfig;
     private NoiseGeneratorSO m_noiseGen;
 
@@ -29,15 +29,16 @@ public class TerrainGeneratorMBEditor : Editor
         if(!m_terrainConfig || !m_noiseGen) return;
 
         if(!m_terrainConfigSOEditor)
-            m_terrainConfigSOEditor = Editor.CreateEditor(m_terrainConfig);
+            m_terrainConfigSOEditor = (TerrainConfigSOEditor)Editor
+                                        .CreateEditor(m_terrainConfig, typeof(TerrainConfigSOEditor));
 
         if(!m_noiseGeneratorSOEditor)
-            m_noiseGeneratorSOEditor = Editor.CreateEditor(m_noiseGen);
+            m_noiseGeneratorSOEditor = (NoiseGeneratorSOEditor)Editor
+                                        .CreateEditor(m_noiseGen, typeof(NoiseGeneratorSOEditor));
         
     }
     private void OnSceneGUI()
     {
-
         TerrainGeneratorMB tg = (TerrainGeneratorMB)target;
 
         var terrainConfig = tg.GetTerrainConfigSO();
@@ -54,17 +55,12 @@ public class TerrainGeneratorMBEditor : Editor
         // Draw Preview
         switch (m_previewType)
         {
-            case PreviewType.None:
-                return;
             case PreviewType.Wireframe:
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 break;
             case PreviewType.Mesh:
                 OnSceneGUI_DrawWireframePreview(terrainConfig, tg.transform, heightFunc);
                 OnSceneGUI_DrawMeshPreview(terrainConfig, tg.transform, heightFunc);
-                break;
-            default:
-                OnSceneGUI_DrawVerticesPreview();
                 break;
         }
 
@@ -142,10 +138,6 @@ public class TerrainGeneratorMBEditor : Editor
         Graphics.DrawMeshNow(mesh, tr.localToWorldMatrix);
 
     }
-    private void OnSceneGUI_DrawVerticesPreview()
-    {
-        throw new NotImplementedException();
-    }
     private void OnSceneGUI_DrawBoundaries(Transform terrainTransform, Vector3 terrainDimensions)
     {
         Handles.color = Color.red;
@@ -168,7 +160,11 @@ public class TerrainGeneratorMBEditor : Editor
                 "Noise Generator Settings"
             );
 
-        if (_showNoiseGeneratorSettings) m_noiseGeneratorSOEditor.OnInspectorGUI();
+        if (_showNoiseGeneratorSettings)
+        {
+            m_noiseGeneratorSOEditor.SetTerrainConfigSO(m_terrainConfig);
+            m_noiseGeneratorSOEditor.OnInspectorGUI();
+        }
 
         EditorGUILayout.EndFoldoutHeaderGroup();
     }

@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 787583c8fc36c3345932c89ab22c39fd, type: 3}
   m_Name: TerrainConfig2
   m_EditorClassIdentifier: 
-  terrainMaterial: {fileID: 0}
-  terrainDimensions: {x: 9.67, y: 7, z: 18.42}
+  isInfinite: 0
+  terrainMaterial: {fileID: 2100000, guid: 59542f914cb5db241947694635cefdfd, type: 2}
+  terrainDimensions: {x: 153.6, y: 7, z: 186.3}
   resolutionX: 53
-  resolutionY: 56
+  resolutionZ: 34
