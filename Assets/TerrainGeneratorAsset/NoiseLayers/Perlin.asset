@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TerrainGeneratorAsset.PerlinNoiseLayerSo
   scale: 9.27
   octaves: 3
-  persistence: 0.38
-  lacunarity: 0.94
-  offset: {x: 982, y: -508.5}
+  persistence: 0.35
+  lacunarity: 0.32
+  offset: {x: 903, y: -508.5}
