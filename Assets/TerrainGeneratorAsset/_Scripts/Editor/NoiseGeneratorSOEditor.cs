@@ -8,6 +8,12 @@ using System;
 [CustomEditor(typeof(NoiseGeneratorSO))]
 public class NoiseGeneratorSOEditor : Editor
 {
+    private TerrainConfigSO m_terrainConfig;
+
+    public void SetTerrainConfigSO(TerrainConfigSO terrainConfig)
+    {
+       m_terrainConfig = terrainConfig; 
+    }
     public override void OnInspectorGUI()
     {
         // Experimental NoiseLayerSO Editor within array
@@ -18,7 +24,7 @@ public class NoiseGeneratorSOEditor : Editor
         {
             if(noiseLayers[i] == null)
             {
-                // Create filed for user to drag noise layer in
+                // Create field for user to drag noise layer in
                 noiseLayers[i] = (NoiseLayerSO)EditorGUILayout.ObjectField(
                         label: "Noise Layer",
                         obj: noiseLayers[i],
@@ -28,15 +34,10 @@ public class NoiseGeneratorSOEditor : Editor
             }
             else
             {
-                Editor editor = CreateEditor(noiseLayers[i]);
-                editor.OnInspectorGUI(); // Display the serializable paremeters
+                var editor = CreateEditor(noiseLayers[i], typeof(NoiseLayerSOEditor));
+                editor.OnInspectorGUI(); // Display usual Serialized Fields
 
-                // Draw a texture preview
-
-                const int texPreviewLength = 200;
-                Rect previewRect = GUILayoutUtility.GetRect(texPreviewLength, texPreviewLength);
-                Texture tex = GenerateTexturePreview(noiseLayers[i], texPreviewLength);
-                EditorGUI.DrawPreviewTexture(previewRect, tex);
+                OnInspectorGUI_DrawNoiseTexturePreview(noiseLayers, i);
             }
 
             if (GUILayout.Button(new GUIContent("Remove Layer")))
@@ -49,8 +50,15 @@ public class NoiseGeneratorSOEditor : Editor
         if (GUILayout.Button(new GUIContent("Add New Layer"))) noiseLayers.Add(null);
 
     }
-
-    internal static Texture2D GenerateTexturePreview(NoiseLayerSO noise, int texWidth)
+    internal static void OnInspectorGUI_DrawNoiseTexturePreview(List<NoiseLayerSO> noiseLayers, int i)
+    {
+        // Draw a texture preview
+        const int texPreviewLength = 200;
+        Rect previewRect = GUILayoutUtility.GetRect(texPreviewLength, texPreviewLength);
+        Texture2D tex = OnInspectorGUI_GenerateTexturePreview(noiseLayers[i], texPreviewLength);
+        EditorGUI.DrawPreviewTexture(previewRect, tex);
+    }
+    internal static Texture2D OnInspectorGUI_GenerateTexturePreview(NoiseLayerSO noise, int texWidth)
     {
         var tex = new Texture2D(texWidth, texWidth, TextureFormat.RGBA32, false);
 
