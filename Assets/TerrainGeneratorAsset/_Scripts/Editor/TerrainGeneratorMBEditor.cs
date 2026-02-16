@@ -5,9 +5,10 @@ namespace TerrainGeneratorAsset
 {
 
     // Main Partial Class for TerrainGeneratorMBEditor that containsd data fields and common functions
+
+    [CustomEditor(typeof(TerrainGeneratorMB))]
     public partial class TerrainGeneratorMBEditor : Editor
     {
-        [CustomEditor(typeof(TerrainGeneratorMB))]
         private enum PreviewType { Wireframe, Mesh };
         private PreviewType m_previewType; 
 
@@ -18,7 +19,6 @@ namespace TerrainGeneratorAsset
 
         private bool _showNoiseGeneratorSettings = false;
         private bool _showTerrainConfigSettings = false;
-        private bool _showTerrainPreviewSettings = false;
         private void OnEnable()
         {
             var terrainGen = (TerrainGeneratorMB)target;

@@ -105,6 +105,5 @@ namespace TerrainGeneratorAsset
             Handles.DrawWireCube(Vector3.zero, terrainDimensions);
         }
 
-
     }
 }

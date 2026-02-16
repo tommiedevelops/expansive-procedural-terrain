@@ -9,25 +9,36 @@ namespace TerrainGeneratorAsset
     {
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             // Create, Save, Load, Modify TerrainConfigs
             EditorGUILayout.LabelField("Terrain Configuration Settings", EditorStyles.boldLabel);
-
-            serializedObject.Update();
-
-            var terrainGen = (TerrainGeneratorMB)target;
 
             SerializedProperty terrainConfig_Prop = serializedObject.FindProperty("m_terrainConfig");
             SerializedProperty noiseGenerator_Prop = serializedObject.FindProperty("m_noiseGenerator");
 
-            serializedObject.Update();
-            EditorGUILayout.PropertyField(terrainConfig_Prop);
-            EditorGUILayout.PropertyField(noiseGenerator_Prop);
-            serializedObject.ApplyModifiedProperties();
+            float prev = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 110f;
+            var buttonWidth = GUILayout.Width(200f);
+            var buttonHeight = GUILayout.Height(40f);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(terrainConfig_Prop, buttonHeight);
+            GUILayout.Button("Create new Terrain Config", buttonWidth, buttonHeight);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(noiseGenerator_Prop, buttonHeight);
+            GUILayout.Button("Create new Noise Generator", buttonWidth, buttonHeight);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUIUtility.labelWidth = prev;
 
             m_previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", m_previewType);
 
             TerrainConfigSOModification();
             NoiseGeneratorSOModification();
+
+            serializedObject.ApplyModifiedProperties();
         }
         void NoiseGeneratorSOModification()
         {
