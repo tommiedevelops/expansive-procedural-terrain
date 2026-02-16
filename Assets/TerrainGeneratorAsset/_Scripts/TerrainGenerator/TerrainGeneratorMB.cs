@@ -7,14 +7,17 @@ namespace TerrainGeneratorAsset {
         
     public class TerrainGeneratorMB : MonoBehaviour
     {
+        // Warning: If you change the variable names, you will need to update the relevant FindProperty() arguments
+        // in TerrainGeneratorMBEditor.cs
+
         [SerializeField] private Transform terrainViewer;
-        [SerializeField] private TerrainConfigSO terrainConfig;
-        [SerializeField] private NoiseGeneratorSO noiseGen;
+        [SerializeField] private TerrainConfigSO m_terrainConfig;
+        [SerializeField] private NoiseGeneratorSO m_noiseGenerator;
 
         private List<Chunk> activeChunks = new();
         private void Awake()
         {
-            if (!terrainViewer || !terrainConfig || !noiseGen)
+            if (!terrainViewer || !m_terrainConfig || !m_noiseGenerator)
                 Debug.Assert(false, "Terrain Viewer, Terrain Config and Noise Generator are required. Exiting...");
 
         }
@@ -26,11 +29,11 @@ namespace TerrainGeneratorAsset {
         }
         public NoiseGeneratorSO GetNoiseGeneratorSO()
         {
-            return noiseGen;
+            return m_noiseGenerator;
         }
         public TerrainConfigSO GetTerrainConfigSO()
         {
-            return terrainConfig;
+            return m_terrainConfig;
         }
 
      }

@@ -35,10 +35,14 @@ public class NoiseGeneratorSOEditor : Editor
             }
             else
             {
+                bool showPreview = false;
+                showPreview = EditorGUILayout.Toggle("Show Texture Preview", showPreview);
+
                 var editor = CreateEditor(noiseLayers[i], typeof(NoiseLayerSOEditor));
                 editor.OnInspectorGUI(); // Display usual Serialized Fields
 
-                OnInspectorGUI_DrawNoiseTexturePreview(noiseLayers, i);
+                if (showPreview)
+                    OnInspectorGUI_DrawNoiseTexturePreview(noiseLayers, i);
             }
 
             if (GUILayout.Button(new GUIContent("Remove Layer")))
