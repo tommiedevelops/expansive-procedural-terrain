@@ -1078,8 +1078,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrainViewer: {fileID: 0}
-  terrainConfig: {fileID: 11400000, guid: 29001f5682a49bf4599d0dae9266ef50, type: 2}
-  noiseGen: {fileID: 11400000, guid: 79d1c91903063be4d85d4e67bf39d075, type: 2}
+  m_terrainConfig: {fileID: 11400000, guid: 1caad075402c92d4da96fb82dd7580b9, type: 2}
+  m_noiseGenerator: {fileID: 11400000, guid: 6ac6ea4a14db8ae4bb8236af99d864c5, type: 2}
 --- !u!4 &1108282618
 Transform:
   m_ObjectHideFlags: 0
@@ -1089,7 +1089,7 @@ Transform:
   m_GameObject: {fileID: 1108282616}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.3, z: 0}
+  m_LocalPosition: {x: 0, y: -11, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

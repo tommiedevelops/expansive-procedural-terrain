@@ -16,9 +16,6 @@ namespace TerrainGeneratorAsset
         private NoiseGeneratorSOEditor m_noiseGeneratorSOEditor;
         private TerrainConfigSO m_terrainConfig;
         private NoiseGeneratorSO m_noiseGen;
-
-        private bool _showNoiseGeneratorSettings = false;
-        private bool _showTerrainConfigSettings = false;
         private void OnEnable()
         {
             var terrainGen = (TerrainGeneratorMB)target;
