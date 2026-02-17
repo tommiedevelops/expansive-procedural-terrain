@@ -8,16 +8,41 @@ public class TerrainConfigSOEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        var it = serializedObject.GetIterator();
-        bool enterChildren = true;
-        while (it.NextVisible(enterChildren))
-        {
-            if (it.propertyPath == "m_Script") continue; // don't draw the script reference
-            EditorGUILayout.PropertyField(it, includeChildren: true);
-            enterChildren = false;
+        serializedObject.Update();
+        var terrainConfig = (TerrainConfigSO)target;
 
-        }
-        
+        var isInfinite_Prop = serializedObject.FindProperty("isInfinite");
+        var terrainMaterial_Prop = serializedObject.FindProperty("terrainMaterial");
+        var terrainDimensions_Prop = serializedObject.FindProperty("terrainDimensions");
+        var resolutionX_Prop = serializedObject.FindProperty("resolutionX");
+        var resolutionZ_Prop = serializedObject.FindProperty("resolutionZ");
+
+        var buttonWidth = GUILayout.Width(400f);
+        var buttonHeight = GUILayout.Height(40f);
+
+        EditorGUILayout.Space();
+
+        EditorGUILayout.PropertyField(terrainMaterial_Prop
+                                     , new GUIContent("Material")
+                                     , buttonHeight);
+
+        EditorGUILayout.Space();
+
+        EditorGUILayout.PropertyField(terrainDimensions_Prop
+                                      , new GUIContent("Dimensions")
+                                      , GUILayout.MinHeight(40f));
+
+
+        EditorGUILayout.PropertyField(resolutionX_Prop
+                                     , new GUIContent("X Resolution")
+                                     , GUILayout.MinWidth(40f)
+                                     );
+
+        EditorGUILayout.PropertyField(resolutionZ_Prop
+                                     , new GUIContent("Y Resolution")
+                                     , GUILayout.MinWidth(40f)
+                                     );
+
         serializedObject.ApplyModifiedProperties();
     }
 }
