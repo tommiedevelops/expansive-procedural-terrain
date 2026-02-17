@@ -49,21 +49,27 @@ namespace TerrainGeneratorAsset
             int resolutionX = terrainConfig.resolutionX;
             int resolutionZ = terrainConfig.resolutionZ;
 
-            float xDistBetweenPtsOS = xLengthOS / resolutionX;
-            float zDistBetweenPtsOS = zLengthOS / resolutionZ;
+            float xDistBetweenPtsOS = xLengthOS / (resolutionX - 1);
+            float zDistBetweenPtsOS = zLengthOS / (resolutionZ - 1);
 
             // starting coordinate in object space
             float startX = -0.5f * xLengthOS;
             float startZ = -0.5f * zLengthOS;
 
             for (int x = 0; x < resolutionX; ++x)
-                for (int z = 0; z < resolutionZ; ++z)
-                {
+            for (int z = 0; z < resolutionZ; ++z)
+            {
                     // currX, currZ, nextX, nextZ all in Object Space
                     float currX = startX + x * xDistBetweenPtsOS;
                     float currZ = startZ + z * zDistBetweenPtsOS;
                     float nextX = startX + (x + 1) * xDistBetweenPtsOS;
                     float nextZ = startZ + (z + 1) * zDistBetweenPtsOS;
+
+                    if (Mathf.Abs(nextX) > terrainConfig.terrainDimensions.x / 2f)
+                        nextX = terrainConfig.terrainDimensions.x / 2f;
+
+                    if(Mathf.Abs(nextZ) > terrainConfig.terrainDimensions.z / 2f)
+                        nextZ = terrainConfig.terrainDimensions.z / 2f;
 
                     float aHeight = yLengthOS * heightFunc(currX, currZ);
                     float bHeight = yLengthOS * heightFunc(currX, nextZ);
@@ -80,7 +86,7 @@ namespace TerrainGeneratorAsset
                     Handles.DrawLine(c, d);
                     Handles.DrawLine(a, d);
                     Handles.DrawLine(a, c);
-                }
+            }
 
         }
         private void DrawMeshPreview(TerrainConfigSO cfg, Transform tr, Func<float, float, float> heightFunc)
