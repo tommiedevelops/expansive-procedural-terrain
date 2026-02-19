@@ -11,14 +11,28 @@ public class NoiseLayerSOEditor : Editor
     private TerrainConfigSO m_terrainConfig;
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
         NoiseLayerSO noiseLayer = target as NoiseLayerSO;
+
+        // List Serialized Fields
+        var it = serializedObject.GetIterator();
+        bool enterChildren = true;
+        while(it.NextVisible(enterChildren))
+        {
+            if (it.propertyPath == "m_Script") continue;
+            EditorGUILayout.PropertyField(it, includeChildren: true);
+            enterChildren = false;
+        }
+
+        // Draw Texture Preview
         const int texPreviewLength = 200;
         Rect previewRect = GUILayoutUtility.GetRect(texPreviewLength, texPreviewLength);
-        Texture2D tex = OnInspectorGUI_GenerateTexturePreview(noiseLayer, texPreviewLength);
+        Texture2D tex = GeneratePreviewTexture(noiseLayer, texPreviewLength);
         EditorGUI.DrawPreviewTexture(previewRect, tex);
- 
+
+        serializedObject.ApplyModifiedProperties(); 
     }
-    private Texture2D OnInspectorGUI_GenerateTexturePreview(NoiseLayerSO noise, int texWidth)
+    private Texture2D GeneratePreviewTexture(NoiseLayerSO noise, int texWidth)
     {
         var tex = new Texture2D(texWidth, texWidth, TextureFormat.RGBA32, false);
 
