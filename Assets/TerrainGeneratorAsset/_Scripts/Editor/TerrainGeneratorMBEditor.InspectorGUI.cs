@@ -9,6 +9,8 @@ namespace TerrainGeneratorAsset
     {
         public override void OnInspectorGUI()
         {
+            if (m_noiseGeneratorSOEditor == null || m_terrainConfigSOEditor == null) return; // currently not handling this case
+
             serializedObject.Update();
 
             SerializedProperty terrainConfig_Prop = serializedObject.FindProperty("m_terrainConfig");

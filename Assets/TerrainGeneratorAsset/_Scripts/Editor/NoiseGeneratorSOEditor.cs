@@ -16,18 +16,19 @@ public class NoiseGeneratorSOEditor : Editor
     }
     public override void OnInspectorGUI()
     {
-        // Experimental NoiseLayerSO Editor within array
         var noiseGen = (NoiseGeneratorSO)target;
+        serializedObject.Update();
+
+        if (m_terrainConfig == null) return; // currently not handling this case
+
+        // Experimental NoiseLayerSO Editor within array
         var noiseLayers = noiseGen.GetNoiseLayers();
 
         // Preview the final result
-
         EditorGUILayout.LabelField("Final result");
-
         EditorNoisePreviewer.DrawNoisePreview(m_terrainConfig, noiseGen.GetHeightFunc()); 
 
         // Preview the individual layers
-
         for (int i = 0; i < noiseLayers.Count; i++)
         {
             if(noiseLayers[i] == null)
@@ -55,5 +56,6 @@ public class NoiseGeneratorSOEditor : Editor
         // Add New Layer Button
         if (GUILayout.Button(new GUIContent("Add New Layer"))) noiseLayers.Add(null);
 
+        serializedObject.ApplyModifiedProperties();
     }
 }

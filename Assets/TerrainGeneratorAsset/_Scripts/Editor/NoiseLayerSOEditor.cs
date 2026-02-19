@@ -23,7 +23,7 @@ public class NoiseLayerSOEditor : Editor
             bool enterChildren = true;
             while (it.NextVisible(enterChildren))
             {
-                if (it.propertyPath == "m_Script") continue;
+                if (it.propertyPath == "m_Script" || it.propertyPath == "isExpanded") continue;
                 EditorGUILayout.PropertyField(it, includeChildren: true);
                 enterChildren = false;
             }
