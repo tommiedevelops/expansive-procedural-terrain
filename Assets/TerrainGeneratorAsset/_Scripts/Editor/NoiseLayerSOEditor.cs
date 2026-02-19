@@ -14,6 +14,12 @@ public class NoiseLayerSOEditor : Editor
         serializedObject.Update();
         NoiseLayerSO noiseLayer = target as NoiseLayerSO;
 
+        GUIStyle centredBold = new GUIStyle(EditorStyles.label);
+        centredBold.alignment = TextAnchor.MiddleCenter;
+        centredBold.fontStyle = FontStyle.Bold;
+
+        EditorGUILayout.LabelField(noiseLayer.name, centredBold);
+
         // List Serialized Fields
         var it = serializedObject.GetIterator();
         bool enterChildren = true;
@@ -48,6 +54,8 @@ public class NoiseLayerSOEditor : Editor
             null,
             ScaleMode.ScaleAndCrop
         );
+
+        EditorGUILayout.Space(5f);
 
         serializedObject.ApplyModifiedProperties(); 
     }
