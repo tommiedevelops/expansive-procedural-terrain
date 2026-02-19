@@ -35,9 +35,9 @@ public class NoiseGeneratorSOEditor : Editor
             }
             else
             {
-                var editor = CreateEditor(noiseLayers[i], typeof(NoiseLayerSOEditor));
+                var editor = (NoiseLayerSOEditor)Editor.CreateEditor(noiseLayers[i], typeof(NoiseLayerSOEditor));
+                editor.SetTerrainConfigSO(m_terrainConfig);
                 editor.OnInspectorGUI(); // Display usual Serialized Fields
-                OnInspectorGUI_DrawNoiseTexturePreview(noiseLayers, i);
             }
 
             if (GUILayout.Button(new GUIContent("Remove Layer")))
@@ -49,36 +49,5 @@ public class NoiseGeneratorSOEditor : Editor
         // Add New Layer Button
         if (GUILayout.Button(new GUIContent("Add New Layer"))) noiseLayers.Add(null);
 
-    }
-    private void OnInspectorGUI_DrawNoiseTexturePreview(List<NoiseLayerSO> noiseLayers, int i)
-    {
-        // Draw a texture preview
-        const int texPreviewLength = 200;
-        Rect previewRect = GUILayoutUtility.GetRect(texPreviewLength, texPreviewLength);
-        Texture2D tex = OnInspectorGUI_GenerateTexturePreview(noiseLayers[i], texPreviewLength);
-        EditorGUI.DrawPreviewTexture(previewRect, tex);
-    }
-    private Texture2D OnInspectorGUI_GenerateTexturePreview(NoiseLayerSO noise, int texWidth)
-    {
-        var tex = new Texture2D(texWidth, texWidth, TextureFormat.RGBA32, false);
-
-        Func<float, float, float> sampler = noise.Evaluate;
-
-        float pixelLengthX = m_terrainConfig.terrainDimensions.x / (texWidth - 1);
-        float pixelLengthZ = m_terrainConfig.terrainDimensions.z / (texWidth - 1);
-
-        Color32[] pixels = new Color32[texWidth * texWidth];
-
-        for (int i = 0; i < texWidth; i++)
-        for (int j = 0; j < texWidth; j++)
-        {
-                float value = Mathf.Clamp01(sampler(i*pixelLengthX, j*pixelLengthZ));
-                pixels[j + i * texWidth] = new Color(value, value, value, 1f);
-        }
-
-        tex.SetPixels32(pixels);
-        tex.Apply(false);
-
-        return tex;
     }
 }
