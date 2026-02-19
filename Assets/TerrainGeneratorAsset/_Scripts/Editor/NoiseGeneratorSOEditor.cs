@@ -23,6 +23,7 @@ public class NoiseGeneratorSOEditor : Editor
         // Preview the final result
 
         EditorGUILayout.LabelField("Final result");
+
         EditorNoisePreviewer.DrawNoisePreview(m_terrainConfig, noiseGen.GetHeightFunc()); 
 
         // Preview the individual layers

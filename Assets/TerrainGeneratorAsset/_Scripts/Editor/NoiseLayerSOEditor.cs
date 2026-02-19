@@ -14,28 +14,29 @@ public class NoiseLayerSOEditor : Editor
         serializedObject.Update();
         NoiseLayerSO noiseLayer = target as NoiseLayerSO;
 
-        GUIStyle centredBold = new GUIStyle(EditorStyles.label);
-        centredBold.alignment = TextAnchor.MiddleCenter;
-        centredBold.fontStyle = FontStyle.Bold;
+        noiseLayer.isExpanded = EditorGUILayout.BeginFoldoutHeaderGroup(noiseLayer.isExpanded, noiseLayer.name);
 
-        EditorGUILayout.LabelField(noiseLayer.name, centredBold);
-
-        // List Serialized Fields
-        var it = serializedObject.GetIterator();
-        bool enterChildren = true;
-        while (it.NextVisible(enterChildren))
+        if (noiseLayer.isExpanded)
         {
-            if (it.propertyPath == "m_Script") continue;
-            EditorGUILayout.PropertyField(it, includeChildren: true);
-            enterChildren = false;
+            // List Serialized Fields
+            var it = serializedObject.GetIterator();
+            bool enterChildren = true;
+            while (it.NextVisible(enterChildren))
+            {
+                if (it.propertyPath == "m_Script") continue;
+                EditorGUILayout.PropertyField(it, includeChildren: true);
+                enterChildren = false;
+            }
+
+            EditorGUILayout.Space();
+
+            EditorNoisePreviewer.DrawNoisePreview(m_terrainConfig, noiseLayer.Evaluate);
+
+            EditorGUILayout.Space(5f);
+
         }
 
-        EditorGUILayout.Space();
-
-        EditorNoisePreviewer.DrawNoisePreview(m_terrainConfig, noiseLayer.Evaluate);
-
-        EditorGUILayout.Space(5f);
-
+        EditorGUILayout.EndFoldoutHeaderGroup();
         serializedObject.ApplyModifiedProperties();
     }
   

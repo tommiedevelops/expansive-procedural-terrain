@@ -10,5 +10,10 @@ namespace TerrainGeneratorAsset
         {
             ValidateValues();
         }
+
+#if UNITY_EDITOR
+        public bool isExpanded;
+#endif
+
     }
 }
