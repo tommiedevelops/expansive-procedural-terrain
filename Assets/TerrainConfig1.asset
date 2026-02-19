@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isInfinite: 1
   terrainMaterial: {fileID: 2100000, guid: 59542f914cb5db241947694635cefdfd, type: 2}
-  terrainDimensions: {x: 500, y: 100.3, z: 500}
-  resolutionX: 50
-  resolutionZ: 50
+  terrainDimensions: {x: 259.25, y: 71.1, z: 280.7}
+  resolutionX: 72
+  resolutionZ: 41

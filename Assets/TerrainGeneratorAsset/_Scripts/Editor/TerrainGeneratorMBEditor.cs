@@ -14,7 +14,6 @@ namespace TerrainGeneratorAsset
 
         private TerrainConfigSOEditor m_terrainConfigSOEditor;
         private NoiseGeneratorSOEditor m_noiseGeneratorSOEditor;
-        private MaterialEditor m_terrainMaterialEditor;
         private TerrainConfigSO m_terrainConfig;
         private NoiseGeneratorSO m_noiseGen;
         private void OnEnable()
@@ -33,10 +32,6 @@ namespace TerrainGeneratorAsset
                 m_noiseGeneratorSOEditor = (NoiseGeneratorSOEditor)Editor
                                             .CreateEditor(m_noiseGen, typeof(NoiseGeneratorSOEditor));
             
-            if (!m_terrainMaterialEditor)
-                m_terrainMaterialEditor = (MaterialEditor)Editor
-                                           .CreateEditor(m_terrainConfig.terrainMaterial
-                                           ,typeof(MaterialEditor));
         }
 
     }

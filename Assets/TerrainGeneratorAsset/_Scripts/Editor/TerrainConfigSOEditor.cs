@@ -24,18 +24,19 @@ public class TerrainConfigSOEditor : Editor
 
         EditorGUILayout.PropertyField(terrainMaterial_Prop
                                      , new GUIContent("Material")
-                                     , buttonHeight);
+                                     , buttonHeight
+                                     );
 
         EditorGUILayout.Space();
 
         EditorGUILayout.PropertyField(terrainDimensions_Prop
                                       , new GUIContent("Dimensions")
-                                      , GUILayout.MinHeight(40f));
+                                      , GUILayout.MinHeight(40f)
+                                      );
 
 
         EditorGUILayout.PropertyField(resolutionX_Prop
                                      , new GUIContent("X Resolution")
-                                     , GUILayout.MinWidth(40f)
                                      );
 
         EditorGUILayout.PropertyField(resolutionZ_Prop

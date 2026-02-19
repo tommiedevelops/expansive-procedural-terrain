@@ -10,7 +10,7 @@ namespace TerrainGeneratorAsset
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            // Create, Save, Load, Modify TerrainConfigs
+
             SerializedProperty terrainConfig_Prop = serializedObject.FindProperty("m_terrainConfig");
             SerializedProperty noiseGenerator_Prop = serializedObject.FindProperty("m_noiseGenerator");
 
