@@ -5,9 +5,9 @@ using System;
 
 namespace TerrainGeneratorAsset
 {
-    public static class EditorTexturePreviewer
+    public static class EditorNoisePreviewer
     {
-        public static void DrawNoiseLayerPreviewTexture(TerrainConfigSO terrainConfig, NoiseLayerSO noiseLayer)
+        public static void DrawNoisePreview(TerrainConfigSO terrainConfig, Func<float,float,float> noiseFunc)
         {
             // Draw Texture Preview
             const int texPreviewLength = 200;
@@ -23,7 +23,7 @@ namespace TerrainGeneratorAsset
 
             Rect previewRect = ScaleRectToFit(outerBox, aspect);
 
-            Texture2D tex = GeneratePreviewTexture(terrainConfig, noiseLayer, texPreviewLength);
+            Texture2D tex = GeneratePreviewTexture(terrainConfig, noiseFunc, texPreviewLength);
 
             EditorGUI.DrawPreviewTexture(
                 previewRect,
@@ -33,11 +33,9 @@ namespace TerrainGeneratorAsset
             );
         }
 
-        private static Texture2D GeneratePreviewTexture(TerrainConfigSO terrainConfig, NoiseLayerSO noise, int texWidth)
+        private static Texture2D GeneratePreviewTexture(TerrainConfigSO terrainConfig, Func<float,float,float> noiseFunc, int texWidth)
         {
             var tex = new Texture2D(texWidth, texWidth, TextureFormat.RGBA32, false);
-
-            Func<float, float, float> sampler = noise.Evaluate;
 
             float pixelLengthX = terrainConfig.terrainDimensions.x / (texWidth - 1);
             float pixelLengthZ = terrainConfig.terrainDimensions.z / (texWidth - 1);
@@ -47,7 +45,7 @@ namespace TerrainGeneratorAsset
             for (int i = 0; i < texWidth; i++)
                 for (int j = 0; j < texWidth; j++)
                 {
-                    float value = Mathf.Clamp01(sampler(i * pixelLengthX, j * pixelLengthZ));
+                    float value = Mathf.Clamp01(noiseFunc(i * pixelLengthX, j * pixelLengthZ));
                     pixels[j + i * texWidth] = new Color(value, value, value, 1f);
                 }
 

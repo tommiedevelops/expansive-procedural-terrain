@@ -32,7 +32,7 @@ public class NoiseLayerSOEditor : Editor
 
         EditorGUILayout.Space();
 
-        EditorTexturePreviewer.DrawNoiseLayerPreviewTexture(m_terrainConfig, noiseLayer);
+        EditorNoisePreviewer.DrawNoisePreview(m_terrainConfig, noiseLayer.Evaluate);
 
         EditorGUILayout.Space(5f);
 
