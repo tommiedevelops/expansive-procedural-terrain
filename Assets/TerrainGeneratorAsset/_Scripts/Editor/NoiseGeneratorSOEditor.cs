@@ -10,7 +10,6 @@ using TMPro;
 public class NoiseGeneratorSOEditor : Editor
 {
     private TerrainConfigSO m_terrainConfig;
-
     public void SetTerrainConfigSO(TerrainConfigSO terrainConfig)
     {
        m_terrainConfig = terrainConfig; 
@@ -20,6 +19,10 @@ public class NoiseGeneratorSOEditor : Editor
         // Experimental NoiseLayerSO Editor within array
         var noiseGen = (NoiseGeneratorSO)target;
         var noiseLayers = noiseGen.GetNoiseLayers();
+
+        // Preview the final result
+
+        // Preview the individual layers
 
         for (int i = 0; i < noiseLayers.Count; i++)
         {
@@ -45,7 +48,6 @@ public class NoiseGeneratorSOEditor : Editor
 
         }
 
-        GUILayout.Space(10f);
         // Add New Layer Button
         if (GUILayout.Button(new GUIContent("Add New Layer"))) noiseLayers.Add(null);
 
