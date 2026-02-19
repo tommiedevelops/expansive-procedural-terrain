@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5bdc32b6c08a124db35b3ca72068d3c, type: 3}
   m_Name: Perlin
   m_EditorClassIdentifier: Assembly-CSharp::TerrainGeneratorAsset.PerlinNoiseLayerSo
-  scale: 28.3
-  octaves: 3
-  persistence: 0.35
-  lacunarity: 0.32
-  offset: {x: 914.27, y: -508.5}
+  scale: 143.4
+  octaves: 2
+  persistence: 0.21
+  lacunarity: 16.8
+  offset: {x: 856, y: -3191.2}
