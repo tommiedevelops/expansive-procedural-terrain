@@ -31,18 +31,23 @@ public class TerrainConfigSOEditor : Editor
 
         EditorGUILayout.PropertyField(terrainDimensions_Prop
                                       , new GUIContent("Dimensions")
-                                      , GUILayout.MinHeight(40f)
+                                      , buttonHeight
                                       );
 
-
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PropertyField(resolutionX_Prop
                                      , new GUIContent("X Resolution")
                                      );
 
+        EditorGUILayout.Space();
+
         EditorGUILayout.PropertyField(resolutionZ_Prop
-                                     , new GUIContent("Y Resolution")
-                                     , GUILayout.MinWidth(40f)
+                                     , new GUIContent("Z Resolution")
                                      );
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(20);
 
         serializedObject.ApplyModifiedProperties();
     }

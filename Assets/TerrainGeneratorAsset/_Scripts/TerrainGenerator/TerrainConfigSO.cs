@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TerrainGeneratorAsset 
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/TerrainConfig")]
+    [CreateAssetMenu(menuName = "TerrainGenerator/TerrainConfig")]
     [Serializable]
     public class TerrainConfigSO : ScriptableObject 
     {

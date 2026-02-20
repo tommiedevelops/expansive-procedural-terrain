@@ -10,14 +10,14 @@ namespace TerrainGeneratorAsset {
         // Warning: If you change the variable names, you will need to update the relevant FindProperty() arguments
         // in TerrainGeneratorMBEditor.cs
 
-        [SerializeField] private Transform terrainViewer;
+        [SerializeField] private Transform m_terrainViewer;
         [SerializeField] private TerrainConfigSO m_terrainConfig;
         [SerializeField] private NoiseGeneratorSO m_noiseGenerator;
 
         private List<Chunk> activeChunks = new();
         private void Awake()
         {
-            if (!terrainViewer || !m_terrainConfig || !m_noiseGenerator)
+            if (!m_terrainViewer || !m_terrainConfig || !m_noiseGenerator)
                 Debug.Assert(false, "Terrain Viewer, Terrain Config and Noise Generator are required. Exiting...");
 
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TerrainGeneratorAsset
 {
 
-    [CreateAssetMenu(menuName = "ScriptableObjects/NoiseGenerator")]
+    [CreateAssetMenu(menuName = "TerrainGenerator/NoiseGenerator")]
     [Serializable]
     public class NoiseGeneratorSO : ScriptableObject
     {

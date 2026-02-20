@@ -15,27 +15,37 @@ namespace TerrainGeneratorAsset
 
             SerializedProperty terrainConfig_Prop = serializedObject.FindProperty("m_terrainConfig");
             SerializedProperty noiseGenerator_Prop = serializedObject.FindProperty("m_noiseGenerator");
+            SerializedProperty terrainViewer_Prop = serializedObject.FindProperty("m_terrainViewer");
+
 
             float prev = EditorGUIUtility.labelWidth;
             EditorGUIUtility.labelWidth = 110f;
-            var buttonWidth = GUILayout.Width(200f);
+            var minButtonWidth = GUILayout.MinWidth(50f);
             var buttonHeight = GUILayout.Height(40f);
+            var maxButtonWidth = GUILayout.MaxWidth(100f);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(terrainViewer_Prop, buttonHeight);
+            GUILayout.Button("Create New", minButtonWidth, buttonHeight, maxButtonWidth); // creates new gameobject in the scene and assigns it automatically
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PropertyField(terrainConfig_Prop, buttonHeight);
-            GUILayout.Button("Create new Terrain Config", buttonWidth, buttonHeight);
+            GUILayout.Button("Create New", minButtonWidth, buttonHeight, maxButtonWidth); // creates new terrain config in files and assigns it
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PropertyField(noiseGenerator_Prop, buttonHeight);
-            GUILayout.Button("Create new Noise Generator", buttonWidth, buttonHeight);
+            GUILayout.Button("Create New", minButtonWidth, buttonHeight, maxButtonWidth); // creates new noisegenerator in files and assigns it
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space();
 
-            m_previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", m_previewType);
+            m_previewType = (PreviewType)EditorGUILayout.EnumPopup("Preview Type", m_previewType, buttonHeight);
 
             EditorGUILayout.Space();
 
