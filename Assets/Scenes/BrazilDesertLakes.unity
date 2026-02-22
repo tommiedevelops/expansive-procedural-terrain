@@ -1077,9 +1077,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9bbc2f2dabd19f4db771ad6b681bfa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrainViewer: {fileID: 0}
+  m_terrainViewer: {fileID: 111722350}
   m_terrainConfig: {fileID: 11400000, guid: 1caad075402c92d4da96fb82dd7580b9, type: 2}
-  m_noiseGenerator: {fileID: 11400000, guid: 6ac6ea4a14db8ae4bb8236af99d864c5, type: 2}
+  m_noiseGenerator: {fileID: 11400000, guid: 79d1c91903063be4d85d4e67bf39d075, type: 2}
 --- !u!4 &1108282618
 Transform:
   m_ObjectHideFlags: 0

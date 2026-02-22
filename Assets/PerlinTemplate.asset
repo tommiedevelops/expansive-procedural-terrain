@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5bdc32b6c08a124db35b3ca72068d3c, type: 3}
-  m_Name: Perlin
+  m_Name: PerlinTemplate
   m_EditorClassIdentifier: Assembly-CSharp::TerrainGeneratorAsset.PerlinNoiseLayerSo
   isExpanded: 1
-  scale: 107.6
+  scale: 126.38
   octaves: 2
-  persistence: 0.21
-  lacunarity: 16.8
+  persistence: 0.4
+  lacunarity: 8.54
   offset: {x: 856, y: -3191.2}

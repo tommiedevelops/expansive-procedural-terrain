@@ -10,7 +10,7 @@ namespace TerrainGeneratorAsset
     public class NoiseGeneratorSO : ScriptableObject
     {
         [SerializeField] private List<NoiseLayerSO> _noiseLayers;
-        private NoiseCombinerSO _noiseCombiner;
+        private NoiseCombinerSO m_noiseCombiner;
         private void OnEnable() {
             // only initialize if its null
             _noiseLayers ??= new List<NoiseLayerSO>();    
@@ -31,6 +31,7 @@ namespace TerrainGeneratorAsset
         }
         public void AddLayer(NoiseLayerSO layer)
         {
+            // Make a copy of the NoiseLayer
             _noiseLayers.Add(layer);
         }
         public void RemoveLayer<TLayerType>() where TLayerType : NoiseLayerSO

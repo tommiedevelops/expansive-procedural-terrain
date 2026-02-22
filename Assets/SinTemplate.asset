@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10834cbcb0fa0754e9b02ac7fe698e32, type: 3}
-  m_Name: Sin
+  m_Name: SinTemplate
   m_EditorClassIdentifier: Assembly-CSharp::SinNoiseLayerSO
   isExpanded: 1
-  xFreq: 0.8
+  xFreq: 0.86
   yFreq: -341.1

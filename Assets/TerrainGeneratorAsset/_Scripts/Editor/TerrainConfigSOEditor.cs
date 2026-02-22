@@ -34,18 +34,14 @@ public class TerrainConfigSOEditor : Editor
                                       , buttonHeight
                                       );
 
-        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PropertyField(resolutionX_Prop
                                      , new GUIContent("X Resolution")
                                      );
-
-        EditorGUILayout.Space();
 
         EditorGUILayout.PropertyField(resolutionZ_Prop
                                      , new GUIContent("Z Resolution")
                                      );
 
-        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space(20);
 

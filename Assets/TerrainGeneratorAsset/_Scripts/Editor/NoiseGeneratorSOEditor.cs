@@ -34,15 +34,16 @@ public class NoiseGeneratorSOEditor : Editor
             if(noiseLayers[i] == null)
             {
                 // Create field for user to drag noise layer in
-                noiseLayers[i] = (NoiseLayerSO)EditorGUILayout.ObjectField(
+                noiseLayers[i] = (NoiseLayerSO)EditorGUILayout.ObjectField (
                         label: "Noise Layer",
                         obj: noiseLayers[i],
                         objType: typeof(NoiseLayerSO),
                         allowSceneObjects: false
-                    );
+                );
             }
             else
             {
+                // if not already copied, make a copy of noiseLayers[i] and store it inside NoiseGeneratorSO
                 var editor = (NoiseLayerSOEditor)Editor.CreateEditor(noiseLayers[i], typeof(NoiseLayerSOEditor));
                 editor.SetTerrainConfigSO(m_terrainConfig);
                 editor.OnInspectorGUI(); // Display usual Serialized Fields
